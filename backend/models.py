@@ -80,6 +80,33 @@ class Incident(BaseModel):
     ai_analysis: VisionAIAnalysis
     created_at: datetime
 
+# --- DIAGNÓSTICO DE HARDWARE ESP32 (VISTA ADMIN) ---
+class HardwareDetails(BaseModel):
+    board_type: str = "ESP32-WROOM-32D (Dual Core 240MHz)"
+    sensor_ultrasonic: str = "JSN-SR04T Waterproof (IP67)"
+    battery_voltage_v: float = 4.12
+    battery_pct: float = 94.0
+    solar_panel_charging: bool = True
+    signal_rssi_dbm: int = -72
+    signal_quality: str = "EXCELENTE"
+    firmware_version: str = "v1.4.2-rally"
+    sampling_interval_sec: int = 3
+
+class NodeLocation(BaseModel):
+    lat: float
+    lng: float
+    district: str
+
+class NodeDiagnostic(BaseModel):
+    id: str
+    name: str
+    location: NodeLocation
+    status: str  # ONLINE, SIN_SENAL, ANOMALIA_DETECTADA
+    hardware: HardwareDetails
+    has_anomalies: bool = False
+    anomaly_description: str = "Lecturas acústicas estables sin rebote falso"
+    last_packet_time: datetime
+
 # --- SIMULADOR ---
 class SimulatorTrigger(BaseModel):
     scenario: str = Field(
@@ -87,4 +114,5 @@ class SimulatorTrigger(BaseModel):
         description="Escenario a simular",
         examples=["CRECIDA_SUBITA", "LLUVIA_TORRENCIAL", "NODO_DESCONECTADO", "NORMALIZACION"]
     )
+
 

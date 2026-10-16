@@ -139,7 +139,7 @@ paths:
                   $ref: '#/components/schemas/Incident'
     post:
       tags: [Reportes Ciudadanos]
-      summary: Registrar reporte vecinal con análisis automático por Visión Artificial
+      summary: Registrar reporte vecinal (JSON)
       requestBody:
         required: true
         content:
@@ -154,9 +154,86 @@ paths:
               schema:
                 $ref: '#/components/schemas/Incident'
 
+  /incidents/upload:
+    post:
+      tags: [Reportes Ciudadanos]
+      summary: Subir fotografía real de drenaje para análisis por Visión Artificial
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image, description, latitude, longitude]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Archivo de fotografía tomado por el vecino
+                reporter_name:
+                  type: string
+                  example: "Rosa Gómez (Vecina Sabana Grande)"
+                description:
+                  type: string
+                  example: "Sedimentos acumulados en la boca de tormenta calle 4"
+                latitude:
+                  type: number
+                  example: 12.1255
+                longitude:
+                  type: number
+                  example: -86.1768
+      responses:
+        '201':
+          description: Fotografía procesada con diagnóstico de IA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
   # ==========================================
-  # 5. SIMULADOR (DEMOSTRACIÓN PARA EL JURADO)
+  # 5. ADMINISTRACIÓN & DIAGNÓSTICO DE HARDWARE ESP32 (VISTA ADMIN)
   # ==========================================
+  /admin/nodes:
+    get:
+      tags: [Administración & Nodos]
+      summary: Listar todos los reservorios/nodos monitoreados en Managua
+      responses:
+        '200':
+          description: Lista de nodos con telemetría de hardware
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodeDiagnostic'
+
+  /admin/nodes/{node_id}/select:
+    post:
+      tags: [Administración & Nodos]
+      summary: Seleccionar el nodo activo para visualización en el mapa y simulación
+      parameters:
+        - in: path
+          name: node_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nodo seleccionado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  selected_node_id:
+                    type: string
+                  message:
+                    type: string
+
+  # ==========================================
+  # 6. SIMULADOR (DEMOSTRACIÓN PARA EL JURADO)
+  # ==========================================
+
 
   /simulator/trigger:
     post:
@@ -381,4 +458,68 @@ components:
         created_at:
           type: string
           format: date-time
+
+    # --- ADMINISTRACIÓN DE HARDWARE & ESP32 ---
+    NodeDiagnostic:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "node-maravilla-01"
+        name:
+          type: string
+          example: "Cauce La Maravilla & Pista Sabana Grande"
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+            district:
+              type: string
+        status:
+          type: string
+          enum: [ONLINE, SIN_SENAL, ANOMALIA_DETECTADA]
+          example: "ONLINE"
+        hardware:
+          type: object
+          properties:
+            board_type:
+              type: string
+              example: "ESP32-WROOM-32D (Dual Core 240MHz)"
+            sensor_ultrasonic:
+              type: string
+              example: "JSN-SR04T Waterproof Ultrasonic"
+            battery_voltage_v:
+              type: number
+              example: 4.12
+            battery_pct:
+              type: number
+              example: 94.0
+            solar_panel_charging:
+              type: boolean
+              example: true
+            signal_rssi_dbm:
+              type: integer
+              example: -72
+            signal_quality:
+              type: string
+              example: "EXCELENTE"
+            firmware_version:
+              type: string
+              example: "v1.4.2-rally"
+            sampling_interval_sec:
+              type: integer
+              example: 3
+        has_anomalies:
+          type: boolean
+          example: false
+        anomaly_description:
+          type: string
+          example: "Lecturas acústicas estables sin ruido parasitario"
+        last_packet_time:
+          type: string
+          format: date-time
+
 

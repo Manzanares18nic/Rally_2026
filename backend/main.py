@@ -1,11 +1,12 @@
-from datetime import datetime
-import uuid
-from typing import List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import shutil
+import uuid
+from typing import List
+from datetime import datetime
 
 from models import (
     TelemetryInput,
@@ -15,10 +16,10 @@ from models import (
     DashboardSummary,
     SimulatorTrigger,
     Incident,
-    CreateIncidentInput
+    CreateIncidentInput,
+    NodeDiagnostic
 )
 from database import db, MAX_CAPACITY_CM
-
 
 app = FastAPI(
     title="Reservorio Vivo API",
@@ -26,11 +27,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Montar carpeta de archivos estáticos (para servir fotos subidas de reportes)
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 # Servir la interfaz visual de pruebas en la ruta raíz '/'
 @app.get("/", include_in_schema=False)
 def serve_dashboard():
-    static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    static_file = os.path.join(static_dir, "index.html")
     return FileResponse(static_file)
+
 
 
 # CORS TOTAL: Permite que el frontend de tu compañero se conecte sin problemas desde localhost:3000, 5173, etc.
@@ -122,7 +128,7 @@ def list_incidents():
 
 @app.post("/api/v1/incidents", response_model=Incident, status_code=201, tags=["Reportes Ciudadanos"])
 def report_incident(data: CreateIncidentInput):
-    """Registra un reporte vecinal y genera clasificación automática por Visión Artificial."""
+    """Registra un reporte vecinal (JSON)."""
     incident = db.add_incident(
         reporter_name=data.reporter_name or "Vecino Sabana Grande",
         description=data.description,
@@ -132,7 +138,58 @@ def report_incident(data: CreateIncidentInput):
     )
     return incident
 
+@app.post("/api/v1/incidents/upload", response_model=Incident, status_code=201, tags=["Reportes Ciudadanos"])
+async def upload_incident_photo(
+    image: UploadFile = File(...),
+    description: str = Form(...),
+    reporter_name: str = Form("Vecino Sabana Grande"),
+    latitude: float = Form(12.1249),
+    longitude: float = Form(-86.1761)
+):
+    """Permite subir una foto real desde el celular/PC y procesarla con Visión Artificial."""
+    uploads_dir = os.path.join(os.path.dirname(__file__), "static", "uploads")
+    os.makedirs(uploads_dir, exist_ok=True)
+    
+    file_ext = os.path.splitext(image.filename)[1] or ".jpg"
+    filename = f"report_{uuid.uuid4().hex[:8]}{file_ext}"
+    file_path = os.path.join(uploads_dir, filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    photo_url = f"/static/uploads/{filename}"
+
+    incident = db.add_incident(
+        reporter_name=reporter_name,
+        description=description,
+        lat=latitude,
+        lng=longitude,
+        photo_url=photo_url
+    )
+    return incident
+
+# ---------------------------------------------------------------------------
+# 4. ADMINISTRACIÓN & DIAGNÓSTICO DE HARDWARE ESP32 (VISTA ADMIN)
+# ---------------------------------------------------------------------------
+@app.get("/api/v1/admin/nodes", response_model=List[NodeDiagnostic], tags=["Administración & Nodos"])
+def get_all_nodes():
+    """Retorna la lista de todos los reservorios/nodos monitoreados con su estado de hardware."""
+    return db.nodes
+
+@app.post("/api/v1/admin/nodes/{node_id}/select", tags=["Administración & Nodos"])
+def select_active_node(node_id: str):
+    """Selecciona el nodo que se visualiza en la consola."""
+    match = next((n for n in db.nodes if n.id == node_id), None)
+    if not match:
+        raise HTTPException(status_code=404, detail="Nodo no encontrado.")
+    db.selected_node_id = node_id
+    return {
+        "selected_node_id": node_id,
+        "message": f"Nodo '{match.name}' seleccionado para monitoreo activo."
+    }
+
 from simulator import simulator
+
 
 @app.on_event("startup")
 def startup_event():

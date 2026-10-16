@@ -3,7 +3,11 @@ Almacenamiento ultra-rápido en memoria con SQLite / persistencia simple para ha
 """
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from models import TelemetryPoint, Alert, DashboardSummary, Location, GreenModule, Incident, VisionAIAnalysis
+from models import (
+    TelemetryPoint, Alert, DashboardSummary, Location, GreenModule, Incident, VisionAIAnalysis,
+    NodeDiagnostic, HardwareDetails, NodeLocation
+)
+
 import uuid
 
 # Capacidad máxima del reservorio piloto en cm
@@ -19,11 +23,77 @@ class SimpleDB:
         self.telemetry_history: List[TelemetryPoint] = []
         self.alerts: List[Alert] = []
         self.incidents: List[Incident] = []
+        self.selected_node_id: str = "node-maravilla-01"
         self.sensor_status: str = "ONLINE"
         self.last_reading_time: datetime = datetime.now()
         
+        # Nodos monitoreados en Managua (Multi-reservorios)
+        self.nodes: List[NodeDiagnostic] = [
+            NodeDiagnostic(
+                id="node-maravilla-01",
+                name="Cauce La Maravilla & Pista Sabana Grande",
+                location=NodeLocation(lat=12.1249, lng=-86.1761, district="Distrito VI, Managua"),
+                status="ONLINE",
+                hardware=HardwareDetails(
+                    board_type="ESP32-WROOM-32D (Dual Core 240MHz)",
+                    sensor_ultrasonic="JSN-SR04T Waterproof (IP67)",
+                    battery_voltage_v=4.12,
+                    battery_pct=94.0,
+                    solar_panel_charging=True,
+                    signal_rssi_dbm=-72,
+                    signal_quality="EXCELENTE",
+                    firmware_version="v1.4.2-rally",
+                    sampling_interval_sec=3
+                ),
+                has_anomalies=False,
+                anomaly_description="Lecturas acústicas estables sin rebote falso",
+                last_packet_time=datetime.now()
+            ),
+            NodeDiagnostic(
+                id="node-31dic-02",
+                name="Microrrepresa & Cauce 31 de Diciembre",
+                location=NodeLocation(lat=12.1485, lng=-86.2085, district="Distrito VI, Managua"),
+                status="ONLINE",
+                hardware=HardwareDetails(
+                    board_type="ESP32 LoRaWAN 915MHz",
+                    sensor_ultrasonic="JSN-SR04T Waterproof (IP67)",
+                    battery_voltage_v=3.85,
+                    battery_pct=78.0,
+                    solar_panel_charging=True,
+                    signal_rssi_dbm=-84,
+                    signal_quality="BUENA",
+                    firmware_version="v1.4.0-rally",
+                    sampling_interval_sec=5
+                ),
+                has_anomalies=False,
+                anomaly_description="Telemetría normal",
+                last_packet_time=datetime.now() - timedelta(minutes=1)
+            ),
+            NodeDiagnostic(
+                id="node-tiscapa-03",
+                name="Drenaje Laguneta Tiscapa Norte",
+                location=NodeLocation(lat=12.1350, lng=-86.2700, district="Distrito I, Managua"),
+                status="SIN_SENAL",
+                hardware=HardwareDetails(
+                    board_type="ESP32 + SIM800L GSM",
+                    sensor_ultrasonic="JSN-SR04T Waterproof (IP67)",
+                    battery_voltage_v=3.42,
+                    battery_pct=15.0,
+                    solar_panel_charging=False,
+                    signal_rssi_dbm=-105,
+                    signal_quality="DEFICIENTE",
+                    firmware_version="v1.3.9-rally",
+                    sampling_interval_sec=10
+                ),
+                has_anomalies=True,
+                anomaly_description="Batería baja y pérdida de enlace GSM (> 40 min)",
+                last_packet_time=datetime.now() - timedelta(minutes=42)
+            )
+        ]
+
         # Inicializar con algunos datos de muestra para que el frontend no arranque vacío
         self._seed_initial_data()
+
 
 
     def _seed_initial_data(self):

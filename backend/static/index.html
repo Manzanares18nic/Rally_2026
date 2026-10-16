@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reservorio Vivo - Panel de Monitoreo & Simulación</title>
+  <title>Reservorio Vivo - Sistema Dual (Comunidad & Administrador)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -12,227 +12,332 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    .leaflet-container {
-      background: #1e293b;
-    }
+    .leaflet-container { background: #0f172a; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8">
+<body class="bg-slate-900 text-slate-100 min-h-screen p-3 md:p-6 font-sans">
 
-  <div class="max-w-6xl mx-auto space-y-6">
+  <div class="max-w-7xl mx-auto space-y-5">
     
-    <!-- HEADER -->
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg gap-4">
-      <div>
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">🌊</span>
-          <h1 class="text-2xl font-bold tracking-tight">Reservorio Vivo</h1>
-          <span class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold border border-blue-500/30">MVP 24h</span>
-        </div>
-        <p id="reservoir-name" class="text-slate-400 text-sm mt-1">Cargando ubicación...</p>
-      </div>
-      
-      <!-- ESTADO DE NODO Y SEMÁFORO -->
-      <div class="flex items-center gap-4">
-        <div class="text-right">
-          <p class="text-xs text-slate-400">Sensor IoT</p>
-          <span id="sensor-badge" class="font-bold text-sm text-green-400">ONLINE</span>
-        </div>
-        <div id="status-card" class="px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-emerald-950 text-emerald-400 border border-emerald-700">
-          <span id="status-dot" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="status-text">VERDE</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- METRICAS PRINCIPALES -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-        <p class="text-xs text-slate-400 font-medium">NIVEL ACTUAL (%)</p>
-        <div class="flex items-baseline gap-2 mt-2">
-          <span id="metric-level-pct" class="text-4xl font-extrabold text-blue-400">--</span>
-          <span class="text-slate-500 font-semibold">%</span>
-        </div>
-        <div class="w-full bg-slate-700 h-2 rounded-full mt-3 overflow-hidden">
-          <div id="metric-level-bar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
-        </div>
-      </div>
-
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-        <p class="text-xs text-slate-400 font-medium">ALTURA DE AGUA</p>
-        <div class="flex items-baseline gap-2 mt-2">
-          <span id="metric-level-cm" class="text-4xl font-extrabold text-white">--</span>
-          <span class="text-slate-500 font-semibold">cm / 300 cm</span>
-        </div>
-        <p class="text-xs text-slate-400 mt-3">Capacidad: 15,000 m³</p>
-      </div>
-
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
-        <p class="text-xs text-slate-400 font-medium">TASA DE SUBIDA (30m)</p>
-        <div class="flex items-baseline gap-2 mt-2">
-          <span id="metric-rate" class="text-4xl font-extrabold text-amber-400">--</span>
-          <span class="text-slate-500 font-semibold">% / 30min</span>
-        </div>
-        <p id="metric-rate-desc" class="text-xs text-slate-400 mt-3">Anticipación inteligente</p>
-      </div>
-
-      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+    <!-- TOP NAVIGATION & PROFILE SWITCHER -->
+    <nav class="flex flex-col sm:flex-row justify-between items-center bg-slate-800/90 backdrop-blur p-4 rounded-2xl border border-slate-700 shadow-xl gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🌊</span>
         <div>
-          <p class="text-xs text-slate-400 font-medium">SIMULADOR EN VIVO</p>
-          <p id="current-scenario" class="text-sm font-semibold text-purple-400 mt-1">Escenario: NORMAL</p>
+          <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            Reservorio Vivo
+            <span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-blue-500/30">Rally 2026</span>
+          </h1>
+          <p id="nav-location" class="text-xs text-slate-400">Cauce La Maravilla • Pista Sabana Grande (Distrito VI, Managua)</p>
         </div>
-        <button onclick="sendWhatsAppDemo()" class="mt-3 w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-green-900/40">
-          <span>📲</span> Probar Alerta WhatsApp
+      </div>
+
+      <!-- SWITCHER DE PERFILES (COMUNIDAD VS ADMIN) -->
+      <div class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-700/80">
+        <button id="btn-profile-community" onclick="switchProfile('community')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow">
+          <span>👥</span> Vista Comunidad
+        </button>
+        <button id="btn-profile-admin" onclick="switchProfile('admin')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+          <span>🛠️</span> Vista Administrador / IoT
         </button>
       </div>
+    </nav>
+
+    <!-- ============================================================== -->
+    <!-- PERFIL 1: VISTA DE LA COMUNIDAD (SIMPLE, DIRECTA, PREVENTIVA)  -->
+    <!-- ============================================================== -->
+    <div id="view-community" class="space-y-5">
+      
+      <!-- BANNER SEMÁFORO DE EMERGENCIA BARRIAL -->
+      <div id="community-alert-banner" class="p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-emerald-950/60 border-emerald-700 text-emerald-200">
+        <div class="flex items-center gap-4">
+          <div id="community-status-badge" class="w-14 h-14 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg">
+            ✅
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="community-status-text" class="text-xl font-black uppercase tracking-wider text-emerald-300">ESTADO NORMAL</span>
+              <span class="text-xs px-2 py-0.5 bg-black/30 rounded-full font-mono">SIN RIESGO</span>
+            </div>
+            <p id="community-instruction" class="text-xs text-slate-300 mt-1">El cauce fluye sin amenaza de desborde sobre la Pista Sabana Grande.</p>
+          </div>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+          <button onclick="sendWhatsAppDemo()" class="w-full md:w-auto bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow">
+            <span>📲</span> Recibir Avisos en WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- MÉTRICAS CLAVE PARA EL VECINO -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+          <p class="text-xs text-slate-400 font-semibold">NIVEL DE LLENADO DEL CAUCE</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span id="comm-level-pct" class="text-4xl font-black text-blue-400">40%</span>
+            <span id="comm-level-cm" class="text-xs text-slate-400">(120 cm / 300 cm máx)</span>
+          </div>
+          <div class="w-full bg-slate-700 h-2.5 rounded-full mt-3 overflow-hidden">
+            <div id="comm-level-bar" class="bg-blue-500 h-full transition-all duration-500" style="width: 40%"></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+          <p class="text-xs text-slate-400 font-semibold">VELOCIDAD DE CRECIDA</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span id="comm-rate" class="text-4xl font-black text-amber-400">Estable</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-3">Alerta preventiva si sube más de 10% en 30 minutos.</p>
+        </div>
+
+        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+          <div>
+            <p class="text-xs text-slate-400 font-semibold">PARTICIPACIÓN CIUDADANA</p>
+            <p class="text-xs text-slate-300 mt-1">¿Ves basura o ramas en la boca de tormenta?</p>
+          </div>
+          <button onclick="document.getElementById('modal-report').classList.remove('hidden')" class="mt-3 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+            <span>📸</span> Reportar Obstrucción con Foto
+          </button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- SECCIÓN CENTRAL: GRÁFICA & CONTROLES DE SIMULACIÓN -->
+    <!-- ============================================================== -->
+    <!-- PERFIL 2: VISTA ADMINISTRADOR & HARDWARE IoT (TÉCNICA & ALCALDÍA) -->
+    <!-- ============================================================== -->
+    <div id="view-admin" class="hidden space-y-5">
+      
+      <!-- BARRA DE SELECCIÓN DE RESERVORIO / NODO -->
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📡</span>
+          <div>
+            <p class="text-xs text-slate-400 font-bold uppercase">Red de Telemetría Managua</p>
+            <h2 class="text-base font-bold text-white">Consola de Diagnóstico de Hardware ESP32</h2>
+          </div>
+        </div>
+
+        <!-- SELECTOR DE RESERVORIOS -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <label class="text-xs text-slate-400">Reservorio:</label>
+          <select id="node-selector" onchange="selectNode(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+            <option value="node-maravilla-01">Cauce La Maravilla (Sabana Grande) [ONLINE]</option>
+            <option value="node-31dic-02">Microrrepresa 31 de Diciembre [ONLINE]</option>
+            <option value="node-tiscapa-03">Drenaje Tiscapa Norte [SIN SEÑAL / ALERTA]</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TARJETAS DE SALUD DE HARDWARE DEL NODO SELECCIONADO -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        
+        <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+          <p class="text-[11px] text-slate-400 font-semibold">BATERÍA & ENERGÍA SOLAR</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span id="hw-battery-pct" class="text-2xl font-black text-emerald-400">94.0%</span>
+            <span id="hw-voltage" class="text-xs text-slate-400">(4.12 V)</span>
+          </div>
+          <p id="hw-solar-status" class="text-[10px] text-emerald-400 mt-2 flex items-center gap-1">
+            <span>☀️</span> Panel Solar Cargando
+          </p>
+        </div>
+
+        <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+          <p class="text-[11px] text-slate-400 font-semibold">CONECTIVIDAD & SEÑAL</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span id="hw-rssi" class="text-2xl font-black text-blue-400">-72 dBm</span>
+          </div>
+          <p id="hw-signal-quality" class="text-[10px] text-blue-400 mt-2 font-semibold">Señal: EXCELENTE (LoRa/GSM)</p>
+        </div>
+
+        <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+          <p class="text-[11px] text-slate-400 font-semibold">SENSOR ULTRASÓNICO</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span class="text-sm font-bold text-white">JSN-SR04T (IP67)</span>
+          </div>
+          <p id="hw-sensor-health" class="text-[10px] text-emerald-400 mt-2 font-semibold">Respuesta acústica: OK</p>
+        </div>
+
+        <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+          <p class="text-[11px] text-slate-400 font-semibold">ESTADO DE ANOMALÍAS</p>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span id="hw-anomaly-badge" class="text-sm font-bold text-emerald-400">Sin Anomalías</span>
+          </div>
+          <p id="hw-anomaly-desc" class="text-[10px] text-slate-400 mt-2 truncate">Lecturas estables sin ruido</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SECCIÓN COMÚN: MAPA SATELITAL REAL (ESRI) & GRÁFICA TEMPORAL   -->
+    <!-- ============================================================== -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- GRÁFICA EN TIEMPO REAL (2 COLUMNAS) -->
-      <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="font-bold text-lg text-slate-200 flex items-center gap-2">
-            <span>📈</span> Nivel de Agua en Tiempo Real
-          </h2>
-          <span class="text-xs text-slate-400 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Actualizando cada 2s
-          </span>
+      <!-- MAPA SATELITAL DE ALTA RESOLUCIÓN (2 COLUMNAS) -->
+      <div class="lg:col-span-2 bg-slate-800 p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
+          <div>
+            <h2 class="font-bold text-base text-slate-200 flex items-center gap-2">
+              <span>🛰️</span> Vista Satelital de Alta Resolución (SINAPRED)
+            </h2>
+            <p class="text-[11px] text-slate-400">Punto Crítico: 12.1249° N, 86.1761° O • Pista Sabana Grande</p>
+          </div>
+          <div class="flex items-center gap-3 text-[11px]">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Cauce</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Reportes Vecinales</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Infraestructura Verde</span>
+          </div>
         </div>
-        <div class="relative h-64 md:h-80">
-          <canvas id="telemetryChart"></canvas>
-        </div>
+        <div id="map" class="w-full h-72 md:h-96 rounded-xl border border-slate-700 shadow-inner"></div>
       </div>
 
-      <!-- BOTONES DE SIMULACIÓN PARA EL JURADO (1 COLUMNA) -->
-      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+      <!-- PANEL LATERAL: CONTROL DEL SIMULADOR & HISTORIAL -->
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 flex flex-col justify-between space-y-4">
         <div>
-          <h2 class="font-bold text-lg text-slate-200 mb-1 flex items-center gap-2">
-            <span>🎮</span> Disparador para Jurado
-          </h2>
-          <p class="text-xs text-slate-400 mb-4">
-            Demuestra al evaluador cómo reacciona el sistema ante eventos extremos sin necesidad de hardware físico.
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="font-bold text-sm text-slate-200 flex items-center gap-1.5">
+              <span>🎮</span> Disparador para Jurado
+            </h2>
+            <span id="current-scenario" class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-mono font-bold">NORMAL</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mb-3">
+            Demuestra cómo reacciona el sistema ante eventos extremos en tiempo real:
           </p>
 
-          <div class="space-y-2.5">
-            <button onclick="triggerScenario('CRECIDA_SUBITA')" class="w-full text-left p-3 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-700/60 text-red-200 transition font-medium text-xs flex justify-between items-center">
+          <div class="space-y-2">
+            <button onclick="triggerScenario('CRECIDA_SUBITA')" class="w-full text-left p-2.5 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-700/60 text-red-200 text-xs font-semibold flex justify-between items-center">
               <div>
-                <p class="font-bold text-red-300">🚨 Crecida Súbita</p>
-                <p class="text-[10px] text-red-400">Tormenta violenta (+10 cm/ciclo)</p>
+                <p>🚨 Crecida Súbita</p>
+                <p class="text-[10px] text-red-400 font-normal">Tormenta violenta (+10 cm/ciclo)</p>
               </div>
-              <span class="text-base">⛈️</span>
+              <span>⛈️</span>
             </button>
 
-            <button onclick="triggerScenario('LLUVIA_MODERADA')" class="w-full text-left p-3 rounded-xl bg-amber-950/60 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 transition font-medium text-xs flex justify-between items-center">
+            <button onclick="triggerScenario('VACIADO')" class="w-full text-left p-2.5 rounded-xl bg-blue-950/60 hover:bg-blue-900 border border-blue-700/60 text-blue-200 text-xs font-semibold flex justify-between items-center">
               <div>
-                <p class="font-bold text-amber-300">🌧️ Lluvia Moderada</p>
-                <p class="text-[10px] text-amber-400">Crecida sostenida (+2 cm/ciclo)</p>
+                <p>🌿 Retención Infraestructura Verde</p>
+                <p class="text-[10px] text-blue-400 font-normal">Jardines de lluvia drenan el agua</p>
               </div>
-              <span class="text-base">🌦️</span>
+              <span>🌱</span>
             </button>
 
-            <button onclick="triggerScenario('VACIADO')" class="w-full text-left p-3 rounded-xl bg-blue-950/60 hover:bg-blue-900/80 border border-blue-700/60 text-blue-200 transition font-medium text-xs flex justify-between items-center">
+            <button onclick="triggerScenario('NODO_DESCONECTADO')" class="w-full text-left p-2.5 rounded-xl bg-purple-950/60 hover:bg-purple-900 border border-purple-700/60 text-purple-200 text-xs font-semibold flex justify-between items-center">
               <div>
-                <p class="font-bold text-blue-300">🌿 Drenaje / Infraestructura Verde</p>
-                <p class="text-[10px] text-blue-400">Simula retención y vaciado</p>
+                <p>📡 Falla de Sensor (Sin Señal)</p>
+                <p class="text-[10px] text-purple-400 font-normal">Regla: nodo sin datos = alerta</p>
               </div>
-              <span class="text-base">🌱</span>
+              <span>⚠️</span>
             </button>
 
-            <button onclick="triggerScenario('NODO_DESCONECTADO')" class="w-full text-left p-3 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-700/60 text-purple-200 transition font-medium text-xs flex justify-between items-center">
-              <div>
-                <p class="font-bold text-purple-300">⚠️ Falla: Sensor Caído</p>
-                <p class="text-[10px] text-purple-400">Alerta de nodo sin datos</p>
-              </div>
-              <span class="text-base">📡</span>
-            </button>
-
-            <button onclick="triggerScenario('NORMAL')" class="w-full text-left p-3 rounded-xl bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-slate-200 transition font-medium text-xs flex justify-between items-center">
-              <div>
-                <p class="font-bold text-slate-300">✅ Normalizar Sistema</p>
-                <p class="text-[10px] text-slate-400">Estado estable</p>
-              </div>
-              <span class="text-base">🔄</span>
-            </button>
-
-            <!-- BOTÓN IDEA E: REPORTE CIUDADANO CON IA -->
-            <button onclick="simulateCitizenReport()" class="w-full text-left p-3 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-600/60 text-amber-100 transition font-medium text-xs flex justify-between items-center mt-3">
-              <div>
-                <p class="font-bold text-amber-300">📸 Simular Reporte Ciudadano (Idea E)</p>
-                <p class="text-[10px] text-amber-400">Envía foto con análisis automático por Visión AI</p>
-              </div>
-              <span class="text-base">🤖</span>
+            <button onclick="triggerScenario('NORMAL')" class="w-full text-left p-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs flex justify-between items-center">
+              <span>🔄 Normalizar</span>
+              <span>✅</span>
             </button>
           </div>
-
         </div>
 
-        <p class="text-[11px] text-slate-500 text-center mt-4 border-t border-slate-700/60 pt-3">
-          Rally Latinoamericano de Innovación 2026 • Reto 05
-        </p>
-      </div>
-
-    </div>
-
-    <!-- MAPA GEOESPACIAL DE MANAGUA (LEAFLET) -->
-    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-        <div>
-          <h2 class="font-bold text-lg text-slate-200 flex items-center gap-2">
-            <span>🗺️</span> Ubicación Geoespacial & Radio de Afectación Barrial
-          </h2>
-          <p class="text-xs text-slate-400">Sector Piloto: Microcuenca Tiscapa / Drenaje Central Managua</p>
-        </div>
-        <div class="flex items-center gap-3 text-xs">
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Normal</span>
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Alerta Amarilla</span>
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500"></span> Evacuación Roja</span>
+        <div class="border-t border-slate-700 pt-3">
+          <p class="text-xs font-bold text-slate-300 mb-2">📈 Nivel de Agua en Vivo</p>
+          <div class="h-28">
+            <canvas id="telemetryChart"></canvas>
+          </div>
         </div>
       </div>
-      <div id="map" class="w-full h-72 md:h-96 rounded-xl border border-slate-700 shadow-inner overflow-hidden"></div>
-    </div>
 
-    <!-- LOG DE ALERTAS RECIENTES -->
-    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-      <h2 class="font-bold text-lg text-slate-200 mb-3 flex items-center gap-2">
-        <span>📢</span> Registro de Alertas Despachadas
-      </h2>
-      <div id="alerts-container" class="space-y-2">
-        <p class="text-xs text-slate-400 italic">No hay alertas registradas aún.</p>
-      </div>
     </div>
 
   </div>
 
+  <!-- ============================================================== -->
+  <!-- MODAL: SUBIR FOTO REAL PARA ANÁLISIS DE VISIÓN ARTIFICIAL (IA) -->
+  <!-- ============================================================== -->
+  <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <span>📸</span> Reportar Drenaje u Obstrucción
+        </h3>
+        <button onclick="document.getElementById('modal-report').classList.add('hidden')" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-300">
+        Sube una fotografía de cualquier drenaje o boca de tormenta. El modelo de **Visión Artificial** analizará el porcentaje de sedimentos y desechos.
+      </p>
+
+      <form id="form-upload-report" onsubmit="handlePhotoUpload(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Tu Nombre o Comité:</label>
+          <input type="text" id="report-name" value="Vecino Sabana Grande" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Descripción del problema:</label>
+          <textarea id="report-desc" rows="2" required placeholder="Ej. Rama atorada y botellas acumuladas bajo el puente peatonal" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Seleccionar Fotografía Real:</label>
+          <input type="file" id="report-file" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+        </div>
+
+        <button type="submit" id="btn-submit-upload" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+          <span>🤖</span> Analizar con Visión Artificial
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script>
-    // INICIALIZACIÓN DE LEAFLET (OpenStreetMap - 100% Gratuito y sin API Key)
+    // ESTADO GLOBAL
+    let activeProfile = 'community';
     let map = null;
     let reservoirMarker = null;
     let alertZone = null;
     let greenMarkers = [];
     let incidentMarkers = [];
 
+    // CAMBIAR PERFILES (COMUNIDAD VS ADMIN)
+    function switchProfile(profile) {
+      activeProfile = profile;
+      const viewComm = document.getElementById('view-community');
+      const viewAdmin = document.getElementById('view-admin');
+      const btnComm = document.getElementById('btn-profile-community');
+      const btnAdmin = document.getElementById('btn-profile-admin');
+
+      if (profile === 'community') {
+        viewComm.classList.remove('hidden');
+        viewAdmin.classList.add('hidden');
+        btnComm.className = 'px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow';
+        btnAdmin.className = 'px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white';
+      } else {
+        viewComm.classList.add('hidden');
+        viewAdmin.classList.remove('hidden');
+        btnAdmin.className = 'px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow';
+        btnComm.className = 'px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white';
+        fetchAdminNodes();
+      }
+    }
+
+    // INICIALIZACIÓN DEL MAPA SATELITAL (ESRI)
     function initMap(lat, lng, name) {
       if (map) return;
       map = L.map('map', { zoomControl: true }).setView([lat, lng], 16);
 
-      // 1. Capa Satelital Real de Alta Resolución (ESRI World Imagery - 100% Gratuito y sin API Key)
-      const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; SINAPRED Managua',
         maxZoom: 19
       }).addTo(map);
 
-      // 2. Capa transparente de Nombres de Calles y Pistas (para ubicar la Pista Sabana Grande y el Cauce)
-      const labelsLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+      L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19
       }).addTo(map);
 
-      // Marcador del cauce / reservorio
       reservoirMarker = L.marker([lat, lng]).addTo(map);
       reservoirMarker.bindPopup(`<b>${name}</b><br>Punto Crítico de Anegamiento (Estudio SINAPRED)`);
 
-      // Radio de alerta dinámica (área vulnerable de inundación sobre el cauce)
       alertZone = L.circle([lat, lng], {
         color: '#10b981',
         fillColor: '#10b981',
@@ -240,88 +345,64 @@
         radius: 280
       }).addTo(map);
 
-      // Cargar reportes ciudadanos en el mapa
       fetchIncidents();
     }
 
-
-
-
-    // Función para actualizar color de la zona en el mapa según el semáforo
     function updateMapStatus(status, levelPct) {
-      let color = '#10b981'; // Verde
-      let radius = 300;
+      if (!alertZone) return;
+      let color = '#10b981';
+      let radius = 280;
 
       if (status === 'ROJO') {
-        color = '#ef4444'; // Rojo crítico
-        radius = 500; // Radio de evacuación extendido
+        color = '#ef4444';
+        radius = 500;
       } else if (status === 'AMARILLO') {
-        color = '#f59e0b'; // Amarillo advertencia
+        color = '#f59e0b';
         radius = 400;
       } else if (status === 'FALLO_SENSOR') {
-        color = '#a855f7'; // Morado sensor caído
-        radius = 250;
+        color = '#a855f7';
+        radius = 200;
       }
 
       alertZone.setStyle({ color: color, fillColor: color });
       alertZone.setRadius(radius);
-      reservoirMarker.setPopupContent(`
-        <div class="text-slate-900 text-xs">
-          <strong class="text-sm">Reservorio Piloto Tiscapa</strong><br>
-          Estado actual: <b style="color:${color}">${status}</b><br>
-          Nivel de llenado: <b>${levelPct}%</b>
-        </div>
-      `);
     }
 
-    // INICIALIZACIÓN DE CHART.JS
+    // GRÁFICA EN VIVO (CHART.JS)
     const ctx = document.getElementById('telemetryChart').getContext('2d');
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: [],
         datasets: [{
-          label: 'Nivel de Agua (%)',
           data: [],
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.1)',
           fill: true,
           tension: 0.3,
           borderWidth: 2,
-          pointRadius: 2
+          pointRadius: 1
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: {
-            min: 0,
-            max: 100,
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#94a3b8' }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { color: '#94a3b8' }
-          }
+          y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
+          x: { display: false }
         },
-        plugins: {
-          legend: { display: false }
-        }
+        plugins: { legend: { display: false } }
       }
     });
 
-    // ACTUALIZACIÓN PERIÓDICA DEL DASHBOARD
+    // POLLING PERIÓDICO DEL DASHBOARD
     async function fetchDashboard() {
       try {
         const res = await fetch('/api/v1/dashboard');
         const data = await res.json();
 
-        // 1. Inicializar mapa con las coordenadas y nombre que vienen del contrato
         initMap(data.location.lat, data.location.lng, data.reservoir_name);
 
-        // 2. Pintar módulos verdes si vienen del contrato y no se han pintado
         if (data.green_modules && greenMarkers.length === 0 && map) {
           data.green_modules.forEach(mod => {
             const m = L.circleMarker([mod.lat, mod.lng], {
@@ -331,204 +412,179 @@
           });
         }
 
-        document.getElementById('reservoir-name').innerText = `${data.reservoir_name} (${data.location.neighborhood}, ${data.location.district})`;
-        document.getElementById('metric-level-pct').innerText = data.current_level_pct;
-        document.getElementById('metric-level-cm').innerText = data.current_level_cm;
-        document.getElementById('metric-rate').innerText = data.rise_rate_pct_30m > 0 ? `+${data.rise_rate_pct_30m}` : data.rise_rate_pct_30m;
-        document.getElementById('metric-level-bar').style.width = `${Math.min(100, data.current_level_pct)}%`;
+        // Vista de la comunidad
+        document.getElementById('comm-level-pct').innerText = `${data.current_level_pct}%`;
+        document.getElementById('comm-level-cm').innerText = `(${data.current_level_cm} cm / 300 cm máx)`;
+        document.getElementById('comm-level-bar').style.width = `${Math.min(100, data.current_level_pct)}%`;
+        document.getElementById('comm-rate').innerText = data.rise_rate_pct_30m > 0 ? `+${data.rise_rate_pct_30m}%` : 'Estable';
 
-
-        // Sensor badge
-        const sensorBadge = document.getElementById('sensor-badge');
-        if (data.sensor_status === 'ONLINE') {
-          sensorBadge.innerText = 'ONLINE';
-          sensorBadge.className = 'font-bold text-sm text-green-400';
-        } else {
-          sensorBadge.innerText = 'SIN SEÑAL';
-          sensorBadge.className = 'font-bold text-sm text-red-400 animate-bounce';
-        }
-
-        // Semáforo visual
-        const statusCard = document.getElementById('status-card');
-        const statusDot = document.getElementById('status-dot');
-        const statusText = document.getElementById('status-text');
-        statusText.innerText = data.status;
+        const banner = document.getElementById('community-alert-banner');
+        const badge = document.getElementById('community-status-badge');
+        const statusText = document.getElementById('community-status-text');
+        const instruction = document.getElementById('community-instruction');
 
         if (data.status === 'ROJO') {
-          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-red-950 text-red-400 border border-red-700 animate-pulse';
-          statusDot.className = 'w-3 h-3 rounded-full bg-red-400';
+          banner.className = 'p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-red-950/70 border-red-700 text-red-200 animate-pulse';
+          badge.className = 'w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center text-3xl shadow-lg';
+          badge.innerText = '🚨';
+          statusText.innerText = 'ALERTA ROJA: EVACUACIÓN';
+          instruction.innerText = '¡Crecida súbita detectada! Evacuar viviendas en márgenes del cauce hacia puntos altos.';
         } else if (data.status === 'AMARILLO') {
-          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-amber-950 text-amber-400 border border-amber-700';
-          statusDot.className = 'w-3 h-3 rounded-full bg-amber-400';
+          banner.className = 'p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-amber-950/70 border-amber-700 text-amber-200';
+          badge.className = 'w-14 h-14 rounded-2xl bg-amber-600 flex items-center justify-center text-3xl shadow-lg';
+          badge.innerText = '⚠️';
+          statusText.innerText = 'ALERTA AMARILLA: PRECAUCIÓN';
+          instruction.innerText = 'Subida rápida de agua. Comité barrial y vigías: despejar canaletas y vigilar paso peatonal.';
         } else if (data.status === 'FALLO_SENSOR') {
-          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-purple-950 text-purple-400 border border-purple-700';
-          statusDot.className = 'w-3 h-3 rounded-full bg-purple-400';
+          banner.className = 'p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-purple-950/70 border-purple-700 text-purple-200';
+          badge.className = 'w-14 h-14 rounded-2xl bg-purple-600 flex items-center justify-center text-3xl shadow-lg';
+          badge.innerText = '📡';
+          statusText.innerText = 'SENSOR SIN SEÑAL';
+          instruction.innerText = 'Fallo de telemetría reportado. Vigías comunitarios activados para inspección visual directa.';
         } else {
-          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-emerald-950 text-emerald-400 border border-emerald-700';
-          statusDot.className = 'w-3 h-3 rounded-full bg-emerald-400 animate-pulse';
+          banner.className = 'p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-emerald-950/60 border-emerald-700 text-emerald-200';
+          badge.className = 'w-14 h-14 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg';
+          badge.innerText = '✅';
+          statusText.innerText = 'ESTADO NORMAL';
+          instruction.innerText = 'El cauce fluye sin amenaza de desborde sobre la Pista Sabana Grande.';
         }
 
-        // Actualizar el mapa reactivo (color y radio de advertencia)
         updateMapStatus(data.status, data.current_level_pct);
 
       } catch (err) {
-        console.error("Error al obtener dashboard:", err);
+        console.error("Error dashboard:", err);
       }
     }
 
-    // ACTUALIZACIÓN DE GRÁFICA
+    // TELEMETRÍA GRÁFICA
     async function fetchTelemetry() {
       try {
-        const res = await fetch('/api/v1/telemetry?limit=25');
+        const res = await fetch('/api/v1/telemetry?limit=20');
         const points = await res.json();
-        
-        chart.data.labels = points.map(p => new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        chart.data.labels = points.map(p => new Date(p.timestamp).toLocaleTimeString());
         chart.data.datasets[0].data = points.map(p => p.water_level_pct);
         chart.update();
-      } catch (err) {
-        console.error("Error al obtener telemetría:", err);
-      }
+      } catch (e) {}
     }
 
-    // ACTUALIZACIÓN DE ALERTAS
-    async function fetchAlerts() {
-      try {
-        const res = await fetch('/api/v1/alerts');
-        const alerts = await res.json();
-        const container = document.getElementById('alerts-container');
-
-        if (alerts.length === 0) {
-          container.innerHTML = '<p class="text-xs text-slate-400 italic">No hay alertas activas.</p>';
-          return;
-        }
-
-        container.innerHTML = alerts.map(a => `
-          <div class="p-3 rounded-xl border flex items-center justify-between text-xs ${
-            a.level === 'ROJO' ? 'bg-red-950/40 border-red-800 text-red-200' :
-            a.level === 'AMARILLO' ? 'bg-amber-950/40 border-amber-800 text-amber-200' :
-            'bg-slate-700/40 border-slate-600 text-slate-200'
-          }">
-            <div>
-              <p class="font-bold">${a.title}</p>
-              <p class="text-slate-400 mt-0.5">${a.instruction}</p>
-            </div>
-            <span class="text-[10px] text-slate-500">${new Date(a.created_at).toLocaleTimeString()}</span>
-          </div>
-        `).join('');
-
-      } catch (err) {
-        console.error("Error al obtener alertas:", err);
-      }
-    }
-
-    // DISPARAR ESCENARIOS
-    async function triggerScenario(scenario) {
-      try {
-        const res = await fetch('/api/v1/simulator/trigger', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ scenario })
-        });
-        const data = await res.json();
-        document.getElementById('current-scenario').innerText = `Escenario: ${data.scenario}`;
-        fetchDashboard();
-        fetchTelemetry();
-        fetchAlerts();
-      } catch (err) {
-        alert("Error al disparar escenario: " + err);
-      }
-    }
-
-    // CARGAR REPORTES CIUDADANOS EN EL MAPA SATELITAL
+    // CARGAR INCIDENTES EN MAPA
     async function fetchIncidents() {
       try {
         const res = await fetch('/api/v1/incidents');
         const incidents = await res.json();
-        
         if (!map) return;
-        
-        // Limpiar marcadores viejos
         incidentMarkers.forEach(m => map.removeLayer(m));
         incidentMarkers = [];
 
         incidents.forEach(inc => {
           const marker = L.circleMarker([inc.latitude, inc.longitude], {
-            radius: 9,
-            color: '#f97316',
-            fillColor: '#ea580c',
-            fillOpacity: 0.9,
-            weight: 2
+            radius: 8, color: '#ea580c', fillColor: '#f97316', fillOpacity: 0.9, weight: 2
           }).addTo(map);
 
           marker.bindPopup(`
             <div class="text-slate-900 text-xs max-w-xs">
-              <span class="bg-orange-100 text-orange-800 text-[10px] font-bold px-1.5 py-0.5 rounded">📸 Reporte Ciudadano</span>
-              <p class="font-bold text-sm mt-1 text-slate-800">${inc.reporter_name}</p>
-              <p class="text-slate-600 mt-1">${inc.description}</p>
-              <div class="mt-2 p-2 bg-slate-100 rounded border border-slate-200">
-                <p class="font-bold text-[11px] text-blue-700">🤖 Clasificación Visión AI:</p>
-                <p class="text-[10px] text-slate-700"><b>Detección:</b> ${inc.ai_analysis.obstruction_type}</p>
-                <p class="text-[10px] text-slate-700"><b>Confianza:</b> ${inc.ai_analysis.confidence_pct}%</p>
-                <p class="text-[10px] text-red-600 font-semibold mt-0.5">Acción: ${inc.ai_analysis.suggested_action}</p>
+              <span class="bg-orange-100 text-orange-800 text-[10px] font-bold px-1.5 py-0.5 rounded">📸 Reporte Vecinal</span>
+              <p class="font-bold text-xs mt-1">${inc.reporter_name}</p>
+              <p class="text-slate-600 text-[11px] mt-0.5">${inc.description}</p>
+              ${inc.photo_url ? `<img src="${inc.photo_url}" class="mt-2 rounded-lg max-h-24 w-full object-cover">` : ''}
+              <div class="mt-2 p-1.5 bg-slate-100 rounded text-[10px]">
+                <b class="text-blue-700">🤖 Visión AI:</b> ${inc.ai_analysis.obstruction_type} (${inc.ai_analysis.confidence_pct}%)
               </div>
             </div>
           `);
           incidentMarkers.push(marker);
         });
-      } catch (err) {
-        console.error("Error al cargar incidentes:", err);
-      }
+      } catch (e) {}
     }
 
-    // SIMULAR ENVÍO DE REPORTE CIUDADANO CON FOTO
-    async function simulateCitizenReport() {
+    // CARGAR DATOS DE ADMINISTRADOR (ESP32)
+    async function fetchAdminNodes() {
       try {
-        const payload = {
-          reporter_name: "Doña Carmen (Líder Comunitaria La Maravilla)",
-          description: "Basura y ramas obstruyendo el flujo bajo el puente de la Pista Sabana Grande",
-          latitude: 12.1255,
-          longitude: -86.1768,
-          photo_url: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80"
-        };
+        const res = await fetch('/api/v1/admin/nodes');
+        const nodes = await res.json();
+        const selectedId = document.getElementById('node-selector').value;
+        const current = nodes.find(n => n.id === selectedId) || nodes[0];
 
-        const res = await fetch('/api/v1/incidents', {
+        document.getElementById('hw-battery-pct').innerText = `${current.hardware.battery_pct}%`;
+        document.getElementById('hw-voltage').innerText = `(${current.hardware.battery_voltage_v} V)`;
+        document.getElementById('hw-rssi').innerText = `${current.hardware.signal_rssi_dbm} dBm`;
+        document.getElementById('hw-signal-quality').innerText = `Señal: ${current.hardware.signal_quality}`;
+        
+        const anomBadge = document.getElementById('hw-anomaly-badge');
+        if (current.has_anomalies) {
+          anomBadge.innerText = '⚠️ Anomalía Detectada';
+          anomBadge.className = 'text-sm font-bold text-red-400';
+        } else {
+          anomBadge.innerText = '✅ Telemetría Estable';
+          anomBadge.className = 'text-sm font-bold text-emerald-400';
+        }
+        document.getElementById('hw-anomaly-desc').innerText = current.anomaly_description;
+
+      } catch (e) {}
+    }
+
+    // SUBIR FOTO REAL DE INCIDENTE
+    async function handlePhotoUpload(event) {
+      event.preventDefault();
+      const btn = document.getElementById('btn-submit-upload');
+      btn.innerText = "⏳ Procesando con Visión Artificial...";
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData();
+        formData.append("reporter_name", document.getElementById('report-name').value);
+        formData.append("description", document.getElementById('report-desc').value);
+        formData.append("image", document.getElementById('report-file').files[0]);
+        formData.append("latitude", 12.1252);
+        formData.append("longitude", -86.1765);
+
+        const res = await fetch('/api/v1/incidents/upload', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: formData
         });
         const data = await res.json();
-        
-        alert(`✅ Reporte registrado!\n🤖 Visión AI detectó: ${data.ai_analysis.obstruction_type} (${data.ai_analysis.confidence_pct}% confianza).\n📍 Se ha fijado un marcador naranja en el mapa satelital.`);
+
+        alert(`✅ Fotografía analizada con éxito!\n🤖 Detección Visión AI: ${data.ai_analysis.obstruction_type}\n📊 Confianza: ${data.ai_analysis.confidence_pct}%\n📌 Acción recomendada: ${data.ai_analysis.suggested_action}`);
+        document.getElementById('modal-report').classList.add('hidden');
+        document.getElementById('form-upload-report').reset();
         fetchIncidents();
       } catch (err) {
-        alert("Error al simular reporte: " + err);
+        alert("Error al subir foto: " + err);
+      } finally {
+        btn.innerText = "🤖 Analizar con Visión Artificial";
+        btn.disabled = false;
       }
     }
 
-    // PROBAR BOTÓN DE WHATSAPP
+    // DISPARAR ESCENARIOS
+    async function triggerScenario(scenario) {
+      const res = await fetch('/api/v1/simulator/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario })
+      });
+      const data = await res.json();
+      document.getElementById('current-scenario').innerText = data.scenario;
+      fetchDashboard();
+      fetchTelemetry();
+    }
+
+    // WHATSAPP
     async function sendWhatsAppDemo() {
-      try {
-        const res = await fetch('/api/v1/alerts/test-whatsapp/send-whatsapp', { method: 'POST' });
-        const data = await res.json();
-        if (data.whatsapp_direct_link) {
-          window.open(data.whatsapp_direct_link, '_blank');
-        }
-      } catch (err) {
-        alert("Error al enviar WhatsApp: " + err);
-      }
+      const res = await fetch('/api/v1/alerts/test/send-whatsapp', { method: 'POST' });
+      const data = await res.json();
+      if (data.whatsapp_direct_link) window.open(data.whatsapp_direct_link, '_blank');
     }
 
-    // INTERVALO DE CONSULTA CADA 2 SEGUNDOS
+    // INTERVALO DE REFREZCO
     setInterval(() => {
       fetchDashboard();
       fetchTelemetry();
-      fetchAlerts();
+      if (activeProfile === 'admin') fetchAdminNodes();
     }, 2000);
 
-    // LLAMADA INICIAL
     fetchDashboard();
     fetchTelemetry();
-    fetchAlerts();
   </script>
 </body>
 </html>
