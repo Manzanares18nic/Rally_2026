@@ -28,10 +28,10 @@ class Alert(BaseModel):
 
 # --- DASHBOARD GENERAL ---
 class Location(BaseModel):
-    lat: float = 12.1485
-    lng: float = -86.2085
-    neighborhood: str = "Barrio 31 de Diciembre"
-    district: str = "Distrito VI, Managua"
+    lat: float = 12.1249
+    lng: float = -86.1761
+    neighborhood: str = "Sector Cauce La Maravilla"
+    district: str = "Distrito VI, Pista Sabana Grande, Managua"
 
 class GreenModule(BaseModel):
     name: str
@@ -41,7 +41,7 @@ class GreenModule(BaseModel):
     retention_desc: str
 
 class DashboardSummary(BaseModel):
-    reservoir_name: str = "Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua"
+    reservoir_name: str = "Cauce La Maravilla & Pista Sabana Grande - Distrito VI Managua"
     location: Location = Location()
     current_level_pct: float
     current_level_cm: float
@@ -51,6 +51,7 @@ class DashboardSummary(BaseModel):
     sensor_status: str  # ONLINE, SIN_SENAL
     green_modules: List[GreenModule] = []
     last_updated: datetime
+
 
 
 # --- SIMULADOR ---

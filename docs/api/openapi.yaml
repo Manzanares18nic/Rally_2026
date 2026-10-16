@@ -161,22 +161,23 @@ components:
       properties:
         reservoir_name:
           type: string
-          example: "Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua"
+          example: "Cauce La Maravilla & Pista Sabana Grande - Distrito VI Managua"
         location:
           type: object
           properties:
             lat:
               type: number
-              example: 12.1485
+              example: 12.1249
             lng:
               type: number
-              example: -86.2085
+              example: -86.1761
             neighborhood:
               type: string
-              example: "Barrio 31 de Diciembre"
+              example: "Sector Cauce La Maravilla"
             district:
               type: string
-              example: "Distrito VI, Managua"
+              example: "Distrito VI, Pista Sabana Grande, Managua"
+
         current_level_pct:
           type: number
           example: 65.0

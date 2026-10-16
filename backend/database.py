@@ -104,28 +104,28 @@ class SimpleDB:
         
         green_modules = [
             GreenModule(
-                name="Jardín de Lluvia y Bio-Retención Norte",
-                lat=12.1500,
-                lng=-86.2095,
+                name="Jardín de Lluvia y Bio-Retención Sabana Grande",
+                lat=12.1265,
+                lng=-86.1775,
                 type="JARDIN_LLUVIA",
-                retention_desc="Retiene hasta 45,000 L de escorrentía barrial directa"
+                retention_desc="Retiene hasta 45,000 L de escorrentía superficial de la Pista Sabana Grande"
             ),
             GreenModule(
-                name="Franja Filtrante Calle Principal",
-                lat=12.1470,
-                lng=-86.2070,
+                name="Franja Filtrante Márgenes del Cauce La Maravilla",
+                lat=12.1235,
+                lng=-86.1748,
                 type="FRANJA_FILTRANTE",
-                retention_desc="Disminuye en 38% la velocidad de entrada de sedimentos al cauce"
+                retention_desc="Amortigua el pico de crecida y filtra sedimentos antes del estrangulamiento"
             )
         ]
 
         return DashboardSummary(
-            reservoir_name="Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua",
+            reservoir_name="Cauce La Maravilla & Pista Sabana Grande - Distrito VI Managua",
             location=Location(
-                lat=12.1485,
-                lng=-86.2085,
-                neighborhood="Barrio 31 de Diciembre",
-                district="Distrito VI, Managua"
+                lat=12.1249,
+                lng=-86.1761,
+                neighborhood="Sector Cauce La Maravilla",
+                district="Distrito VI, Pista Sabana Grande, Managua"
             ),
             current_level_pct=latest.water_level_pct,
             current_level_cm=latest.water_level_cm,
@@ -136,6 +136,7 @@ class SimpleDB:
             green_modules=green_modules,
             last_updated=latest.timestamp
         )
+
 
 
 # Instancia única en memoria para el servidor
