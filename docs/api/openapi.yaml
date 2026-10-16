@@ -1,182 +1,77 @@
 openapi: 3.0.3
 info:
-  title: Reservorio Vivo API - Rally LATAM 2026 (Reto 05)
+  title: Reservorio Vivo API - MVP 24 Horas (Rally LATAM 2026)
   description: |
-    API REST para la solución **Reservorio Vivo**, que integra:
-    - **Idea A**: Nodos IoT + Telemetría de nivel y lluvia + Alertas por umbral y tasa de subida.
-    - **Idea B**: Infraestructura verde modular y medición de impacto (antes vs después).
-    - **Idea C**: Pronóstico a corto plazo (modelo hidrológico predictivo 1-3 horas).
-    - **Idea D**: Red comunitaria de vigías, alertas multicanal (WhatsApp/SMS/Sirena) y gestión de comités.
-    - **Idea E**: Reportes ciudadanos con visión por computador para detección/clasificación de drenajes obstruidos.
+    API REST para el **MVP de 24 horas** de **Reservorio Vivo**.
+    Diseñado para ser implementado y demostrado en tiempo récord:
+    - Ingesta de nivel y lluvia (físico o simulado).
+    - Detección de alerta por nivel y tasa de subida rápida (+X% en Y min).
+    - Detección de nodo sin señal (fallo visible).
+    - Despacho de alerta por WhatsApp / SMS / Webhook.
+    - Simulador integrado con 1 clic para la demo del jurado.
+    - Datos públicos para el mapa y panel barrial.
   version: 1.0.0
-  contact:
-    name: Equipo Reservorio Vivo - Rally LATAM 2026
 servers:
   - url: http://localhost:8000/api/v1
-    description: Servidor de desarrollo local
-  - url: https://api.reservoriovivo.latam/api/v1
-    description: Servidor de producción / Demo Rally
+    description: Servidor local de desarrollo
 
 tags:
-  - name: Auth
-    description: Autenticación JWT y perfil de usuario
-  - name: Nodes
-    description: Gestión y estado de nodos de sensado IoT (Idea A)
-  - name: Telemetry
-    description: Recepción y consulta de lecturas de nivel, lluvia y batería (Idea A)
-  - name: Alerts
-    description: Motor de alertas por umbrales, tasa de subida y aprobación de emergencias (Idea A, D)
-  - name: Community & Vigias
-    description: Red de vigías, suscriptores de alerta y canal WhatsApp/SMS (Idea D)
-  - name: Green Infrastructure
-    description: Módulos de infraestructura verde y métricas de retención/desempeño (Idea B)
-  - name: Forecast AI
-    description: Predicción de nivel a corto plazo (1 a 3 horas) con modelo ML (Idea C)
-  - name: Citizen Reports & Vision AI
-    description: Reporte de drenajes con clasificación por Visión Artificial (Idea E)
-  - name: Simulator
-    description: Inyección de datos y simulación de lluvias torrenciales para demostración en vivo
   - name: Dashboard
-    description: Métricas agregadas e Índice de Resiliencia barrial para vista pública
+    description: Estado general público y mapa del reservorio
+  - name: Telemetria
+    description: Recepción y consulta rápida de lecturas (nodo IoT o simulador)
+  - name: Alertas
+    description: Estado de alertas y aprobación/envío
+  - name: Simulador
+    description: Control de simulación en vivo para la presentación al jurado
 
 paths:
   # ==========================================
-  # AUTH
+  # 1. DASHBOARD & ESTADO GENERAL
   # ==========================================
-  /auth/login:
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Estado consolidado en tiempo real (Mapa, nivel actual, alertas)
+      description: Endpoint principal que alimenta toda la pantalla inicial del frontend.
+      responses:
+        '200':
+          description: Resumen general del sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+
+  # ==========================================
+  # 2. TELEMETRÍA (INGESTA & HISTORIAL RÁPIDO)
+  # ==========================================
+  /telemetry:
     post:
-      tags: [Auth]
-      summary: Iniciar sesión y obtener token JWT
+      tags: [Telemetria]
+      summary: Enviar lectura desde el nodo IoT (ESP32) o script de prueba
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: Autenticación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthToken'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-
-  /auth/me:
-    get:
-      tags: [Auth]
-      summary: Perfil del usuario autenticado
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Datos del usuario actual
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-
-  # ==========================================
-  # NODES (IDEA A)
-  # ==========================================
-  /nodes:
-    get:
-      tags: [Nodes]
-      summary: Listar todos los nodos IoT
-      responses:
-        '200':
-          description: Lista de nodos con último estado
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Node'
-    post:
-      tags: [Nodes]
-      summary: Registrar nuevo nodo de sensado
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateNodeRequest'
+              $ref: '#/components/schemas/TelemetryInput'
       responses:
         '201':
-          description: Nodo registrado exitosamente
+          description: Lectura procesada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-
-  /nodes/{node_id}:
+                $ref: '#/components/schemas/TelemetryResult'
     get:
-      tags: [Nodes]
-      summary: Obtener detalle y salud de un nodo
-      parameters:
-        - $ref: '#/components/parameters/NodeId'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NodeDetail'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  # ==========================================
-  # TELEMETRY (IDEA A)
-  # ==========================================
-  /telemetry/readings:
-    post:
-      tags: [Telemetry]
-      summary: Ingesta de telemetría desde nodo físico (ESP32/LoRa/GSM)
-      parameters:
-        - in: header
-          name: X-Device-Token
-          required: true
-          schema:
-            type: string
-          description: Token secreto configurado en el firmware del dispositivo
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TelemetryReadingInput'
-      responses:
-        '201':
-          description: Lectura procesada y evaluada por el motor de reglas
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TelemetryIngestResult'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      tags: [Telemetry]
-      summary: Consultar series temporales históricas de telemetría
+      tags: [Telemetria]
+      summary: Obtener las últimas lecturas para la gráfica del panel
       parameters:
         - in: query
-          name: node_id
-          schema:
-            type: string
-        - in: query
-          name: hours
+          name: limit
           schema:
             type: integer
-            default: 24
-        - in: query
-          name: aggregate
-          schema:
-            type: string
-            enum: [raw, 5m, 15m, 1h]
-            default: raw
+            default: 30
+          description: Número de puntos recientes para la gráfica
       responses:
         '200':
           content:
@@ -184,39 +79,15 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TelemetryReading'
-
-  /nodes/{node_id}/rate:
-    get:
-      tags: [Telemetry]
-      summary: Consultar tasa actual de subida del nivel (% y cm por minuto)
-      parameters:
-        - $ref: '#/components/parameters/NodeId'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WaterRateStatus'
+                  $ref: '#/components/schemas/TelemetryPoint'
 
   # ==========================================
-  # ALERTS (IDEA A & D)
+  # 3. ALERTAS
   # ==========================================
   /alerts:
     get:
-      tags: [Alerts]
-      summary: Listado de alertas generadas o activas
-      parameters:
-        - in: query
-          name: level
-          schema:
-            type: string
-            enum: [VERDE, AMARILLO, ROJO, FALLO_SENSOR]
-        - in: query
-          name: active_only
-          schema:
-            type: boolean
-            default: true
+      tags: [Alertas]
+      summary: Listar alertas recientes (Verde, Amarillo, Rojo, Fallo Sensor)
       responses:
         '200':
           content:
@@ -226,234 +97,38 @@ paths:
                 items:
                   $ref: '#/components/schemas/Alert'
 
-  /alerts/{alert_id}/approve:
+  /alerts/{alert_id}/send-whatsapp:
     post:
-      tags: [Alerts]
-      summary: Aprobación humana para disparo de Alerta Roja comunitaria
-      description: Requisito de seguridad del proyecto para evitar fatiga de alertas por falsos positivos.
-      security:
-        - BearerAuth: []
+      tags: [Alertas]
+      summary: Enviar o reenviar alerta a la red vecinal por WhatsApp
       parameters:
         - in: path
           name: alert_id
           required: true
           schema:
             type: string
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                notes:
-                  type: string
-                  example: "Confirmado por el vigía barrial Juan Pérez vía visual"
       responses:
         '200':
-          description: Alerta roja aprobada y despachada a canales masivos
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Alert'
-
-  # ==========================================
-  # COMMUNITY & VIGIAS (IDEA D)
-  # ==========================================
-  /community/subscribers:
-    get:
-      tags: [Community & Vigias]
-      summary: Listar vecinos y vigías suscritos al sistema de alerta
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Subscriber'
-    post:
-      tags: [Community & Vigias]
-      summary: Registro vecinal para recibir alertas vía WhatsApp y SMS
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateSubscriberRequest'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscriber'
-
-  /community/broadcast:
-    post:
-      tags: [Community & Vigias]
-      summary: Envío manual de instrucción u orientación barrial por WhatsApp/SMS
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [message, channels]
-              properties:
-                message:
-                  type: string
-                  example: "Comité Barrial: Limpieza preventiva de canaletas programada para hoy a las 3:00 PM."
-                channels:
-                  type: array
-                  items:
-                    type: string
-                    enum: [WHATSAPP, SMS, LOUDSPEAKER]
-      responses:
-        '200':
-          description: Mensaje encolado para distribución masiva
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  dispatched_count:
-                    type: integer
                   status:
                     type: string
-                    example: "ENQUEUED"
+                    example: "WHATSAPP_SENT"
+                  message:
+                    type: string
+                    example: "Alerta enviada exitosamente a los vigías comunitarios"
 
   # ==========================================
-  # GREEN INFRASTRUCTURE (IDEA B)
+  # 4. SIMULADOR (DEMOSTRACIÓN PARA EL JURADO)
   # ==========================================
-  /green-infrastructure/modules:
-    get:
-      tags: [Green Infrastructure]
-      summary: Listar intervenciones de infraestructura verde (jardines de lluvia, franjas filtrantes, etc.)
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GreenInfraModule'
+  /simulator/trigger:
     post:
-      tags: [Green Infrastructure]
-      summary: Registrar nuevo módulo de infraestructura verde
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGreenInfraRequest'
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GreenInfraModule'
-
-  /green-infrastructure/impact:
-    get:
-      tags: [Green Infrastructure]
-      summary: Medición del impacto antes vs después (retención de agua y amortiguamiento)
-      parameters:
-        - in: query
-          name: module_id
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GreenInfraImpactReport'
-
-  # ==========================================
-  # FORECAST AI (IDEA C)
-  # ==========================================
-  /forecast/predict:
-    get:
-      tags: [Forecast AI]
-      summary: Pronóstico hidrológico predictivo de nivel a 1, 2 y 3 horas
-      parameters:
-        - in: query
-          name: node_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ForecastResult'
-
-  # ==========================================
-  # CITIZEN REPORTS & VISION AI (IDEA E)
-  # ==========================================
-  /reports/incidents:
-    get:
-      tags: [Citizen Reports & Vision AI]
-      summary: Listar reportes ciudadanos de obstrucciones y basura en cauces
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IncidentReport'
-    post:
-      tags: [Citizen Reports & Vision AI]
-      summary: Enviar reporte fotográfico de drenaje obstruido para análisis por Visión AI
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              required: [image, latitude, longitude]
-              properties:
-                image:
-                  type: string
-                  format: binary
-                  description: Fotografía del drenaje o punto crítico
-                latitude:
-                  type: number
-                  format: float
-                  example: 12.1364
-                longitude:
-                  type: number
-                  format: float
-                  example: -86.2514
-                description:
-                  type: string
-                  example: "Sedimentos acumulados en la boca de tormenta calle 4"
-                reporter_name:
-                  type: string
-                  example: "Rosa Gómez"
-      responses:
-        '201':
-          description: Reporte recibido y clasificado automáticamente por Vision AI
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IncidentReport'
-
-  # ==========================================
-  # SIMULATOR (PARA DEMO EN RALLY)
-  # ==========================================
-  /simulator/run:
-    post:
-      tags: [Simulator]
-      summary: Ejecutar simulación de evento de lluvia torrencial para demostración del jurado
+      tags: [Simulador]
+      summary: Disparar escenario de demostración en vivo
+      description: Permite al equipo demostrar en 1 minuto cómo reacciona el sistema ante una crecida súbita o falla de sensor.
       requestBody:
         required: true
         content:
@@ -464,12 +139,8 @@ paths:
               properties:
                 scenario:
                   type: string
-                  enum: [NORMAL_RAIN, FLASH_FLOOD_CRITICAL, SENSOR_FAULT_RECOVERY, GREEN_INFRA_BUFFERING]
-                  example: FLASH_FLOOD_CRITICAL
-                duration_seconds:
-                  type: integer
-                  default: 60
-                  description: Duración acelerada del ciclo de demostración
+                  enum: [LLUVIA_TORRENCIAL, CRECIDA_SUBITA, NODO_DESCONECTADO, NORMALIZACION]
+                  example: CRECIDA_SUBITA
       responses:
         '200':
           content:
@@ -477,430 +148,111 @@ paths:
               schema:
                 type: object
                 properties:
-                  session_id:
+                  scenario_applied:
                     type: string
-                  scenario:
+                  current_status:
                     type: string
-                  status:
-                    type: string
-                    example: "SIMULATION_RUNNING"
-
-  # ==========================================
-  # DASHBOARD & RESILIENCE INDEX
-  # ==========================================
-  /dashboard/overview:
-    get:
-      tags: [Dashboard]
-      summary: Resumen público de estado, nivel de reservorios, alertas y métrica de resiliencia
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DashboardOverview'
+                    example: "ALERTA_AMARILLA_ACTIVADA"
 
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  parameters:
-    NodeId:
-      in: path
-      name: node_id
-      required: true
-      schema:
-        type: string
-      description: Identificador del nodo IoT
-
-  responses:
-    Unauthorized:
-      description: Credenciales no válidas o token ausente/expirado
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    NotFound:
-      description: Recurso no encontrado
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
   schemas:
-    ErrorResponse:
+    DashboardSummary:
       type: object
       properties:
-        error:
+        reservoir_name:
           type: string
-          example: "NOT_FOUND"
-        message:
-          type: string
-          example: "El nodo solicitado no existe"
-
-    LoginRequest:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-          example: "operador@reservoriovivo.latam"
-        password:
-          type: string
-          format: password
-          example: "RallyLatam2026*"
-
-    AuthToken:
-      type: object
-      properties:
-        access_token:
-          type: string
-        token_type:
-          type: string
-          example: "bearer"
-        expires_in:
-          type: integer
-          example: 86400
-
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        role:
-          type: string
-          enum: [ADMIN, OPERATOR, VIGIA]
-        name:
-          type: string
-
-    Node:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "node-managua-01"
-        name:
-          type: string
-          example: "Nodo Principal Reservorio Tiscapa Norte"
-        latitude:
+          example: "Reservorio Barrial Tiscapa - Sector Piloto"
+        location:
+          type: object
+          properties:
+            lat:
+              type: number
+              example: 12.135
+            lng:
+              type: number
+              example: -86.270
+        current_level_pct:
           type: number
-          example: 12.135
-        longitude:
+          example: 65.0
+        current_level_cm:
           type: number
-          example: -86.270
+          example: 195.0
+        max_capacity_cm:
+          type: number
+          example: 300.0
         status:
           type: string
-          enum: [ONLINE, OFFLINE, WARNING_FAULT]
+          enum: [VERDE, AMARILLO, ROJO, FALLO_SENSOR]
+          example: "AMARILLO"
+        rise_rate_pct_30m:
+          type: number
+          example: 12.5
+          description: Tasa de subida porcentual en los últimos 30 minutos
+        sensor_status:
+          type: string
+          enum: [ONLINE, SIN_SENAL]
           example: "ONLINE"
-        current_water_level_pct:
-          type: number
-          example: 45.2
-        battery_pct:
-          type: number
-          example: 92.5
-        last_seen:
+        last_updated:
           type: string
           format: date-time
 
-    NodeDetail:
-      allOf:
-        - $ref: '#/components/schemas/Node'
-        - type: object
-          properties:
-            sensor_type:
-              type: string
-              example: "Ultrasonic Waterproof JSN-SR04T + Tipping Bucket Pluviometer"
-            connectivity:
-              type: string
-              example: "LoRaWAN 915MHz + SIM800L GSM Fallback"
-            reservoir_capacity_m3:
-              type: number
-              example: 15000.0
-            depth_max_cm:
-              type: number
-              example: 350.0
-
-    CreateNodeRequest:
+    TelemetryInput:
       type: object
-      required: [id, name, latitude, longitude, depth_max_cm]
+      required: [water_level_cm]
       properties:
-        id:
-          type: string
-        name:
-          type: string
-        latitude:
-          type: number
-        longitude:
-          type: number
-        depth_max_cm:
-          type: number
-
-    TelemetryReadingInput:
-      type: object
-      required: [node_id, water_level_cm, battery_pct]
-      properties:
-        node_id:
-          type: string
-          example: "node-managua-01"
         water_level_cm:
           type: number
-          example: 145.6
-        rain_accumulated_mm:
+          example: 195.0
+        rain_mm:
           type: number
-          example: 12.4
+          example: 8.5
         battery_pct:
           type: number
-          example: 88.0
-        signal_csq:
-          type: integer
-          example: 24
+          example: 92.0
 
-    TelemetryReading:
+    TelemetryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "SAVED"
+        triggered_alert:
+          type: string
+          enum: [NINGUNA, AMARILLO, ROJO, SUBIDA_RAPIDA]
+          example: "SUBIDA_RAPIDA"
+
+    TelemetryPoint:
       type: object
       properties:
         timestamp:
           type: string
           format: date-time
-        water_level_cm:
-          type: number
         water_level_pct:
           type: number
+          example: 65.0
+        water_level_cm:
+          type: number
+          example: 195.0
         rain_mm:
           type: number
-        battery_pct:
-          type: number
-
-    TelemetryIngestResult:
-      type: object
-      properties:
-        status:
-          type: string
-          example: "ACCEPTED"
-        alert_triggered:
-          type: boolean
-          example: false
-        current_level_status:
-          type: string
-          enum: [VERDE, AMARILLO, ROJO]
-          example: "VERDE"
-
-    WaterRateStatus:
-      type: object
-      properties:
-        node_id:
-          type: string
-        rate_cm_per_minute:
-          type: number
-          example: 1.8
-        rate_pct_per_30min:
-          type: number
-          example: 15.4
-        is_rapid_rise_alert:
-          type: boolean
-          example: true
+          example: 8.5
 
     Alert:
       type: object
       properties:
         id:
           type: string
-        node_id:
-          type: string
+          example: "alt-01"
         level:
           type: string
-          enum: [VERDE, AMARILLO, ROJO, FALLO_SENSOR]
-        trigger_reason:
+          enum: [AMARILLO, ROJO, FALLO_SENSOR]
+          example: "AMARILLO"
+        title:
           type: string
-          example: "Velocidad de subida crítica: +15% en 30 minutos"
-        requires_human_approval:
-          type: boolean
-          example: true
-        approved:
-          type: boolean
-          example: false
+          example: "Crecida rápida detectada (+12.5% en 30m)"
+        instruction:
+          type: string
+          example: "Comité barrial: vigilar canaletas y avisar a viviendas bajas"
         created_at:
           type: string
           format: date-time
-
-    Subscriber:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        phone_number:
-          type: string
-          example: "+50588889999"
-        neighborhood:
-          type: string
-          example: "Barrio San Judas"
-        is_vigia:
-          type: boolean
-          example: true
-        channels:
-          type: array
-          items:
-            type: string
-            enum: [WHATSAPP, SMS]
-
-    CreateSubscriberRequest:
-      type: object
-      required: [name, phone_number, neighborhood]
-      properties:
-        name:
-          type: string
-        phone_number:
-          type: string
-        neighborhood:
-          type: string
-        is_vigia:
-          type: boolean
-          default: false
-        channels:
-          type: array
-          items:
-            type: string
-            enum: [WHATSAPP, SMS]
-
-    GreenInfraModule:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "gi-jardin-lluvia-01"
-        name:
-          type: string
-          example: "Jardín de Lluvia y Bio-Retención Sector Norte"
-        type:
-          type: string
-          enum: [JARDIN_LLUVIA, FRANJA_FILTRANTE, HUMEDAL_ARTIFICIAL, PAVIMENTO_PERMEABLE]
-        surface_m2:
-          type: number
-          example: 120.0
-        retention_capacity_liters:
-          type: number
-          example: 45000.0
-        installed_date:
-          type: string
-          format: date
-
-    CreateGreenInfraRequest:
-      type: object
-      required: [name, type, surface_m2, retention_capacity_liters]
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum: [JARDIN_LLUVIA, FRANJA_FILTRANTE, HUMEDAL_ARTIFICIAL, PAVIMENTO_PERMEABLE]
-        surface_m2:
-          type: number
-        retention_capacity_liters:
-          type: number
-
-    GreenInfraImpactReport:
-      type: object
-      properties:
-        runoff_reduction_pct:
-          type: number
-          example: 38.5
-          description: "Porcentaje de reducción de escorrentía medido por sensores"
-        peak_delay_minutes:
-          type: integer
-          example: 45
-          description: "Retraso del pico máximo de llenado hacia el reservorio principal"
-        water_volume_infiltrated_m3:
-          type: number
-          example: 1420.0
-
-    ForecastResult:
-      type: object
-      properties:
-        node_id:
-          type: string
-        forecast_generated_at:
-          type: string
-          format: date-time
-        predictions:
-          type: array
-          items:
-            type: object
-            properties:
-              horizon_hours:
-                type: integer
-                example: 1
-              predicted_water_level_pct:
-                type: number
-                example: 68.4
-              probability_overflow_pct:
-                type: number
-                example: 12.0
-              risk_level:
-                type: string
-                enum: [BAJO, MEDIO, ALTO]
-
-    IncidentReport:
-      type: object
-      properties:
-        id:
-          type: string
-        photo_url:
-          type: string
-        latitude:
-          type: number
-        longitude:
-          type: number
-        description:
-          type: string
-        status:
-          type: string
-          enum: [RECIBIDO, VERIFICADO, EN_LIMPIEZA, RESUELTO]
-        vision_ai_classification:
-          type: object
-          properties:
-            detected_obstruction:
-              type: boolean
-              example: true
-            obstruction_type:
-              type: string
-              example: "SEDIMENTOS_Y_BASURA_PLASTICA"
-            confidence_score:
-              type: number
-              example: 0.94
-            suggested_action:
-              type: string
-              example: "Cuadrilla de desarenado urgente requerida"
-        reported_at:
-          type: string
-          format: date-time
-
-    DashboardOverview:
-      type: object
-      properties:
-        overall_status:
-          type: string
-          enum: [VERDE, AMARILLO, ROJO]
-          example: "VERDE"
-        active_nodes_count:
-          type: integer
-          example: 3
-        faulty_nodes_count:
-          type: integer
-          example: 0
-        current_average_fill_pct:
-          type: number
-          example: 34.5
-        resilience_index_score:
-          type: number
-          example: 8.4
-          description: "Calificación 1-10 del índice de resiliencia comunitaria"
-        active_alerts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Alert'
