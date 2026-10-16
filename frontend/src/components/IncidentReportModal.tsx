@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, Camera, CheckCircle2 } from 'lucide-react';
+import { X, Upload, Camera, Image as ImageIcon } from 'lucide-react';
 
 interface IncidentReportModalProps {
   isOpen: boolean;
@@ -19,9 +19,21 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    if (selectedFile) {
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setPreviewUrl(objectUrl);
+    } else {
+      setPreviewUrl(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +57,9 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
       if (!res.ok) throw new Error('Error al enviar reporte');
 
       onSuccess('Reporte enviado correctamente. Cuadrilla informada.');
+      setFile(null);
+      setPreviewUrl(null);
+      setDescription('');
       onClose();
     } catch (err: any) {
       alert('No se pudo enviar el reporte: ' + err.message);
@@ -64,32 +79,35 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
       >
         <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Camera className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <Camera className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <h3 className="font-bold text-sm">Reportar obstrucción en el cauce</h3>
           </div>
           <button
-            onClick={onClose}
+            onClick={() => {
+              setPreviewUrl(null);
+              onClose();
+            }}
             className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">
-          Adjunte una fotografía clara del punto obstruido para evaluar la prioridad de limpieza.
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+          Adjunte una fotografía del punto obstruido para evaluar la prioridad de limpieza.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           <div>
             <label className="block text-[11px] font-medium text-slate-600 dark:text-slate-400 mb-1">
-              Nombre o teléfono de contacto (opcional)
+              Nombre o teléfono (opcional)
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej. Juan Pérez"
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent focus:outline-none focus:border-blue-600"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent focus:outline-none focus:border-emerald-600"
             />
           </div>
 
@@ -103,10 +121,11 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               required
               placeholder="Ej. Acumulación de ramas y basura bajo el puente"
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent focus:outline-none focus:border-blue-600"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent focus:outline-none focus:border-emerald-600"
             />
           </div>
 
+          {/* Selector de Foto */}
           <div>
             <label className="block text-[11px] font-medium text-slate-600 dark:text-slate-400 mb-1">
               Fotografía del sitio
@@ -115,15 +134,30 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
               type="file"
               accept="image/*"
               required
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-950 dark:file:text-blue-300 hover:file:bg-blue-100 cursor-pointer"
+              onChange={handleFileChange}
+              className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950 dark:file:text-emerald-300 hover:file:bg-emerald-100 cursor-pointer"
             />
           </div>
 
+          {/* VISTA PREVIA INMEDIATA DE LA FOTO DENTRO DEL FORMULARIO */}
+          {previewUrl && (
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-2 bg-slate-50 dark:bg-slate-900/60">
+              <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1">
+                <ImageIcon className="w-3 h-3 text-emerald-600" />
+                <span>Vista previa de la fotografía a enviar:</span>
+              </p>
+              <img
+                src={previewUrl}
+                alt="Vista previa de reporte"
+                className="w-full h-36 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+              />
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading}
-            className="w-full mt-2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center justify-center gap-2 transition-colors shadow-sm"
+            disabled={loading || !file}
+            className="w-full mt-2 py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-50"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>{loading ? 'Subiendo reporte...' : 'Enviar reporte'}</span>

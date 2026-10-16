@@ -10,25 +10,24 @@ import {
 } from './services/api';
 import { Header } from './components/Header';
 import { CommunityView } from './components/CommunityView';
-import { TelemetryChart } from './components/TelemetryChart';
-import { JurorSimulator, type ScenarioType } from './components/JurorSimulator';
+import { AdminDashboard } from './components/AdminDashboard';
+import { GreenInfrastructureView } from './components/GreenInfrastructureView';
 import { SatelliteMapView } from './components/SatelliteMapView';
 import { WhatsAppModal } from './components/WhatsAppModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { IncidentReportModal } from './components/IncidentReportModal';
+import { type ScenarioType } from './components/JurorSimulator';
 
 export default function App() {
-  // Theme State (Dark / Light)
+  // Tema (Modo Claro / Oscuro)
   const [isDark, setIsDark] = useState<boolean>(() => {
     return localStorage.getItem('theme') !== 'light';
   });
 
-  // Role View: 'community' (default) | 'admin'
-  const [currentRole, setCurrentRole] = useState<'community' | 'admin'>('community');
-  // Sub-tab when in Admin view: 'telemetry' | 'map'
-  const [adminTab, setAdminTab] = useState<'telemetry' | 'map'>('telemetry');
+  // Navegación principal: 'community' | 'green' | 'map' | 'admin'
+  const [currentTab, setCurrentTab] = useState<'community' | 'green' | 'map' | 'admin'>('community');
 
-  // Admin Auth State
+  // Autenticación de Administrador
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     return Boolean(localStorage.getItem('reservorio_admin_token'));
   });
@@ -36,7 +35,7 @@ export default function App() {
     return localStorage.getItem('reservorio_admin_name');
   });
 
-  // Application Data State
+  // Datos en vivo del sistema
   const [dashboard, setDashboard] = useState<DashboardSummary>({
     reservoir_name: 'Cauce La Maravilla & Pista Sabana Grande',
     location: { lat: 12.1249, lng: -86.1761 },
@@ -56,7 +55,7 @@ export default function App() {
   const [isTriggeringScenario, setIsTriggeringScenario] = useState<boolean>(false);
   const [isSendingWhatsApp, setIsSendingWhatsApp] = useState<boolean>(false);
 
-  // Modals
+  // Modales
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [whatsAppData, setWhatsAppData] = useState<WhatsAppAlertResponse | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
@@ -83,7 +82,6 @@ export default function App() {
     });
   };
 
-  // Sync theme with DOM document
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
@@ -92,7 +90,7 @@ export default function App() {
     }
   }, [isDark]);
 
-  // Polling data
+  // Polling continuo
   const pollData = useCallback(async () => {
     try {
       const [dashRes, telemRes] = await Promise.all([
@@ -128,7 +126,7 @@ export default function App() {
       const res = await triggerSimulatorScenario(scenario, apiUrl);
       setDashboard(res.dashboard);
       showToast(`Escenario aplicado: ${scenario}`);
-    } catch (err: any) {
+    } catch {
       showToast('Error al aplicar escenario');
     } finally {
       setIsTriggeringScenario(false);
@@ -141,7 +139,7 @@ export default function App() {
       const res = await sendWhatsAppAlert('alert-latest', apiUrl);
       setWhatsAppData(res);
       setIsWhatsAppModalOpen(true);
-    } catch (err: any) {
+    } catch {
       showToast('No se pudo enviar alerta');
     } finally {
       setIsSendingWhatsApp(false);
@@ -153,8 +151,8 @@ export default function App() {
     localStorage.setItem('reservorio_admin_name', name);
     setIsAdminLoggedIn(true);
     setAdminName(name);
-    setCurrentRole('admin');
-    showToast(`Sesión iniciada como ${name}`);
+    setCurrentTab('admin');
+    showToast(`Sesión iniciada: ${name}`);
   };
 
   const handleLogout = () => {
@@ -162,13 +160,13 @@ export default function App() {
     localStorage.removeItem('reservorio_admin_name');
     setIsAdminLoggedIn(false);
     setAdminName(null);
-    setCurrentRole('community');
-    showToast('Sesión de administrador cerrada');
+    setCurrentTab('community');
+    showToast('Sesión cerrada');
   };
 
   const handleOpenLogin = () => {
     if (isAdminLoggedIn) {
-      setCurrentRole('admin');
+      setCurrentTab('admin');
     } else {
       setIsLoginModalOpen(true);
     }
@@ -177,11 +175,11 @@ export default function App() {
   return (
     <div
       className={`min-h-screen transition-colors duration-200 ${
-        isDark ? 'bg-[#090d16] text-slate-100' : 'bg-slate-50 text-slate-900'
+        isDark ? 'bg-[#060b13] text-slate-100' : 'bg-slate-50 text-slate-900'
       }`}
     >
       <div className="max-w-5xl mx-auto px-4 py-5 space-y-5">
-        {/* Header Superior Sobrio */}
+        {/* Encabezado con paleta verde/azul institucional */}
         <Header
           dashboard={dashboard}
           isBackendLive={isBackendLive}
@@ -195,26 +193,48 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
 
-        {/* Selector de Vista: Vecinos vs Administrador */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+        {/* Barra de navegación por módulos temáticos */}
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 flex-wrap gap-2">
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 text-xs">
             <button
-              onClick={() => setCurrentRole('community')}
-              className={`px-3.5 py-1.5 rounded-lg font-medium transition-all ${
-                currentRole === 'community'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+              onClick={() => setCurrentTab('community')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                currentTab === 'community'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              Vista Comunitaria
+              Comunidad
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('green')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                currentTab === 'green'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              Infraestructura Verde (Idea B)
+            </button>
+
+            <button
+              onClick={() => setCurrentTab('map')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                currentTab === 'map'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              Mapa Satelital Sabana Grande
             </button>
 
             {isAdminLoggedIn && (
               <button
-                onClick={() => setCurrentRole('admin')}
-                className={`px-3.5 py-1.5 rounded-lg font-medium transition-all ${
-                  currentRole === 'admin'
-                    ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                onClick={() => setCurrentTab('admin')}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                  currentTab === 'admin'
+                    ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
@@ -224,73 +244,38 @@ export default function App() {
           </div>
 
           <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-            Cauce La Maravilla • Sabana Grande
+            Cauce La Maravilla • Pista Sabana Grande
           </span>
         </div>
 
-        {/* CONTENIDO SEGÚN EL ROL SELECCIONADO */}
-        {currentRole === 'community' ? (
-          /* 1. VISTA DE LA COMUNIDAD: LIMPIA, DIRECTA, PREVENTIVA */
+        {/* RENDERIZADO DEL MÓDULO ACTIVO */}
+        {currentTab === 'community' && (
           <CommunityView
             dashboard={dashboard}
             onOpenReportModal={() => setIsReportModalOpen(true)}
             onSendWhatsApp={handleSendWhatsApp}
             isSendingWhatsApp={isSendingWhatsApp}
-            onGoToMap={() => {
-              if (isAdminLoggedIn) {
-                setCurrentRole('admin');
-                setAdminTab('map');
-              } else {
-                setIsReportModalOpen(true);
-              }
-            }}
+            onGoToMap={() => setCurrentTab('map')}
             isDark={isDark}
           />
-        ) : (
-          /* 2. VISTA TÉCNICA / ADMINISTRADOR: TELEMETRÍA, GRÁFICAS Y SIMULADOR */
-          <div className="space-y-4">
-            {/* Sub-navegación técnica */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setAdminTab('telemetry')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
-                  adminTab === 'telemetry'
-                    ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-600 text-blue-700 dark:text-blue-300'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                Telemetría y Gráficas
-              </button>
-              <button
-                onClick={() => setAdminTab('map')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
-                  adminTab === 'map'
-                    ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-600 text-blue-700 dark:text-blue-300'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                Cartografía Satelital
-              </button>
-            </div>
+        )}
 
-            {adminTab === 'telemetry' ? (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <div className="lg:col-span-7">
-                  <TelemetryChart telemetry={telemetry} dashboard={dashboard} isDark={isDark} />
-                </div>
-                <div className="lg:col-span-5">
-                  <JurorSimulator
-                    currentScenario={currentScenario}
-                    onTriggerScenario={handleTriggerScenario}
-                    isLoading={isTriggeringScenario}
-                    isDark={isDark}
-                  />
-                </div>
-              </div>
-            ) : (
-              <SatelliteMapView dashboard={dashboard} isDark={isDark} />
-            )}
-          </div>
+        {currentTab === 'green' && <GreenInfrastructureView isDark={isDark} />}
+
+        {currentTab === 'map' && <SatelliteMapView dashboard={dashboard} isDark={isDark} />}
+
+        {currentTab === 'admin' && (
+          <AdminDashboard
+            dashboard={dashboard}
+            telemetry={telemetry}
+            currentScenario={currentScenario}
+            onTriggerScenario={handleTriggerScenario}
+            isLoadingScenario={isTriggeringScenario}
+            isDark={isDark}
+            onSendCustomNotification={(msg) => {
+              showToast('Alerta comunitaria despachada a la red de vigías');
+            }}
+          />
         )}
       </div>
 
@@ -317,7 +302,6 @@ export default function App() {
         onSuccess={showToast}
       />
 
-      {/* Toast discreto */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs shadow-lg border border-slate-700">
           {toastMessage}
