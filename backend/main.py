@@ -99,33 +99,43 @@ def send_whatsapp_alert(alert_id: str):
         "content_dispatched": msg
     }
 
+from simulator import simulator
+
+@app.on_event("startup")
+def startup_event():
+    """Inicia automáticamente el simulador en segundo plano al arrancar el servidor."""
+    simulator.start()
+
 # ---------------------------------------------------------------------------
 # 4. SIMULADOR EN VIVO (Para presentar al Jurado)
 # ---------------------------------------------------------------------------
+@app.get("/api/v1/simulator/status", tags=["Simulador"])
+def get_simulator_status():
+    """Consulta el estado actual de la simulación."""
+    return {
+        "is_running": simulator.is_running,
+        "current_scenario": simulator.scenario,
+        "interval_seconds": simulator.interval_seconds,
+        "current_level_cm": simulator.current_water_level_cm
+    }
+
 @app.post("/api/v1/simulator/trigger", tags=["Simulador"])
 def trigger_simulator(action: SimulatorTrigger):
     """Permite al equipo activar escenarios en 1 clic durante el pitch."""
     scenario = action.scenario.upper()
+    valid_scenarios = ["NORMAL", "LLUVIA_MODERADA", "CRECIDA_SUBITA", "NODO_DESCONECTADO", "VACIADO"]
     
-    if scenario == "CRECIDA_SUBITA":
-        # Inyectar una subida abrupta (ej. de 195 a 270 cm)
-        db.add_reading(water_level_cm=275.0, rain_mm=25.0)
-        status_msg = "ALERTA_ROJA_ACTIVADA"
-    elif scenario == "LLUVIA_TORRENCIAL":
-        db.add_reading(water_level_cm=215.0, rain_mm=18.0)
-        status_msg = "ALERTA_AMARILLA_ACTIVADA"
-    elif scenario == "NODO_DESCONECTADO":
-        db.sensor_status = "SIN_SENAL"
-        status_msg = "FALLO_SENSOR_REPORTADO"
-    elif scenario == "NORMALIZACION":
-        db.sensor_status = "ONLINE"
-        db.add_reading(water_level_cm=90.0, rain_mm=0.0)
-        status_msg = "SISTEMA_NORMALIZADO"
-    else:
-        raise HTTPException(status_code=400, detail="Escenario no reconocido.")
+    if scenario not in valid_scenarios:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Escenario '{scenario}' no reconocido. Opciones válidas: {valid_scenarios}"
+        )
+
+    simulator.set_scenario(scenario)
 
     return {
-        "scenario_applied": scenario,
-        "current_status": status_msg,
+        "message": f"Escenario '{scenario}' activado con éxito.",
+        "scenario": scenario,
         "dashboard": db.get_dashboard_summary()
     }
+
