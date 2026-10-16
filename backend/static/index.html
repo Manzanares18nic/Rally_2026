@@ -196,43 +196,35 @@
   </div>
 
   <script>
-    // INICIALIZACIÓN DE LEAFLET
-    const defaultLat = 12.135;
-    const defaultLng = -86.270;
-    const map = L.map('map', { zoomControl: true }).setView([defaultLat, defaultLng], 15);
+    // INICIALIZACIÓN DE LEAFLET (OpenStreetMap - 100% Gratuito y sin API Key)
+    let map = null;
+    let reservoirMarker = null;
+    let alertZone = null;
+    let greenMarkers = [];
 
-    // Capa de mapa oscura / moderna (CartoDB Dark Matter)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
-      maxZoom: 19
-    }).addTo(map);
+    function initMap(lat, lng, name) {
+      if (map) return;
+      map = L.map('map', { zoomControl: true }).setView([lat, lng], 15);
 
-    // Marcador central del Reservorio
-    const reservoirMarker = L.marker([defaultLat, defaultLng]).addTo(map);
-    reservoirMarker.bindPopup(`
-      <div class="text-slate-800 text-xs">
-        <strong class="text-sm">Reservorio Piloto Tiscapa</strong><br>
-        Capacidad: 15,000 m³<br>
-        Microcuenca Anegable Managua
-      </div>
-    `);
+      // Tiles gratuitos de OpenStreetMap (No requieren API key ni facturación)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
 
-    // Radio de alerta dinámica (área que se inundaría / zona de aviso a vecinos)
-    const alertZone = L.circle([defaultLat, defaultLng], {
-      color: '#10b981',
-      fillColor: '#10b981',
-      fillOpacity: 0.25,
-      radius: 350
-    }).addTo(map);
+      // Marcador del reservorio
+      reservoirMarker = L.marker([lat, lng]).addTo(map);
+      reservoirMarker.bindPopup(`<b>${name}</b><br>Nodo de Monitoreo Central`);
 
-    // Módulos de Infraestructura Verde en los alrededores (Idea B)
-    const greenMod1 = L.circleMarker([12.1365, -86.2715], {
-      radius: 8, color: '#059669', fillColor: '#34d399', fillOpacity: 0.8
-    }).addTo(map).bindPopup("<b>Jardín de Lluvia Sector Norte (Idea B)</b><br>Retención: 45,000 L de amortiguamiento.");
+      // Radio de alerta dinámica
+      alertZone = L.circle([lat, lng], {
+        color: '#10b981',
+        fillColor: '#10b981',
+        fillOpacity: 0.25,
+        radius: 350
+      }).addTo(map);
+    }
 
-    const greenMod2 = L.circleMarker([12.1335, -86.2685], {
-      radius: 8, color: '#059669', fillColor: '#34d399', fillOpacity: 0.8
-    }).addTo(map).bindPopup("<b>Franja Bio-Filtrante Sur (Idea B)</b><br>Reduce 38% de escorrentía directa.");
 
     // Función para actualizar color de la zona en el mapa según el semáforo
     function updateMapStatus(status, levelPct) {
@@ -305,11 +297,25 @@
         const res = await fetch('/api/v1/dashboard');
         const data = await res.json();
 
-        document.getElementById('reservoir-name').innerText = `${data.reservoir_name} (Lat: ${data.location.lat}, Lng: ${data.location.lng})`;
+        // 1. Inicializar mapa con las coordenadas y nombre que vienen del contrato
+        initMap(data.location.lat, data.location.lng, data.reservoir_name);
+
+        // 2. Pintar módulos verdes si vienen del contrato y no se han pintado
+        if (data.green_modules && greenMarkers.length === 0 && map) {
+          data.green_modules.forEach(mod => {
+            const m = L.circleMarker([mod.lat, mod.lng], {
+              radius: 8, color: '#059669', fillColor: '#34d399', fillOpacity: 0.8
+            }).addTo(map).bindPopup(`<b>${mod.name}</b><br>${mod.retention_desc}`);
+            greenMarkers.push(m);
+          });
+        }
+
+        document.getElementById('reservoir-name').innerText = `${data.reservoir_name} (${data.location.neighborhood}, ${data.location.district})`;
         document.getElementById('metric-level-pct').innerText = data.current_level_pct;
         document.getElementById('metric-level-cm').innerText = data.current_level_cm;
         document.getElementById('metric-rate').innerText = data.rise_rate_pct_30m > 0 ? `+${data.rise_rate_pct_30m}` : data.rise_rate_pct_30m;
         document.getElementById('metric-level-bar').style.width = `${Math.min(100, data.current_level_pct)}%`;
+
 
         // Sensor badge
         const sensorBadge = document.getElementById('sensor-badge');

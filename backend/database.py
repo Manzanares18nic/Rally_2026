@@ -3,7 +3,7 @@ Almacenamiento ultra-rápido en memoria con SQLite / persistencia simple para ha
 """
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from models import TelemetryPoint, Alert, DashboardSummary, Location
+from models import TelemetryPoint, Alert, DashboardSummary, Location, GreenModule
 
 # Capacidad máxima del reservorio piloto en cm
 MAX_CAPACITY_CM = 300.0
@@ -102,17 +102,41 @@ class SimpleDB:
         rate = self.calculate_rise_rate_30m()
         status = self.get_current_status()
         
+        green_modules = [
+            GreenModule(
+                name="Jardín de Lluvia y Bio-Retención Norte",
+                lat=12.1500,
+                lng=-86.2095,
+                type="JARDIN_LLUVIA",
+                retention_desc="Retiene hasta 45,000 L de escorrentía barrial directa"
+            ),
+            GreenModule(
+                name="Franja Filtrante Calle Principal",
+                lat=12.1470,
+                lng=-86.2070,
+                type="FRANJA_FILTRANTE",
+                retention_desc="Disminuye en 38% la velocidad de entrada de sedimentos al cauce"
+            )
+        ]
+
         return DashboardSummary(
-            reservoir_name="Reservorio Barrial Tiscapa - Sector Piloto",
-            location=Location(lat=12.135, lng=-86.270),
+            reservoir_name="Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua",
+            location=Location(
+                lat=12.1485,
+                lng=-86.2085,
+                neighborhood="Barrio 31 de Diciembre",
+                district="Distrito VI, Managua"
+            ),
             current_level_pct=latest.water_level_pct,
             current_level_cm=latest.water_level_cm,
             max_capacity_cm=MAX_CAPACITY_CM,
             status=status,
             rise_rate_pct_30m=rate,
             sensor_status=self.sensor_status,
+            green_modules=green_modules,
             last_updated=latest.timestamp
         )
+
 
 # Instancia única en memoria para el servidor
 db = SimpleDB()

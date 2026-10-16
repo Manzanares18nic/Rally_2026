@@ -28,11 +28,20 @@ class Alert(BaseModel):
 
 # --- DASHBOARD GENERAL ---
 class Location(BaseModel):
-    lat: float = 12.135
-    lng: float = -86.270
+    lat: float = 12.1485
+    lng: float = -86.2085
+    neighborhood: str = "Barrio 31 de Diciembre"
+    district: str = "Distrito VI, Managua"
+
+class GreenModule(BaseModel):
+    name: str
+    lat: float
+    lng: float
+    type: str
+    retention_desc: str
 
 class DashboardSummary(BaseModel):
-    reservoir_name: str = "Reservorio Barrial Tiscapa - Sector Piloto"
+    reservoir_name: str = "Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua"
     location: Location = Location()
     current_level_pct: float
     current_level_cm: float
@@ -40,7 +49,9 @@ class DashboardSummary(BaseModel):
     status: str  # VERDE, AMARILLO, ROJO, FALLO_SENSOR
     rise_rate_pct_30m: float = 0.0
     sensor_status: str  # ONLINE, SIN_SENAL
+    green_modules: List[GreenModule] = []
     last_updated: datetime
+
 
 # --- SIMULADOR ---
 class SimulatorTrigger(BaseModel):

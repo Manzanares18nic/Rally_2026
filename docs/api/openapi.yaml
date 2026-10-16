@@ -161,16 +161,22 @@ components:
       properties:
         reservoir_name:
           type: string
-          example: "Reservorio Barrial Tiscapa - Sector Piloto"
+          example: "Microrrepresa & Cauce 31 de Diciembre - Distrito VI Managua"
         location:
           type: object
           properties:
             lat:
               type: number
-              example: 12.135
+              example: 12.1485
             lng:
               type: number
-              example: -86.270
+              example: -86.2085
+            neighborhood:
+              type: string
+              example: "Barrio 31 de Diciembre"
+            district:
+              type: string
+              example: "Distrito VI, Managua"
         current_level_pct:
           type: number
           example: 65.0
@@ -192,9 +198,26 @@ components:
           type: string
           enum: [ONLINE, SIN_SENAL]
           example: "ONLINE"
+        green_modules:
+          type: array
+          description: Módulos de infraestructura verde periféricos (Idea B)
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              lat:
+                type: number
+              lng:
+                type: number
+              type:
+                type: string
+              retention_desc:
+                type: string
         last_updated:
           type: string
           format: date-time
+
 
     TelemetryInput:
       type: object
