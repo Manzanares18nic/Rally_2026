@@ -1,0 +1,6 @@
+{
+  "name": "Reservorio Vivo - Telemetría Hidrométrica",
+  "description": "Sistema de alerta temprana y monitoreo hidrométrico en tiempo real para reservorios urbanos y prevención de inundaciones barriales (MVP 24h - Reto 05).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
