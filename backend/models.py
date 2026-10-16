@@ -54,6 +54,32 @@ class DashboardSummary(BaseModel):
 
 
 
+# --- REPORTES CIUDADANOS & VISIÓN ARTIFICIAL (IDEA E) ---
+class VisionAIAnalysis(BaseModel):
+    obstruction_detected: bool = True
+    obstruction_type: str = "SEDIMENTOS_Y_RESIDUOS_PLASTICOS"
+    confidence_pct: float = 94.2
+    urgency_level: str = "ALTA"  # MEDIA, ALTA, CRITICA
+    suggested_action: str = "Despachar cuadrilla de desarenado antes del pico de tormenta"
+
+class CreateIncidentInput(BaseModel):
+    reporter_name: Optional[str] = "Vecino Sector Sabana Grande"
+    description: str
+    latitude: float
+    longitude: float
+    photo_url: Optional[str] = "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80"
+
+class Incident(BaseModel):
+    id: str
+    reporter_name: str
+    description: str
+    latitude: float
+    longitude: float
+    photo_url: str
+    status: str = "VERIFICADO_POR_IA"  # PENDIENTE, VERIFICADO_POR_IA, ATENDIDO
+    ai_analysis: VisionAIAnalysis
+    created_at: datetime
+
 # --- SIMULADOR ---
 class SimulatorTrigger(BaseModel):
     scenario: str = Field(
@@ -61,3 +87,4 @@ class SimulatorTrigger(BaseModel):
         description="Escenario a simular",
         examples=["CRECIDA_SUBITA", "LLUVIA_TORRENCIAL", "NODO_DESCONECTADO", "NORMALIZACION"]
     )
+

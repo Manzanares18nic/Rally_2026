@@ -3,7 +3,8 @@ Almacenamiento ultra-rápido en memoria con SQLite / persistencia simple para ha
 """
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from models import TelemetryPoint, Alert, DashboardSummary, Location, GreenModule
+from models import TelemetryPoint, Alert, DashboardSummary, Location, GreenModule, Incident, VisionAIAnalysis
+import uuid
 
 # Capacidad máxima del reservorio piloto en cm
 MAX_CAPACITY_CM = 300.0
@@ -17,11 +18,13 @@ class SimpleDB:
     def __init__(self):
         self.telemetry_history: List[TelemetryPoint] = []
         self.alerts: List[Alert] = []
+        self.incidents: List[Incident] = []
         self.sensor_status: str = "ONLINE"
         self.last_reading_time: datetime = datetime.now()
         
         # Inicializar con algunos datos de muestra para que el frontend no arranque vacío
         self._seed_initial_data()
+
 
     def _seed_initial_data(self):
         base_time = datetime.now() - timedelta(minutes=60)
@@ -39,6 +42,49 @@ class SimpleDB:
                 )
             )
         self.last_reading_time = datetime.now()
+
+        # Reporte ciudadano inicial para demo
+        self.incidents.append(
+            Incident(
+                id=f"inc-{uuid.uuid4().hex[:6]}",
+                reporter_name="Comité Barrial Sabana Grande",
+                description="Boca de tormenta parcialmente bloqueada por botellas y ramas en el paso peatonal",
+                latitude=12.1242,
+                longitude=-86.1755,
+                photo_url="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80",
+                status="VERIFICADO_POR_IA",
+                ai_analysis=VisionAIAnalysis(
+                    obstruction_detected=True,
+                    obstruction_type="SEDIMENTOS_Y_RESIDUOS_PLASTICOS",
+                    confidence_pct=94.5,
+                    urgency_level="ALTA",
+                    suggested_action="Limpieza preventiva de cuadrilla barrial antes del desborde"
+                ),
+                created_at=datetime.now() - timedelta(minutes=45)
+            )
+        )
+
+    def add_incident(self, reporter_name: str, description: str, lat: float, lng: float, photo_url: str) -> Incident:
+        new_inc = Incident(
+            id=f"inc-{uuid.uuid4().hex[:6]}",
+            reporter_name=reporter_name or "Vecino de la Comunidad",
+            description=description,
+            latitude=lat,
+            longitude=lng,
+            photo_url=photo_url or "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80",
+            status="VERIFICADO_POR_IA",
+            ai_analysis=VisionAIAnalysis(
+                obstruction_detected=True,
+                obstruction_type="SEDIMENTOS_Y_RESIDUOS_SOLIDOS",
+                confidence_pct=92.8,
+                urgency_level="ALTA",
+                suggested_action="Cuadrilla de desarenado y retiro de desechos requerida"
+            ),
+            created_at=datetime.now()
+        )
+        self.incidents.insert(0, new_inc)
+        return new_inc
+
 
     def add_reading(self, water_level_cm: float, rain_mm: float) -> TelemetryPoint:
         now = datetime.now()

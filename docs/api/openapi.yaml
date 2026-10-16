@@ -122,8 +122,42 @@ paths:
                     example: "Alerta enviada exitosamente a los vigías comunitarios"
 
   # ==========================================
-  # 4. SIMULADOR (DEMOSTRACIÓN PARA EL JURADO)
+  # 4. REPORTES CIUDADANOS CON VISIÓN ARTIFICIAL (IDEA E)
   # ==========================================
+  /incidents:
+    get:
+      tags: [Reportes Ciudadanos]
+      summary: Listar reportes vecinales de drenajes y cauces obstruidos
+      responses:
+        '200':
+          description: Lista de reportes ciudadanos analizados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Incident'
+    post:
+      tags: [Reportes Ciudadanos]
+      summary: Registrar reporte vecinal con análisis automático por Visión Artificial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIncidentInput'
+      responses:
+        '201':
+          description: Reporte procesado y clasificado por IA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
+  # ==========================================
+  # 5. SIMULADOR (DEMOSTRACIÓN PARA EL JURADO)
+  # ==========================================
+
   /simulator/trigger:
     post:
       tags: [Simulador]
@@ -280,3 +314,71 @@ components:
         created_at:
           type: string
           format: date-time
+
+    # --- REPORTES CIUDADANOS (IDEA E) ---
+    CreateIncidentInput:
+      type: object
+      required: [description, latitude, longitude]
+      properties:
+        reporter_name:
+          type: string
+          example: "Marcos Sandoval (Vecino Sabana Grande)"
+        description:
+          type: string
+          example: "Sedimentos y botellas plásticas acumuladas en la boca de tormenta del puente peatonal"
+        latitude:
+          type: number
+          example: 12.1242
+        longitude:
+          type: number
+          example: -86.1755
+        photo_url:
+          type: string
+          example: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80"
+
+    VisionAIAnalysis:
+      type: object
+      properties:
+        obstruction_detected:
+          type: boolean
+          example: true
+        obstruction_type:
+          type: string
+          example: "SEDIMENTOS_Y_RESIDUOS_PLASTICOS"
+        confidence_pct:
+          type: number
+          example: 94.2
+        urgency_level:
+          type: string
+          enum: [MEDIA, ALTA, CRITICA]
+          example: "ALTA"
+        suggested_action:
+          type: string
+          example: "Despachar cuadrilla de desarenado antes del pico de tormenta"
+
+    Incident:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "inc-01"
+        reporter_name:
+          type: string
+        description:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        photo_url:
+          type: string
+        status:
+          type: string
+          enum: [PENDIENTE, VERIFICADO_POR_IA, ATENDIDO]
+          example: "VERIFICADO_POR_IA"
+        ai_analysis:
+          $ref: '#/components/schemas/VisionAIAnalysis'
+        created_at:
+          type: string
+          format: date-time
+

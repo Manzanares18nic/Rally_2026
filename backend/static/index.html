@@ -155,7 +155,17 @@
               </div>
               <span class="text-base">🔄</span>
             </button>
+
+            <!-- BOTÓN IDEA E: REPORTE CIUDADANO CON IA -->
+            <button onclick="simulateCitizenReport()" class="w-full text-left p-3 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-600/60 text-amber-100 transition font-medium text-xs flex justify-between items-center mt-3">
+              <div>
+                <p class="font-bold text-amber-300">📸 Simular Reporte Ciudadano (Idea E)</p>
+                <p class="text-[10px] text-amber-400">Envía foto con análisis automático por Visión AI</p>
+              </div>
+              <span class="text-base">🤖</span>
+            </button>
           </div>
+
         </div>
 
         <p class="text-[11px] text-slate-500 text-center mt-4 border-t border-slate-700/60 pt-3">
@@ -201,6 +211,7 @@
     let reservoirMarker = null;
     let alertZone = null;
     let greenMarkers = [];
+    let incidentMarkers = [];
 
     function initMap(lat, lng, name) {
       if (map) return;
@@ -228,7 +239,11 @@
         fillOpacity: 0.35,
         radius: 280
       }).addTo(map);
+
+      // Cargar reportes ciudadanos en el mapa
+      fetchIncidents();
     }
+
 
 
 
@@ -421,6 +436,72 @@
         fetchAlerts();
       } catch (err) {
         alert("Error al disparar escenario: " + err);
+      }
+    }
+
+    // CARGAR REPORTES CIUDADANOS EN EL MAPA SATELITAL
+    async function fetchIncidents() {
+      try {
+        const res = await fetch('/api/v1/incidents');
+        const incidents = await res.json();
+        
+        if (!map) return;
+        
+        // Limpiar marcadores viejos
+        incidentMarkers.forEach(m => map.removeLayer(m));
+        incidentMarkers = [];
+
+        incidents.forEach(inc => {
+          const marker = L.circleMarker([inc.latitude, inc.longitude], {
+            radius: 9,
+            color: '#f97316',
+            fillColor: '#ea580c',
+            fillOpacity: 0.9,
+            weight: 2
+          }).addTo(map);
+
+          marker.bindPopup(`
+            <div class="text-slate-900 text-xs max-w-xs">
+              <span class="bg-orange-100 text-orange-800 text-[10px] font-bold px-1.5 py-0.5 rounded">📸 Reporte Ciudadano</span>
+              <p class="font-bold text-sm mt-1 text-slate-800">${inc.reporter_name}</p>
+              <p class="text-slate-600 mt-1">${inc.description}</p>
+              <div class="mt-2 p-2 bg-slate-100 rounded border border-slate-200">
+                <p class="font-bold text-[11px] text-blue-700">🤖 Clasificación Visión AI:</p>
+                <p class="text-[10px] text-slate-700"><b>Detección:</b> ${inc.ai_analysis.obstruction_type}</p>
+                <p class="text-[10px] text-slate-700"><b>Confianza:</b> ${inc.ai_analysis.confidence_pct}%</p>
+                <p class="text-[10px] text-red-600 font-semibold mt-0.5">Acción: ${inc.ai_analysis.suggested_action}</p>
+              </div>
+            </div>
+          `);
+          incidentMarkers.push(marker);
+        });
+      } catch (err) {
+        console.error("Error al cargar incidentes:", err);
+      }
+    }
+
+    // SIMULAR ENVÍO DE REPORTE CIUDADANO CON FOTO
+    async function simulateCitizenReport() {
+      try {
+        const payload = {
+          reporter_name: "Doña Carmen (Líder Comunitaria La Maravilla)",
+          description: "Basura y ramas obstruyendo el flujo bajo el puente de la Pista Sabana Grande",
+          latitude: 12.1255,
+          longitude: -86.1768,
+          photo_url: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80"
+        };
+
+        const res = await fetch('/api/v1/incidents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        
+        alert(`✅ Reporte registrado!\n🤖 Visión AI detectó: ${data.ai_analysis.obstruction_type} (${data.ai_analysis.confidence_pct}% confianza).\n📍 Se ha fijado un marcador naranja en el mapa satelital.`);
+        fetchIncidents();
+      } catch (err) {
+        alert("Error al simular reporte: " + err);
       }
     }
 

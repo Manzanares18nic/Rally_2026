@@ -13,9 +13,12 @@ from models import (
     TelemetryResult,
     Alert,
     DashboardSummary,
-    SimulatorTrigger
+    SimulatorTrigger,
+    Incident,
+    CreateIncidentInput
 )
 from database import db, MAX_CAPACITY_CM
+
 
 app = FastAPI(
     title="Reservorio Vivo API",
@@ -108,6 +111,26 @@ def send_whatsapp_alert(alert_id: str):
         "whatsapp_direct_link": whatsapp_url,
         "content_dispatched": msg
     }
+
+# ---------------------------------------------------------------------------
+# 3. REPORTES CIUDADANOS & VISIÓN ARTIFICIAL (IDEA E)
+# ---------------------------------------------------------------------------
+@app.get("/api/v1/incidents", response_model=List[Incident], tags=["Reportes Ciudadanos"])
+def list_incidents():
+    """Listado de reportes ciudadanos de drenajes y sedimentación analizados por IA."""
+    return db.incidents
+
+@app.post("/api/v1/incidents", response_model=Incident, status_code=201, tags=["Reportes Ciudadanos"])
+def report_incident(data: CreateIncidentInput):
+    """Registra un reporte vecinal y genera clasificación automática por Visión Artificial."""
+    incident = db.add_incident(
+        reporter_name=data.reporter_name or "Vecino Sabana Grande",
+        description=data.description,
+        lat=data.latitude,
+        lng=data.longitude,
+        photo_url=data.photo_url or ""
+    )
+    return incident
 
 from simulator import simulator
 
