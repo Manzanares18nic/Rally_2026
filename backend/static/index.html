@@ -8,6 +8,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    .leaflet-container {
+      background: #1e293b;
+    }
+  </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8">
 
@@ -157,6 +165,24 @@
 
     </div>
 
+    <!-- MAPA GEOESPACIAL DE MANAGUA (LEAFLET) -->
+    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+        <div>
+          <h2 class="font-bold text-lg text-slate-200 flex items-center gap-2">
+            <span>🗺️</span> Ubicación Geoespacial & Radio de Afectación Barrial
+          </h2>
+          <p class="text-xs text-slate-400">Sector Piloto: Microcuenca Tiscapa / Drenaje Central Managua</p>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Normal</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Alerta Amarilla</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500"></span> Evacuación Roja</span>
+        </div>
+      </div>
+      <div id="map" class="w-full h-72 md:h-96 rounded-xl border border-slate-700 shadow-inner overflow-hidden"></div>
+    </div>
+
     <!-- LOG DE ALERTAS RECIENTES -->
     <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
       <h2 class="font-bold text-lg text-slate-200 mb-3 flex items-center gap-2">
@@ -170,6 +196,71 @@
   </div>
 
   <script>
+    // INICIALIZACIÓN DE LEAFLET
+    const defaultLat = 12.135;
+    const defaultLng = -86.270;
+    const map = L.map('map', { zoomControl: true }).setView([defaultLat, defaultLng], 15);
+
+    // Capa de mapa oscura / moderna (CartoDB Dark Matter)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Marcador central del Reservorio
+    const reservoirMarker = L.marker([defaultLat, defaultLng]).addTo(map);
+    reservoirMarker.bindPopup(`
+      <div class="text-slate-800 text-xs">
+        <strong class="text-sm">Reservorio Piloto Tiscapa</strong><br>
+        Capacidad: 15,000 m³<br>
+        Microcuenca Anegable Managua
+      </div>
+    `);
+
+    // Radio de alerta dinámica (área que se inundaría / zona de aviso a vecinos)
+    const alertZone = L.circle([defaultLat, defaultLng], {
+      color: '#10b981',
+      fillColor: '#10b981',
+      fillOpacity: 0.25,
+      radius: 350
+    }).addTo(map);
+
+    // Módulos de Infraestructura Verde en los alrededores (Idea B)
+    const greenMod1 = L.circleMarker([12.1365, -86.2715], {
+      radius: 8, color: '#059669', fillColor: '#34d399', fillOpacity: 0.8
+    }).addTo(map).bindPopup("<b>Jardín de Lluvia Sector Norte (Idea B)</b><br>Retención: 45,000 L de amortiguamiento.");
+
+    const greenMod2 = L.circleMarker([12.1335, -86.2685], {
+      radius: 8, color: '#059669', fillColor: '#34d399', fillOpacity: 0.8
+    }).addTo(map).bindPopup("<b>Franja Bio-Filtrante Sur (Idea B)</b><br>Reduce 38% de escorrentía directa.");
+
+    // Función para actualizar color de la zona en el mapa según el semáforo
+    function updateMapStatus(status, levelPct) {
+      let color = '#10b981'; // Verde
+      let radius = 300;
+
+      if (status === 'ROJO') {
+        color = '#ef4444'; // Rojo crítico
+        radius = 500; // Radio de evacuación extendido
+      } else if (status === 'AMARILLO') {
+        color = '#f59e0b'; // Amarillo advertencia
+        radius = 400;
+      } else if (status === 'FALLO_SENSOR') {
+        color = '#a855f7'; // Morado sensor caído
+        radius = 250;
+      }
+
+      alertZone.setStyle({ color: color, fillColor: color });
+      alertZone.setRadius(radius);
+      reservoirMarker.setPopupContent(`
+        <div class="text-slate-900 text-xs">
+          <strong class="text-sm">Reservorio Piloto Tiscapa</strong><br>
+          Estado actual: <b style="color:${color}">${status}</b><br>
+          Nivel de llenado: <b>${levelPct}%</b>
+        </div>
+      `);
+    }
+
     // INICIALIZACIÓN DE CHART.JS
     const ctx = document.getElementById('telemetryChart').getContext('2d');
     const chart = new Chart(ctx, {
@@ -249,6 +340,9 @@
           statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-emerald-950 text-emerald-400 border border-emerald-700';
           statusDot.className = 'w-3 h-3 rounded-full bg-emerald-400 animate-pulse';
         }
+
+        // Actualizar el mapa reactivo (color y radio de advertencia)
+        updateMapStatus(data.status, data.current_level_pct);
 
       } catch (err) {
         console.error("Error al obtener dashboard:", err);
