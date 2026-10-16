@@ -32,16 +32,26 @@
         </div>
       </div>
 
-      <!-- SWITCHER DE PERFILES (COMUNIDAD VS ADMIN) -->
-      <div class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-700/80">
-        <button id="btn-profile-community" onclick="switchProfile('community')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow">
-          <span>👥</span> Vista Comunidad
-        </button>
-        <button id="btn-profile-admin" onclick="switchProfile('admin')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
-          <span>🛠️</span> Vista Administrador / IoT
-        </button>
+      <!-- SWITCHER DE PERFILES & LOGIN -->
+      <div class="flex items-center gap-3">
+        <div class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-700/80">
+          <button id="btn-profile-community" onclick="switchProfile('community')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow">
+            <span>👥</span> Vista Comunidad
+          </button>
+          <button id="btn-profile-admin" onclick="attemptAdminAccess()" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+            <span>🛠️</span> Vista Administrador / IoT
+          </button>
+        </div>
+
+        <!-- BADGE DE SESIÓN / BOTÓN DE LOGOUT -->
+        <div id="admin-user-pill" class="hidden flex items-center gap-2 bg-blue-950/60 border border-blue-700/50 px-3 py-1.5 rounded-xl text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="admin-user-name" class="font-semibold text-blue-200">Ing. Carlos Mendoza</span>
+          <button onclick="logoutAdmin()" class="text-slate-400 hover:text-red-400 ml-1 text-xs" title="Cerrar sesión">🚪</button>
+        </div>
       </div>
     </nav>
+
 
     <!-- ============================================================== -->
     <!-- PERFIL 1: VISTA DE LA COMUNIDAD (SIMPLE, DIRECTA, PREVENTIVA)  -->
@@ -252,8 +262,48 @@
   </div>
 
   <!-- ============================================================== -->
+  <!-- MODAL: LOGIN DE ADMINISTRADOR / TÉCNICO MUNICIPAL              -->
+  <!-- ============================================================== -->
+  <div id="modal-login" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🔐</span>
+          <h3 class="text-base font-bold text-white">Acceso a Consola Técnica</h3>
+        </div>
+        <button onclick="document.getElementById('modal-login').classList.add('hidden')" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Ingresa tus credenciales autorizadas por la Alcaldía o Protección Civil para gestionar la red de telemetría ESP32.
+      </p>
+
+      <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Correo Institucional:</label>
+          <input type="email" id="login-email" value="admin@reservoriovivo.ni" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Contraseña:</label>
+          <input type="password" id="login-password" value="Rally2026*" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <div class="p-2.5 bg-blue-950/40 border border-blue-800/40 rounded-xl text-[11px] text-blue-300">
+          🔑 <b>Credencial Demo:</b> admin@reservoriovivo.ni / Rally2026*
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+          <span>🔓</span> Iniciar Sesión de Administrador
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
   <!-- MODAL: SUBIR FOTO REAL PARA ANÁLISIS DE VISIÓN ARTIFICIAL (IA) -->
   <!-- ============================================================== -->
+
   <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-800 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
@@ -291,13 +341,81 @@
   </div>
 
   <script>
-    // ESTADO GLOBAL
+    // ESTADO GLOBAL & AUTENTICACIÓN
     let activeProfile = 'community';
+    let adminToken = localStorage.getItem('reservorio_admin_token') || null;
     let map = null;
     let reservoirMarker = null;
     let alertZone = null;
     let greenMarkers = [];
     let incidentMarkers = [];
+
+    // INTENTAR ACCESO A LA VISTA ADMIN (PIDE LOGIN SI NO ESTÁ AUTENTICADO)
+    function attemptAdminAccess() {
+      if (adminToken) {
+        switchProfile('admin');
+      } else {
+        document.getElementById('modal-login').classList.remove('hidden');
+      }
+    }
+
+    // MANEJAR LOGIN DE ADMINISTRADOR
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      btn.innerText = "⏳ Verificando credenciales...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+          throw new Error("Credenciales inválidas. Usa admin@reservoriovivo.ni / Rally2026*");
+        }
+
+        const data = await res.json();
+        adminToken = data.access_token;
+        localStorage.setItem('reservorio_admin_token', adminToken);
+        localStorage.setItem('reservorio_admin_name', data.user.name);
+
+        document.getElementById('modal-login').classList.add('hidden');
+        updateAdminNav(data.user.name);
+        switchProfile('admin');
+
+      } catch (err) {
+        alert("⚠️ " + err.message);
+      } finally {
+        btn.innerText = "🔓 Iniciar Sesión de Administrador";
+        btn.disabled = false;
+      }
+    }
+
+    // CERRAR SESIÓN DE ADMINISTRADOR
+    function logoutAdmin() {
+      adminToken = null;
+      localStorage.removeItem('reservorio_admin_token');
+      localStorage.removeItem('reservorio_admin_name');
+      document.getElementById('admin-user-pill').classList.add('hidden');
+      switchProfile('community');
+    }
+
+    function updateAdminNav(name) {
+      const pill = document.getElementById('admin-user-pill');
+      const label = document.getElementById('admin-user-name');
+      if (adminToken) {
+        pill.classList.remove('hidden');
+        label.innerText = name || localStorage.getItem('reservorio_admin_name') || 'Administrador Cuenca';
+      } else {
+        pill.classList.add('hidden');
+      }
+    }
 
     // CAMBIAR PERFILES (COMUNIDAD VS ADMIN)
     function switchProfile(profile) {
@@ -320,6 +438,12 @@
         fetchAdminNodes();
       }
     }
+
+    // RESTAURAR ESTADO DE SESIÓN AL INICIAR
+    if (adminToken) {
+      updateAdminNav(localStorage.getItem('reservorio_admin_name'));
+    }
+
 
     // INICIALIZACIÓN DEL MAPA SATELITAL (ESRI)
     function initMap(lat, lng, name) {

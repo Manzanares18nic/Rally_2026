@@ -17,9 +17,13 @@ from models import (
     SimulatorTrigger,
     Incident,
     CreateIncidentInput,
-    NodeDiagnostic
+    NodeDiagnostic,
+    LoginInput,
+    LoginResult,
+    AdminUser
 )
 from database import db, MAX_CAPACITY_CM
+
 
 app = FastAPI(
     title="Reservorio Vivo API",
@@ -49,10 +53,38 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
+# 0. AUTENTICACIÓN ADMINISTRATIVA
+# ---------------------------------------------------------------------------
+@app.post("/api/v1/auth/login", response_model=LoginResult, tags=["Auth"])
+def login(credentials: LoginInput):
+    """Permite el acceso a la consola de administración con credenciales válidas."""
+    # Validación simple para el hackathon (admin@reservoriovivo.ni / Rally2026*)
+    if credentials.email == "admin@reservoriovivo.ni" and credentials.password == "Rally2026*":
+        user = AdminUser(
+            id="usr-01",
+            name="Ing. Carlos Mendoza",
+            email="admin@reservoriovivo.ni",
+            role="ADMINISTRADOR_CUENCA",
+            institution="Alcaldía de Managua / Protección Civil"
+        )
+        return LoginResult(
+            access_token="session-token-rally-2026-admin",
+            token_type="bearer",
+            user=user
+        )
+    raise HTTPException(status_code=401, detail="Correo o contraseña incorrectos.")
+
+@app.get("/api/v1/auth/me", response_model=AdminUser, tags=["Auth"])
+def get_current_user():
+    """Retorna los datos del administrador en sesión."""
+    return AdminUser()
+
+# ---------------------------------------------------------------------------
 # 1. DASHBOARD GENERAL (Todo lo que necesita la pantalla principal)
 # ---------------------------------------------------------------------------
 @app.get("/api/v1/dashboard", response_model=DashboardSummary, tags=["Dashboard"])
 def get_dashboard():
+
     """Retorna el estado consolidado en tiempo real (Nivel, Alerta, Tasa y Mapa)."""
     return db.get_dashboard_summary()
 

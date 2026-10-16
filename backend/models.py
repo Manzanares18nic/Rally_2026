@@ -2,7 +2,25 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
+# --- AUTENTICACIÓN ADMINISTRATIVA ---
+class LoginInput(BaseModel):
+    email: str = Field(..., example="admin@reservoriovivo.ni")
+    password: str = Field(..., example="Rally2026*")
+
+class AdminUser(BaseModel):
+    id: str = "usr-01"
+    name: str = "Ing. Carlos Mendoza"
+    email: str = "admin@reservoriovivo.ni"
+    role: str = "ADMINISTRADOR_CUENCA"
+    institution: str = "Alcaldía de Managua / Protección Civil"
+
+class LoginResult(BaseModel):
+    access_token: str = "session-token-rally-2026-admin"
+    token_type: str = "bearer"
+    user: AdminUser
+
 # --- TELEMETRÍA ---
+
 class TelemetryInput(BaseModel):
     water_level_cm: float = Field(..., description="Nivel actual medido en centímetros", example=195.0)
     rain_mm: Optional[float] = Field(0.0, description="Lluvia acumulada en milímetros", example=8.5)

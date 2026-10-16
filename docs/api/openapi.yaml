@@ -16,19 +16,62 @@ servers:
     description: Servidor local de desarrollo
 
 tags:
+
+  - name: Auth
+    description: Autenticación de Administradores y Operadores de Cuenca
   - name: Dashboard
     description: Estado general público y mapa del reservorio
   - name: Telemetria
     description: Recepción y consulta rápida de lecturas (nodo IoT o simulador)
   - name: Alertas
     description: Estado de alertas y aprobación/envío
+  - name: Reportes Ciudadanos
+    description: Reportes comunitarios con Visión Artificial
+  - name: Administración & Nodos
+    description: Telemetría de hardware ESP32 y control de cuencas
   - name: Simulador
     description: Control de simulación en vivo para la presentación al jurado
 
+
 paths:
+  # ==========================================
+  # 0. AUTENTICACIÓN ADMINISTRATIVA
+  # ==========================================
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión de Administrador / Técnico Municipal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+        '401':
+          description: Credenciales incorrectas
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Obtener perfil del administrador autenticado
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+
   # ==========================================
   # 1. DASHBOARD & ESTADO GENERAL
   # ==========================================
+
   /dashboard:
     get:
       tags: [Dashboard]
@@ -267,7 +310,48 @@ paths:
 
 components:
   schemas:
+    # --- AUTENTICACIÓN ---
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          example: "admin@reservoriovivo.ni"
+        password:
+          type: string
+          example: "Rally2026*"
+
+    LoginResult:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "bearer"
+        user:
+          $ref: '#/components/schemas/AdminUser'
+
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "usr-01"
+        name:
+          type: string
+          example: "Ing. Carlos Mendoza (Alcaldía Managua)"
+        email:
+          type: string
+          example: "admin@reservoriovivo.ni"
+        role:
+          type: string
+          example: "ADMINISTRADOR_CUENCA"
+
     DashboardSummary:
+
       type: object
       properties:
         reservoir_name:
