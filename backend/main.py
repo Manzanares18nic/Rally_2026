@@ -3,6 +3,9 @@ import uuid
 from typing import List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 from models import (
     TelemetryInput,
@@ -19,6 +22,13 @@ app = FastAPI(
     description="API REST del MVP de 24 horas - Rally LATAM 2026 (Reto 05)",
     version="1.0.0"
 )
+
+# Servir la interfaz visual de pruebas en la ruta raíz '/'
+@app.get("/", include_in_schema=False)
+def serve_dashboard():
+    static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    return FileResponse(static_file)
+
 
 # CORS TOTAL: Permite que el frontend de tu compañero se conecte sin problemas desde localhost:3000, 5173, etc.
 app.add_middleware(

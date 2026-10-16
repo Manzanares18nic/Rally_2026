@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservorio Vivo - Panel de Monitoreo & Simulación</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    
+    <!-- HEADER -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">🌊</span>
+          <h1 class="text-2xl font-bold tracking-tight">Reservorio Vivo</h1>
+          <span class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold border border-blue-500/30">MVP 24h</span>
+        </div>
+        <p id="reservoir-name" class="text-slate-400 text-sm mt-1">Cargando ubicación...</p>
+      </div>
+      
+      <!-- ESTADO DE NODO Y SEMÁFORO -->
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-xs text-slate-400">Sensor IoT</p>
+          <span id="sensor-badge" class="font-bold text-sm text-green-400">ONLINE</span>
+        </div>
+        <div id="status-card" class="px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-emerald-950 text-emerald-400 border border-emerald-700">
+          <span id="status-dot" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="status-text">VERDE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- METRICAS PRINCIPALES -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+        <p class="text-xs text-slate-400 font-medium">NIVEL ACTUAL (%)</p>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="metric-level-pct" class="text-4xl font-extrabold text-blue-400">--</span>
+          <span class="text-slate-500 font-semibold">%</span>
+        </div>
+        <div class="w-full bg-slate-700 h-2 rounded-full mt-3 overflow-hidden">
+          <div id="metric-level-bar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+        <p class="text-xs text-slate-400 font-medium">ALTURA DE AGUA</p>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="metric-level-cm" class="text-4xl font-extrabold text-white">--</span>
+          <span class="text-slate-500 font-semibold">cm / 300 cm</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-3">Capacidad: 15,000 m³</p>
+      </div>
+
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700">
+        <p class="text-xs text-slate-400 font-medium">TASA DE SUBIDA (30m)</p>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="metric-rate" class="text-4xl font-extrabold text-amber-400">--</span>
+          <span class="text-slate-500 font-semibold">% / 30min</span>
+        </div>
+        <p id="metric-rate-desc" class="text-xs text-slate-400 mt-3">Anticipación inteligente</p>
+      </div>
+
+      <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+        <div>
+          <p class="text-xs text-slate-400 font-medium">SIMULADOR EN VIVO</p>
+          <p id="current-scenario" class="text-sm font-semibold text-purple-400 mt-1">Escenario: NORMAL</p>
+        </div>
+        <button onclick="sendWhatsAppDemo()" class="mt-3 w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-green-900/40">
+          <span>📲</span> Probar Alerta WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN CENTRAL: GRÁFICA & CONTROLES DE SIMULACIÓN -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- GRÁFICA EN TIEMPO REAL (2 COLUMNAS) -->
+      <div class="lg:col-span-2 bg-slate-800 p-6 rounded-2xl border border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-bold text-lg text-slate-200 flex items-center gap-2">
+            <span>📈</span> Nivel de Agua en Tiempo Real
+          </h2>
+          <span class="text-xs text-slate-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Actualizando cada 2s
+          </span>
+        </div>
+        <div class="relative h-64 md:h-80">
+          <canvas id="telemetryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- BOTONES DE SIMULACIÓN PARA EL JURADO (1 COLUMNA) -->
+      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+        <div>
+          <h2 class="font-bold text-lg text-slate-200 mb-1 flex items-center gap-2">
+            <span>🎮</span> Disparador para Jurado
+          </h2>
+          <p class="text-xs text-slate-400 mb-4">
+            Demuestra al evaluador cómo reacciona el sistema ante eventos extremos sin necesidad de hardware físico.
+          </p>
+
+          <div class="space-y-2.5">
+            <button onclick="triggerScenario('CRECIDA_SUBITA')" class="w-full text-left p-3 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-700/60 text-red-200 transition font-medium text-xs flex justify-between items-center">
+              <div>
+                <p class="font-bold text-red-300">🚨 Crecida Súbita</p>
+                <p class="text-[10px] text-red-400">Tormenta violenta (+10 cm/ciclo)</p>
+              </div>
+              <span class="text-base">⛈️</span>
+            </button>
+
+            <button onclick="triggerScenario('LLUVIA_MODERADA')" class="w-full text-left p-3 rounded-xl bg-amber-950/60 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 transition font-medium text-xs flex justify-between items-center">
+              <div>
+                <p class="font-bold text-amber-300">🌧️ Lluvia Moderada</p>
+                <p class="text-[10px] text-amber-400">Crecida sostenida (+2 cm/ciclo)</p>
+              </div>
+              <span class="text-base">🌦️</span>
+            </button>
+
+            <button onclick="triggerScenario('VACIADO')" class="w-full text-left p-3 rounded-xl bg-blue-950/60 hover:bg-blue-900/80 border border-blue-700/60 text-blue-200 transition font-medium text-xs flex justify-between items-center">
+              <div>
+                <p class="font-bold text-blue-300">🌿 Drenaje / Infraestructura Verde</p>
+                <p class="text-[10px] text-blue-400">Simula retención y vaciado</p>
+              </div>
+              <span class="text-base">🌱</span>
+            </button>
+
+            <button onclick="triggerScenario('NODO_DESCONECTADO')" class="w-full text-left p-3 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 border border-purple-700/60 text-purple-200 transition font-medium text-xs flex justify-between items-center">
+              <div>
+                <p class="font-bold text-purple-300">⚠️ Falla: Sensor Caído</p>
+                <p class="text-[10px] text-purple-400">Alerta de nodo sin datos</p>
+              </div>
+              <span class="text-base">📡</span>
+            </button>
+
+            <button onclick="triggerScenario('NORMAL')" class="w-full text-left p-3 rounded-xl bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-slate-200 transition font-medium text-xs flex justify-between items-center">
+              <div>
+                <p class="font-bold text-slate-300">✅ Normalizar Sistema</p>
+                <p class="text-[10px] text-slate-400">Estado estable</p>
+              </div>
+              <span class="text-base">🔄</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-500 text-center mt-4 border-t border-slate-700/60 pt-3">
+          Rally Latinoamericano de Innovación 2026 • Reto 05
+        </p>
+      </div>
+
+    </div>
+
+    <!-- LOG DE ALERTAS RECIENTES -->
+    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+      <h2 class="font-bold text-lg text-slate-200 mb-3 flex items-center gap-2">
+        <span>📢</span> Registro de Alertas Despachadas
+      </h2>
+      <div id="alerts-container" class="space-y-2">
+        <p class="text-xs text-slate-400 italic">No hay alertas registradas aún.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // INICIALIZACIÓN DE CHART.JS
+    const ctx = document.getElementById('telemetryChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Nivel de Agua (%)',
+          data: [],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2,
+          pointRadius: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: { color: '#94a3b8' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#94a3b8' }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // ACTUALIZACIÓN PERIÓDICA DEL DASHBOARD
+    async function fetchDashboard() {
+      try {
+        const res = await fetch('/api/v1/dashboard');
+        const data = await res.json();
+
+        document.getElementById('reservoir-name').innerText = `${data.reservoir_name} (Lat: ${data.location.lat}, Lng: ${data.location.lng})`;
+        document.getElementById('metric-level-pct').innerText = data.current_level_pct;
+        document.getElementById('metric-level-cm').innerText = data.current_level_cm;
+        document.getElementById('metric-rate').innerText = data.rise_rate_pct_30m > 0 ? `+${data.rise_rate_pct_30m}` : data.rise_rate_pct_30m;
+        document.getElementById('metric-level-bar').style.width = `${Math.min(100, data.current_level_pct)}%`;
+
+        // Sensor badge
+        const sensorBadge = document.getElementById('sensor-badge');
+        if (data.sensor_status === 'ONLINE') {
+          sensorBadge.innerText = 'ONLINE';
+          sensorBadge.className = 'font-bold text-sm text-green-400';
+        } else {
+          sensorBadge.innerText = 'SIN SEÑAL';
+          sensorBadge.className = 'font-bold text-sm text-red-400 animate-bounce';
+        }
+
+        // Semáforo visual
+        const statusCard = document.getElementById('status-card');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        statusText.innerText = data.status;
+
+        if (data.status === 'ROJO') {
+          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-red-950 text-red-400 border border-red-700 animate-pulse';
+          statusDot.className = 'w-3 h-3 rounded-full bg-red-400';
+        } else if (data.status === 'AMARILLO') {
+          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-amber-950 text-amber-400 border border-amber-700';
+          statusDot.className = 'w-3 h-3 rounded-full bg-amber-400';
+        } else if (data.status === 'FALLO_SENSOR') {
+          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-purple-950 text-purple-400 border border-purple-700';
+          statusDot.className = 'w-3 h-3 rounded-full bg-purple-400';
+        } else {
+          statusCard.className = 'px-5 py-2.5 rounded-xl font-bold text-lg uppercase tracking-wider flex items-center gap-2 bg-emerald-950 text-emerald-400 border border-emerald-700';
+          statusDot.className = 'w-3 h-3 rounded-full bg-emerald-400 animate-pulse';
+        }
+
+      } catch (err) {
+        console.error("Error al obtener dashboard:", err);
+      }
+    }
+
+    // ACTUALIZACIÓN DE GRÁFICA
+    async function fetchTelemetry() {
+      try {
+        const res = await fetch('/api/v1/telemetry?limit=25');
+        const points = await res.json();
+        
+        chart.data.labels = points.map(p => new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        chart.data.datasets[0].data = points.map(p => p.water_level_pct);
+        chart.update();
+      } catch (err) {
+        console.error("Error al obtener telemetría:", err);
+      }
+    }
+
+    // ACTUALIZACIÓN DE ALERTAS
+    async function fetchAlerts() {
+      try {
+        const res = await fetch('/api/v1/alerts');
+        const alerts = await res.json();
+        const container = document.getElementById('alerts-container');
+
+        if (alerts.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-400 italic">No hay alertas activas.</p>';
+          return;
+        }
+
+        container.innerHTML = alerts.map(a => `
+          <div class="p-3 rounded-xl border flex items-center justify-between text-xs ${
+            a.level === 'ROJO' ? 'bg-red-950/40 border-red-800 text-red-200' :
+            a.level === 'AMARILLO' ? 'bg-amber-950/40 border-amber-800 text-amber-200' :
+            'bg-slate-700/40 border-slate-600 text-slate-200'
+          }">
+            <div>
+              <p class="font-bold">${a.title}</p>
+              <p class="text-slate-400 mt-0.5">${a.instruction}</p>
+            </div>
+            <span class="text-[10px] text-slate-500">${new Date(a.created_at).toLocaleTimeString()}</span>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error("Error al obtener alertas:", err);
+      }
+    }
+
+    // DISPARAR ESCENARIOS
+    async function triggerScenario(scenario) {
+      try {
+        const res = await fetch('/api/v1/simulator/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenario })
+        });
+        const data = await res.json();
+        document.getElementById('current-scenario').innerText = `Escenario: ${data.scenario}`;
+        fetchDashboard();
+        fetchTelemetry();
+        fetchAlerts();
+      } catch (err) {
+        alert("Error al disparar escenario: " + err);
+      }
+    }
+
+    // PROBAR BOTÓN DE WHATSAPP
+    async function sendWhatsAppDemo() {
+      try {
+        const res = await fetch('/api/v1/alerts/test-whatsapp/send-whatsapp', { method: 'POST' });
+        const data = await res.json();
+        if (data.whatsapp_direct_link) {
+          window.open(data.whatsapp_direct_link, '_blank');
+        }
+      } catch (err) {
+        alert("Error al enviar WhatsApp: " + err);
+      }
+    }
+
+    // INTERVALO DE CONSULTA CADA 2 SEGUNDOS
+    setInterval(() => {
+      fetchDashboard();
+      fetchTelemetry();
+      fetchAlerts();
+    }, 2000);
+
+    // LLAMADA INICIAL
+    fetchDashboard();
+    fetchTelemetry();
+    fetchAlerts();
+  </script>
+</body>
+</html>
