@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   fetchDashboard,
   fetchTelemetry,
+  fetchIncidents,
   triggerSimulatorScenario,
   sendWhatsAppAlert,
   type DashboardSummary,
   type TelemetryPoint,
   type WhatsAppAlertResponse,
+  type Incident,
 } from './services/api';
 import { Header } from './components/Header';
 import { CommunityView } from './components/CommunityView';
@@ -55,6 +57,20 @@ export default function App() {
   const [isTriggeringScenario, setIsTriggeringScenario] = useState<boolean>(false);
   const [isSendingWhatsApp, setIsSendingWhatsApp] = useState<boolean>(false);
 
+  // Nodo seleccionado y reportes ciudadanos
+  const [selectedNode, setSelectedNode] = useState<{
+    id: string;
+    name: string;
+    lat: number;
+    lng: number;
+  }>({
+    id: 'node-01',
+    name: 'Nodo 01: Cauce La Maravilla (Sabana Grande)',
+    lat: 12.1249,
+    lng: -86.1761,
+  });
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+
   // Modales
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [whatsAppData, setWhatsAppData] = useState<WhatsAppAlertResponse | null>(null);
@@ -93,13 +109,17 @@ export default function App() {
   // Polling continuo
   const pollData = useCallback(async () => {
     try {
-      const [dashRes, telemRes] = await Promise.all([
+      const [dashRes, telemRes, incs] = await Promise.all([
         fetchDashboard(apiUrl),
         fetchTelemetry(30, apiUrl),
+        fetchIncidents(apiUrl),
       ]);
       setDashboard(dashRes.data);
       if (telemRes.data && telemRes.data.length > 0) {
         setTelemetry(telemRes.data);
+      }
+      if (incs) {
+        setIncidents(incs);
       }
       setIsBackendLive(dashRes.isLive);
     } catch {
@@ -262,7 +282,18 @@ export default function App() {
 
         {currentTab === 'green' && <GreenInfrastructureView isDark={isDark} />}
 
-        {currentTab === 'map' && <SatelliteMapView dashboard={dashboard} isDark={isDark} />}
+        {currentTab === 'map' && (
+          <SatelliteMapView
+            dashboard={dashboard}
+            isDark={isDark}
+            selectedNodeCoords={{
+              lat: selectedNode.lat,
+              lng: selectedNode.lng,
+              name: selectedNode.name,
+            }}
+            incidents={incidents}
+          />
+        )}
 
         {currentTab === 'admin' && (
           <AdminDashboard
@@ -272,6 +303,12 @@ export default function App() {
             onTriggerScenario={handleTriggerScenario}
             isLoadingScenario={isTriggeringScenario}
             isDark={isDark}
+            selectedNodeId={selectedNode.id}
+            onSelectNode={(node) => {
+              setSelectedNode(node);
+              showToast(`Nodo seleccionado: ${node.name}`);
+            }}
+            onViewOnMap={() => setCurrentTab('map')}
             onSendCustomNotification={(msg) => {
               showToast('Alerta comunitaria despachada a la red de vigías');
             }}
@@ -299,7 +336,10 @@ export default function App() {
         onClose={() => setIsReportModalOpen(false)}
         apiUrl={apiUrl}
         isDark={isDark}
-        onSuccess={showToast}
+        onSuccess={(msg) => {
+          showToast(msg);
+          pollData();
+        }}
       />
 
       {toastMessage && (
