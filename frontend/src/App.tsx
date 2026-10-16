@@ -14,10 +14,15 @@ import { TelemetryChart } from './components/TelemetryChart';
 import { JurorSimulator, type ScenarioType } from './components/JurorSimulator';
 import { WhatsAppModal } from './components/WhatsAppModal';
 import { ApiConfigModal } from './components/ApiConfigModal';
+import { SatelliteMapView } from './components/SatelliteMapView';
 import { CheckCircle, AlertCircle, WifiOff } from 'lucide-react';
 
 export default function App() {
+  // Navigation Tabs State: 'dashboard' | 'map'
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'map'>('dashboard');
+
   // Application State
+
   const [dashboard, setDashboard] = useState<DashboardSummary>({
     reservoir_name: 'Reservorio Barrial Tiscapa - Sector Piloto',
     location: { lat: 12.135, lng: -86.270 },
@@ -203,37 +208,80 @@ export default function App() {
           isRefreshing={isRefreshing}
         />
 
-        {/* 2. Top Metric Cards (4 Columns) */}
-        <MetricCards
-          dashboard={dashboard}
-          currentScenario={currentScenario}
-          onSendWhatsApp={handleSendWhatsApp}
-          isSendingWhatsApp={isSendingWhatsApp}
-        />
+        {/* PESTAÑAS DE VISTA: DASHBOARD HIDROMÉTRICO VS MAPA SATELITAL */}
+        <div className="flex items-center justify-between border-b border-[#1E2A44] pb-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'dashboard'
+                  ? 'bg-[#142342] text-cyan-400 border border-[#233B6E] shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-[#121A2D]'
+              }`}
+            >
+              <span>📊</span>
+              <span>Telemetría & Gráficas</span>
+            </button>
 
-        {/* 3. Main Hydrometric Dashboard (Two Columns) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Left Column: Real-time Area Chart (approx 68% - col-span-8) */}
-          <div className="lg:col-span-8">
-            <TelemetryChart telemetry={telemetry} dashboard={dashboard} />
+            <button
+              onClick={() => setActiveTab('map')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                activeTab === 'map'
+                  ? 'bg-[#142342] text-cyan-400 border border-[#233B6E] shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-[#121A2D]'
+              }`}
+            >
+              <span>🛰️</span>
+              <span>Mapa Satelital de Cuenca (SINAPRED)</span>
+            </button>
           </div>
 
-          {/* Right Column: Juror Simulator (approx 32% - col-span-4) */}
-          <div className="lg:col-span-4">
-            <JurorSimulator
-              currentScenario={currentScenario}
-              onTriggerScenario={handleTriggerScenario}
-              isLoading={isTriggeringScenario}
-            />
-          </div>
+          <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
+            Cauce La Maravilla • Sabana Grande
+          </span>
         </div>
+
+        {/* CONTENIDO CONDICIONAL SEGÚN PESTAÑA */}
+        {activeTab === 'dashboard' ? (
+          <>
+            {/* 2. Top Metric Cards (4 Columns) */}
+            <MetricCards
+              dashboard={dashboard}
+              currentScenario={currentScenario}
+              onSendWhatsApp={handleSendWhatsApp}
+              isSendingWhatsApp={isSendingWhatsApp}
+            />
+
+            {/* 3. Main Hydrometric Dashboard (Two Columns) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              {/* Left Column: Real-time Area Chart (col-span-8) */}
+              <div className="lg:col-span-8">
+                <TelemetryChart telemetry={telemetry} dashboard={dashboard} />
+              </div>
+
+              {/* Right Column: Juror Simulator (col-span-4) */}
+              <div className="lg:col-span-4">
+                <JurorSimulator
+                  currentScenario={currentScenario}
+                  onTriggerScenario={handleTriggerScenario}
+                  isLoading={isTriggeringScenario}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Pantalla dedicada al Mapa Satelital */
+          <SatelliteMapView dashboard={dashboard} />
+        )}
       </main>
+
 
       {/* Footer Branding */}
       <footer className="relative z-10 w-full max-w-[1440px] mx-auto px-4 py-4 text-center text-xs text-slate-400 font-mono flex flex-col sm:flex-row items-center justify-between border-t border-[#121B2F] mt-4">
-        <span>Reservorio Barrial Tiscapa · Sistema de Alerta Temprana</span>
+        <span>Cauce La Maravilla & Pista Sabana Grande · Sistema de Alerta Temprana</span>
         <span className="text-slate-400">Rally LATAM 2026 — Reto 05</span>
       </footer>
+
 
       {/* WhatsApp Modal */}
       <WhatsAppModal
