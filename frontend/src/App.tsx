@@ -132,7 +132,7 @@ export default function App() {
 
   useEffect(() => {
     pollData();
-    const interval = setInterval(pollData, 1000);
+    const interval = setInterval(pollData, 600);
     return () => clearInterval(interval);
   }, [pollData]);
 

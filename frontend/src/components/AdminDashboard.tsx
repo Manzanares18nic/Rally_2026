@@ -297,7 +297,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {/* Gráfica y Simulador en 2 columnas */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <div className="lg:col-span-7">
-              <TelemetryChart telemetry={telemetry} dashboard={dashboard} isDark={isDark} />
+              <TelemetryChart
+                telemetry={telemetry}
+                dashboard={dashboard}
+                isDark={isDark}
+                currentScenario={currentScenario}
+              />
             </div>
             <div className="lg:col-span-5">
               <JurorSimulator

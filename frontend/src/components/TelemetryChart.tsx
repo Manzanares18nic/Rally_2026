@@ -9,16 +9,23 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import { Droplets, Waves } from 'lucide-react';
+import { Droplets, Waves, Sun } from 'lucide-react';
 import type { TelemetryPoint, DashboardSummary } from '../services/api';
+import type { ScenarioType } from './JurorSimulator';
 
 interface TelemetryChartProps {
   telemetry: TelemetryPoint[];
   dashboard: DashboardSummary;
   isDark: boolean;
+  currentScenario?: ScenarioType;
 }
 
-export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashboard, isDark }) => {
+export const TelemetryChart: React.FC<TelemetryChartProps> = ({
+  telemetry,
+  dashboard,
+  isDark,
+  currentScenario,
+}) => {
   // Ondulación hidrodinámica continua en tiempo real (efecto de fluido activo)
   const [wavePhase, setWavePhase] = useState(0);
 
@@ -70,11 +77,20 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
     strokeBack: '#7dd3fc',  // Onda secundaria traslúcida
   };
 
+  // Solo llueve si el escenario activo es de lluvia, o si no hay escenario y el sensor reporta lluvia
   const isRaining =
-    dashboard.status === 'AMARILLO' ||
-    dashboard.status === 'ROJO' ||
-    dashboard.current_level_pct > 35 ||
-    dashboard.rise_rate_pct_30m > 2;
+    currentScenario === 'CRECIDA_SUBITA' ||
+    currentScenario === 'LLUVIA_MODERADA' ||
+    (!currentScenario &&
+      (dashboard.status === 'AMARILLO' || dashboard.status === 'ROJO') &&
+      (dashboard.rain_mm ?? 0) > 0);
+
+  // Nivel de agua y altura del espacio aéreo por donde caen las gotas
+  const waterPct = Math.max(0, Math.min(100, dashboard.current_level_pct));
+  // Las gotas caen desde el cielo hasta la superficie del agua:
+  // Si el agua está al 15%, caen por el 85% del reservorio hasta casi la base.
+  // Conforme el agua sube (ej. 80%), el espacio aéreo se reduce a 20% y las gotas tocan el agua que subió.
+  const airHeightPct = Math.max(6, Math.min(94, 100 - waterPct));
 
   return (
     <div
@@ -117,24 +133,75 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
         </div>
       </div>
 
-      {/* Gotas de lluvia animadas sobre el gráfico al haber precipitación o crecida */}
-      {isRaining && (
-        <div className="relative h-6 w-full overflow-hidden flex justify-around items-start pointer-events-none mb-1 px-8">
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
-            <div
-              key={i}
-              className="w-1.5 h-3 rounded-full bg-[#00A8E8] animate-raindrop opacity-80"
-              style={{
-                animationDelay: `${(i * 0.12) % 1.1}s`,
-                animationDuration: `${0.85 + (i % 3) * 0.18}s`,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {/* Gráfica del reservorio con lluvia cayendo directamente sobre la superficie del agua */}
+      <div className="relative h-64 w-full">
+        {/* Capa de lluvia dinámica: solo si hay lluvia activa */}
+        {isRaining && (
+          <div
+            className="absolute top-0 left-10 right-4 overflow-hidden pointer-events-none z-10 transition-all duration-500 ease-out"
+            style={{ height: `${airHeightPct}%` }}
+          >
+            {/* Gotas de lluvia cayendo desde el cielo hasta la superficie del agua */}
+            <div className="relative w-full h-full">
+              {[
+                { left: '6%', delay: '0.05s', dur: '0.75s', width: '2px', height: '14px' },
+                { left: '14%', delay: '0.35s', dur: '0.85s', width: '2px', height: '18px' },
+                { left: '22%', delay: '0.15s', dur: '0.70s', width: '2.5px', height: '16px' },
+                { left: '31%', delay: '0.55s', dur: '0.90s', width: '2px', height: '14px' },
+                { left: '39%', delay: '0.22s', dur: '0.78s', width: '2px', height: '16px' },
+                { left: '48%', delay: '0.45s', dur: '0.82s', width: '2.5px', height: '20px' },
+                { left: '56%', delay: '0.10s', dur: '0.72s', width: '2px', height: '15px' },
+                { left: '65%', delay: '0.62s', dur: '0.88s', width: '2px', height: '17px' },
+                { left: '74%', delay: '0.28s', dur: '0.76s', width: '2.5px', height: '18px' },
+                { left: '83%', delay: '0.48s', dur: '0.84s', width: '2px', height: '14px' },
+                { left: '92%', delay: '0.18s', dur: '0.74s', width: '2px', height: '16px' },
+              ].map((drop, i) => (
+                <div
+                  key={i}
+                  className="absolute animate-raindrop-to-water rounded-full bg-gradient-to-b from-[#38bdf8]/40 to-[#00A8E8]"
+                  style={{
+                    left: drop.left,
+                    width: drop.width,
+                    height: drop.height,
+                    animationDelay: drop.delay,
+                    animationDuration: drop.dur,
+                  }}
+                />
+              ))}
 
-      {/* Gráfica con acabado de agua líquida */}
-      <div className="h-64 w-full">
+              {/* Ondas de choque en la línea exacta donde las gotas tocan el agua */}
+              <div className="absolute bottom-0 left-0 right-0 h-2 flex justify-around items-center">
+                {[8, 22, 38, 52, 68, 82, 94].map((pos, idx) => (
+                  <span
+                    key={idx}
+                    className="w-3 h-1 rounded-full border border-[#38bdf8]/70 animate-surface-ripple"
+                    style={{
+                      animationDelay: `${(idx * 0.17) % 0.8}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Indicador superior de clima en vivo */}
+        <div className="absolute top-2 right-4 z-10 pointer-events-none">
+          {isRaining ? (
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#00A8E8]/20 border border-[#00A8E8]/40 text-[#00A8E8] backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
+              <Droplets className="w-3 h-3 animate-bounce" />
+              <span>
+                {currentScenario === 'CRECIDA_SUBITA' ? 'Lluvia Fuerte en Microcuenca' : 'Lluvia Moderada Activa'}
+              </span>
+            </span>
+          ) : (
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#70C167]/15 border border-[#70C167]/30 text-[#70C167] backdrop-blur-xs flex items-center gap-1.5">
+              <Sun className="w-3 h-3 text-[#70C167]" />
+              <span>Día Soleado y Despejado</span>
+            </span>
+          )}
+        </div>
+
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>

@@ -84,6 +84,49 @@
   animation: raindrop-fall 1.1s cubic-bezier(0.35, 0, 0.25, 1) infinite;
 }
 
+/* Animación de gotas dinámicas que recorren desde la parte superior hasta tocar la superficie del agua */
+@keyframes raindrop-to-water {
+  0% {
+    top: -5%;
+    opacity: 0;
+    transform: scaleY(0.6);
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+    transform: scaleY(1.3);
+  }
+}
+
+.animate-raindrop-to-water {
+  animation: raindrop-to-water 0.85s linear infinite;
+}
+
+/* Ondas concéntricas de impacto en la superficie del agua */
+@keyframes water-surface-ripple {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.animate-surface-ripple {
+  animation: water-surface-ripple 1.0s ease-out infinite;
+}
+
 @keyframes reservoir-wave {
   0%, 100% {
     transform: scaleY(1) translateY(0);

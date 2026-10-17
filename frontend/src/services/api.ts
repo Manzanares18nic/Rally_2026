@@ -140,23 +140,20 @@ function tickFallbackSimulation() {
   const now = new Date().toISOString();
 
   if (fallbackScenario === 'CRECIDA_SUBITA') {
-    if (fallbackLevelCm > 240) fallbackLevelCm = 90;
-    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.95, fallbackLevelCm + 15.0);
-    fallbackRainMm = Math.min(50, fallbackRainMm + 2.5);
+    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.96, fallbackLevelCm + 18.0);
+    fallbackRainMm = 45.0;
     fallbackRiseRate = 60.3;
     fallbackSensorStatus = 'ONLINE';
-    fallbackStatus = 'ROJO';
+    fallbackStatus = fallbackLevelCm > 240 ? 'ROJO' : fallbackLevelCm > 150 ? 'AMARILLO' : 'VERDE';
   } else if (fallbackScenario === 'LLUVIA_MODERADA') {
-    if (fallbackLevelCm > 210) fallbackLevelCm = 120;
-    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.72, Math.max(120, fallbackLevelCm + 6.0));
-    fallbackRainMm = Math.min(25, fallbackRainMm + 1.0);
+    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.70, fallbackLevelCm + 8.5);
+    fallbackRainMm = 16.0;
     fallbackRiseRate = 18.5;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = 'AMARILLO';
   } else if (fallbackScenario === 'VACIADO') {
-    if (fallbackLevelCm < 160) fallbackLevelCm = 265;
-    fallbackLevelCm = Math.max(45, fallbackLevelCm - 16.0);
-    fallbackRainMm = Math.max(0, fallbackRainMm - 1.5);
+    fallbackLevelCm = Math.max(55.0, fallbackLevelCm - 20.0);
+    fallbackRainMm = 0.0;
     fallbackRiseRate = -18.2;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = fallbackLevelCm > 180 ? 'AMARILLO' : 'VERDE';
@@ -164,9 +161,9 @@ function tickFallbackSimulation() {
     fallbackSensorStatus = 'SIN_SENAL';
     fallbackStatus = 'FALLO_SENSOR';
   } else if (fallbackScenario === 'NORMAL') {
-    fallbackLevelCm = Math.max(90, Math.min(125, fallbackLevelCm + (Math.random() - 0.5) * 1.5));
-    fallbackRainMm = 0.5;
-    fallbackRiseRate = 1.2;
+    fallbackLevelCm = Math.max(85, Math.min(105, fallbackLevelCm + (Math.random() - 0.5) * 1.2));
+    fallbackRainMm = 0.0;
+    fallbackRiseRate = 0.5;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = 'VERDE';
   }
@@ -277,26 +274,43 @@ export async function triggerSimulatorScenario(
 
   // Immediate local update for instantaneous UI feedback
   if (scenario === 'CRECIDA_SUBITA') {
-    fallbackLevelCm = 300.0;
+    fallbackLevelCm = 60.0; // Inicia bajo para que se vea subir
+    fallbackRainMm = 45.0;
     fallbackRiseRate = 60.3;
-    fallbackStatus = 'ROJO';
+    fallbackStatus = 'AMARILLO';
     fallbackSensorStatus = 'ONLINE';
+    // Reconstruir historial inmediato en curva de subida
+    fallbackTelemetryHistory = Array.from({ length: 15 }, (_, i) => ({
+      timestamp: new Date(Date.now() - (15 - i) * 2000).toISOString(),
+      water_level_pct: Math.round(((Math.max(45, 60 - (15 - i) * 1.0)) / MAX_CAPACITY) * 100),
+      water_level_cm: Math.max(45, 60 - (15 - i) * 1.0),
+      rain_mm: 45.0,
+    }));
   } else if (scenario === 'LLUVIA_MODERADA') {
-    fallbackLevelCm = 220.0;
+    fallbackLevelCm = 95.0;
+    fallbackRainMm = 16.0;
     fallbackRiseRate = 18.5;
     fallbackStatus = 'AMARILLO';
     fallbackSensorStatus = 'ONLINE';
   } else if (scenario === 'VACIADO') {
-    fallbackLevelCm = 95.0;
-    fallbackRiseRate = -14.2;
+    fallbackLevelCm = 275.0; // Inicia alto para que se vea bajar
+    fallbackRainMm = 0.0;
+    fallbackRiseRate = -18.2;
     fallbackStatus = 'VERDE';
     fallbackSensorStatus = 'ONLINE';
+    fallbackTelemetryHistory = Array.from({ length: 15 }, (_, i) => ({
+      timestamp: new Date(Date.now() - (15 - i) * 2000).toISOString(),
+      water_level_pct: Math.round(((Math.min(285, 275 + (15 - i) * 0.5)) / MAX_CAPACITY) * 100),
+      water_level_cm: Math.min(285, 275 + (15 - i) * 0.5),
+      rain_mm: 0.0,
+    }));
   } else if (scenario === 'NODO_DESCONECTADO') {
     fallbackSensorStatus = 'SIN_SENAL';
     fallbackStatus = 'FALLO_SENSOR';
   } else if (scenario === 'NORMAL') {
-    fallbackLevelCm = 135.0;
-    fallbackRiseRate = 1.2;
+    fallbackLevelCm = 95.0;
+    fallbackRainMm = 0.0;
+    fallbackRiseRate = 0.5;
     fallbackStatus = 'VERDE';
     fallbackSensorStatus = 'ONLINE';
   }
