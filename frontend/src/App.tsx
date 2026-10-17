@@ -19,6 +19,7 @@ import { SatelliteMapView } from './components/SatelliteMapView';
 import { WhatsAppModal } from './components/WhatsAppModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { IncidentReportModal } from './components/IncidentReportModal';
+import { ProjectPitchModal } from './components/ProjectPitchModal';
 import { type ScenarioType } from './components/JurorSimulator';
 
 export default function App() {
@@ -77,6 +78,7 @@ export default function App() {
   const [whatsAppData, setWhatsAppData] = useState<WhatsAppAlertResponse | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [isPitchModalOpen, setIsPitchModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const apiUrl =
@@ -212,6 +214,7 @@ export default function App() {
           onLogout={handleLogout}
           isDark={isDark}
           onToggleTheme={toggleTheme}
+          onOpenPitch={() => setIsPitchModalOpen(true)}
         />
 
         {/* Barra de navegación por módulos temáticos */}
@@ -355,6 +358,12 @@ export default function App() {
           showToast(msg);
           pollData();
         }}
+      />
+
+      <ProjectPitchModal
+        isOpen={isPitchModalOpen}
+        onClose={() => setIsPitchModalOpen(false)}
+        isDark={isDark}
       />
 
       {toastMessage && (

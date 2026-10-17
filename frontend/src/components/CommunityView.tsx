@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
 import { NewsCarousel } from './NewsCarousel';
+import { AnimatedWaterTank } from './AnimatedWaterTank';
 
 interface CommunityViewProps {
   dashboard: DashboardSummary;
@@ -143,6 +144,16 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           </div>
         </div>
       </section>
+
+      {/* 1.5. Visor Hidrométrico Animado con Olas y Regla Métrica */}
+      <AnimatedWaterTank
+        levelPct={levelPct}
+        levelCm={dashboard.current_level_cm}
+        maxCapacityCm={dashboard.max_capacity_cm}
+        riseRatePct30m={dashboard.rise_rate_pct_30m}
+        status={dashboard.status}
+        isDark={isDark}
+      />
 
       {/* 2. Acciones Rápidas del Vecino (Reportar con Foto, Foro Comunitario y Ver Mapa) */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">

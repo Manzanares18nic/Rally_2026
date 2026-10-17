@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Sun, Moon, LogIn, LogOut, RefreshCw } from 'lucide-react';
+import { MapPin, Sun, Moon, LogIn, LogOut, RefreshCw, Award } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
 import { NotificationBell } from './NotificationBell';
 
@@ -14,6 +14,7 @@ interface HeaderProps {
   onLogout: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
+  onOpenPitch?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   isDark,
   onToggleTheme,
+  onOpenPitch,
 }) => {
   return (
     <header
@@ -55,6 +57,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Controles en la barra superior: Refresco, Tema, Admin y Notificaciones a la extrema derecha */}
         <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
+          {/* Ficha Ejecutiva para Jurados */}
+          {onOpenPitch && (
+            <button
+              onClick={onOpenPitch}
+              title="Ver Ficha Técnica y Modelo de Viabilidad para Jurados"
+              className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+            >
+              <Award className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden sm:inline">Ficha Jurados</span>
+            </button>
+          )}
+
           {/* Actualizar datos */}
           <button
             onClick={onRefresh}
