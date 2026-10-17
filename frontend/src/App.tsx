@@ -132,7 +132,7 @@ export default function App() {
 
   useEffect(() => {
     pollData();
-    const interval = setInterval(pollData, 2500);
+    const interval = setInterval(pollData, 1000);
     return () => clearInterval(interval);
   }, [pollData]);
 
@@ -148,6 +148,7 @@ export default function App() {
     try {
       const res = await triggerSimulatorScenario(scenario, apiUrl);
       setDashboard(res.dashboard);
+      await pollData();
       showToast(`Escenario aplicado: ${scenario}`);
     } catch {
       showToast('Error al aplicar escenario');
@@ -264,18 +265,19 @@ export default function App() {
               Mapa Satelital
             </button>
 
-            {isAdminLoggedIn && (
-              <button
-                onClick={() => setCurrentTab('admin')}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                  currentTab === 'admin'
-                    ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                Panel de Monitoreo Técnico
-              </button>
-            )}
+            <button
+              onClick={() => setCurrentTab('admin')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
+                currentTab === 'admin'
+                  ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              <span>Monitoreo Técnico</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#00A8E8]/15 text-[#00A8E8] font-bold border border-[#00A8E8]/30">
+                IoT
+              </span>
+            </button>
           </div>
 
           <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">

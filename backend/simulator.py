@@ -14,12 +14,12 @@ import uuid
 class SensorSimulator:
     def __init__(self):
         self.is_running: bool = False
-        self.scenario: str = "NORMAL"  # NORMAL, LLUVIA_LIGERA, CRECIDA_SUBITA, NODO_DESCONECTADO
-        self.interval_seconds: float = 3.0
+        self.scenario: str = "NORMAL"  # NORMAL, LLUVIA_MODERADA, CRECIDA_SUBITA, NODO_DESCONECTADO, VACIADO
+        self.interval_seconds: float = 1.0
         self.worker_thread: threading.Thread = None
         
         # Estado interno de la simulación
-        self.current_water_level_cm: float = 120.0  # 40% capacidad
+        self.current_water_level_cm: float = 110.0  # ~37% capacidad
         self.rain_intensity_mm: float = 0.0
 
     def start(self):
@@ -28,7 +28,7 @@ class SensorSimulator:
         self.is_running = True
         self.worker_thread = threading.Thread(target=self._run_loop, daemon=True)
         self.worker_thread.start()
-        print("✅ [Simulador] Hilo de simulación iniciado en segundo plano.")
+        print("✅ [Simulador] Hilo de simulación rápida iniciado en segundo plano (1.0s).")
 
     def stop(self):
         self.is_running = False
@@ -37,20 +37,26 @@ class SensorSimulator:
         self.scenario = scenario_name.upper()
         
         if self.scenario == "NORMAL":
-            self.current_water_level_cm = 110.0
+            self.current_water_level_cm = 105.0
             self.rain_intensity_mm = 0.0
             db.sensor_status = "ONLINE"
         elif self.scenario == "LLUVIA_MODERADA":
-            self.rain_intensity_mm = 5.0
+            self.rain_intensity_mm = 6.5
+            if self.current_water_level_cm > 200.0:
+                self.current_water_level_cm = 120.0
             db.sensor_status = "ONLINE"
         elif self.scenario == "CRECIDA_SUBITA":
-            # Tormenta violenta que provoca crecida rápida
-            self.rain_intensity_mm = 28.0
+            # Tormenta violenta que provoca crecida rápida y visible en pocos segundos
+            self.rain_intensity_mm = 32.0
+            if self.current_water_level_cm > 230.0:
+                self.current_water_level_cm = 85.0
             db.sensor_status = "ONLINE"
         elif self.scenario == "NODO_DESCONECTADO":
             db.sensor_status = "SIN_SENAL"
         elif self.scenario == "VACIADO":
             self.rain_intensity_mm = 0.0
+            if self.current_water_level_cm < 170.0:
+                self.current_water_level_cm = 265.0
             db.sensor_status = "ONLINE"
 
     def _run_loop(self):
@@ -60,23 +66,23 @@ class SensorSimulator:
                 time.sleep(self.interval_seconds)
                 continue
 
-            # Lógica física según escenario
+            # Lógica física acelerada para demostración en vivo (Pitch de jurados)
             if self.scenario == "CRECIDA_SUBITA":
-                # Sube drásticamente entre 6 y 12 cm por ciclo (subida rápida evidente en demo)
-                increment = random.uniform(7.0, 12.0)
-                self.current_water_level_cm = min(MAX_CAPACITY_CM, self.current_water_level_cm + increment)
+                # Sube drásticamente (~5% por ciclo) para verse subir en vivo
+                increment = random.uniform(13.0, 20.0)
+                self.current_water_level_cm = min(MAX_CAPACITY_CM * 0.96, self.current_water_level_cm + increment)
             elif self.scenario == "LLUVIA_MODERADA":
-                # Sube moderadamente entre 1.5 y 3.5 cm
-                increment = random.uniform(1.5, 3.5)
-                self.current_water_level_cm = min(MAX_CAPACITY_CM, self.current_water_level_cm + increment)
+                # Sube moderadamente (~2% por ciclo)
+                increment = random.uniform(5.0, 8.5)
+                self.current_water_level_cm = min(MAX_CAPACITY_CM * 0.72, self.current_water_level_cm + increment)
             elif self.scenario == "VACIADO":
-                # Drenaje o infiltración verde: baja el nivel
-                decrement = random.uniform(3.0, 6.0)
-                self.current_water_level_cm = max(20.0, self.current_water_level_cm - decrement)
+                # Drenaje e infiltración verde rápida: desciende en vivo
+                decrement = random.uniform(14.0, 21.0)
+                self.current_water_level_cm = max(35.0, self.current_water_level_cm - decrement)
             else:
-                # Normal: oscilación mínima natural (+/- 0.5 cm)
-                self.current_water_level_cm += random.uniform(-0.5, 0.5)
-                self.current_water_level_cm = max(30.0, min(150.0, self.current_water_level_cm))
+                # Normal: oscilación mínima natural (+/- 0.8 cm)
+                self.current_water_level_cm += random.uniform(-0.8, 0.8)
+                self.current_water_level_cm = max(60.0, min(120.0, self.current_water_level_cm))
 
             # Registrar lectura en la base de datos
             point = db.add_reading(

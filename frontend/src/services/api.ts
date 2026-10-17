@@ -140,28 +140,31 @@ function tickFallbackSimulation() {
   const now = new Date().toISOString();
 
   if (fallbackScenario === 'CRECIDA_SUBITA') {
-    fallbackLevelCm = Math.min(MAX_CAPACITY, fallbackLevelCm + 1.5);
-    fallbackRainMm = Math.min(50, fallbackRainMm + 0.4);
+    if (fallbackLevelCm > 240) fallbackLevelCm = 90;
+    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.95, fallbackLevelCm + 15.0);
+    fallbackRainMm = Math.min(50, fallbackRainMm + 2.5);
     fallbackRiseRate = 60.3;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = 'ROJO';
   } else if (fallbackScenario === 'LLUVIA_MODERADA') {
-    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.8, Math.max(180, fallbackLevelCm + 0.8));
-    fallbackRainMm = Math.min(25, fallbackRainMm + 0.15);
+    if (fallbackLevelCm > 210) fallbackLevelCm = 120;
+    fallbackLevelCm = Math.min(MAX_CAPACITY * 0.72, Math.max(120, fallbackLevelCm + 6.0));
+    fallbackRainMm = Math.min(25, fallbackRainMm + 1.0);
     fallbackRiseRate = 18.5;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = 'AMARILLO';
   } else if (fallbackScenario === 'VACIADO') {
-    fallbackLevelCm = Math.max(50, fallbackLevelCm - 2.5);
-    fallbackRainMm = Math.max(0, fallbackRainMm - 0.2);
-    fallbackRiseRate = -14.2;
+    if (fallbackLevelCm < 160) fallbackLevelCm = 265;
+    fallbackLevelCm = Math.max(45, fallbackLevelCm - 16.0);
+    fallbackRainMm = Math.max(0, fallbackRainMm - 1.5);
+    fallbackRiseRate = -18.2;
     fallbackSensorStatus = 'ONLINE';
     fallbackStatus = fallbackLevelCm > 180 ? 'AMARILLO' : 'VERDE';
   } else if (fallbackScenario === 'NODO_DESCONECTADO') {
     fallbackSensorStatus = 'SIN_SENAL';
     fallbackStatus = 'FALLO_SENSOR';
   } else if (fallbackScenario === 'NORMAL') {
-    fallbackLevelCm = Math.max(130, Math.min(140, fallbackLevelCm + (Math.random() - 0.5)));
+    fallbackLevelCm = Math.max(90, Math.min(125, fallbackLevelCm + (Math.random() - 0.5) * 1.5));
     fallbackRainMm = 0.5;
     fallbackRiseRate = 1.2;
     fallbackSensorStatus = 'ONLINE';
