@@ -19,7 +19,6 @@ import {
   Maximize2,
 } from 'lucide-react';
 import { fetchWeatherData, type WeatherData } from '../services/api';
-import { ReservoirCrossSection } from './ReservoirCrossSection';
 
 interface GreenInfrastructureProps {
   isDark: boolean;
@@ -235,9 +234,6 @@ export const GreenInfrastructureView: React.FC<GreenInfrastructureProps> = ({ is
           </div>
         </div>
       </section>
-
-      {/* 2.5. Corte Transversal Arquitectónico-Hidráulico Interactivo */}
-      <ReservoirCrossSection season={activeSeason} isDark={isDark} />
 
       {/* 3. Detalle de la Fase Seleccionada (Época Seca vs Temporada Lluviosa) */}
       <section className="space-y-4">
