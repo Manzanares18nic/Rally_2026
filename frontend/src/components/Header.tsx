@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Sun, Moon, LogIn, LogOut, RefreshCw, Award } from 'lucide-react';
+import { MapPin, Sun, Moon, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
 import { NotificationBell } from './NotificationBell';
 
@@ -28,7 +28,6 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   isDark,
   onToggleTheme,
-  onOpenPitch,
 }) => {
   return (
     <header
@@ -38,20 +37,17 @@ export const Header: React.FC<HeaderProps> = ({
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Identidad del Sistema, Logo y Localidad */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3.5">
           <img
             src="/images/logo.jpeg"
             alt="Logo PluviTec"
-            className="w-11 h-11 rounded-xl object-cover border border-[#00A8E8]/40 shadow-xs shrink-0"
+            className="w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover border-2 border-[#00A8E8]/40 shadow-md shrink-0"
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#00A8E8]">
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#00A8E8]">
                 PluviTec
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#70C167]/15 text-[#70C167] border border-[#70C167]/30">
-                Eco-IoT
-              </span>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               <MapPin className="w-3.5 h-3.5 shrink-0 text-[#00A8E8]" />
@@ -62,18 +58,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Controles en la barra superior: Refresco, Tema, Admin y Notificaciones a la extrema derecha */}
         <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
-          {/* Ficha Ejecutiva para Jurados con acento Rosa Fucsia */}
-          {onOpenPitch && (
-            <button
-              onClick={onOpenPitch}
-              title="Ver Ficha Técnica y Modelo de Viabilidad para Jurados"
-              className="px-3 py-2 rounded-xl bg-[#D81B60]/10 hover:bg-[#D81B60]/20 text-[#D81B60] border border-[#D81B60]/30 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
-            >
-              <Award className="w-3.5 h-3.5 text-[#D81B60]" />
-              <span className="hidden sm:inline">Ficha Jurados</span>
-            </button>
-          )}
-
           {/* Actualizar datos */}
           <button
             onClick={onRefresh}
