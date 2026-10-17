@@ -33,15 +33,15 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose, d
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#1E2D4A]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 rounded-xl bg-[#70C167]/20 border border-[#70C167]/40 flex items-center justify-center text-[#70C167]">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-wide">
-                Alerta Comunitaria Despachada
+                Aviso Comunitario Listo para Compartir
               </h3>
-              <p className="text-xs text-emerald-400 font-medium">
-                POST /api/v1/alerts/alt-01/send-whatsapp
+              <p className="text-xs text-[#70C167] font-medium">
+                Mensaje directo para familias y grupos vecinales de WhatsApp
               </p>
             </div>
           </div>
@@ -55,15 +55,15 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose, d
 
         {/* Content body */}
         <div className="my-5 space-y-4">
-          <div className="p-3.5 bg-[#09101F] border border-[#1A263D] rounded-xl font-mono text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+          <div className="p-4 bg-[#09101F] border border-[#1A263D] rounded-xl text-xs text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
             {data.content_dispatched}
           </div>
 
           <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-            <span>Red comunitaria: <strong className="text-slate-200 font-mono">12 vigías barriales</strong></span>
-            <span className="text-emerald-400 flex items-center gap-1 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              {data.status}
+            <span>Difusión barrial: <strong className="text-slate-200">Familias y coordinadores de Sabana Grande</strong></span>
+            <span className="text-[#70C167] flex items-center gap-1.5 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-[#70C167] animate-pulse"></span>
+              Listo para enviar
             </span>
           </div>
         </div>
@@ -76,7 +76,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose, d
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className="w-4 h-4 text-[#70C167]" />
                 <span>Copiado al portapapeles</span>
               </>
             ) : (
@@ -89,10 +89,10 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose, d
 
           <button
             onClick={handleOpenDirect}
-            className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
+            className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#70C167] hover:bg-[#5fa856] text-slate-900 text-xs font-bold transition-all shadow-lg shadow-[#70C167]/20 active:scale-[0.98]"
           >
             <ExternalLink className="w-4 h-4" />
-            <span>Abrir WhatsApp Web</span>
+            <span>Compartir en WhatsApp</span>
           </button>
         </div>
       </div>

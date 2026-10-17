@@ -343,13 +343,21 @@ export async function sendWhatsAppAlert(
   const baseUrl = customBaseUrl || API_BASE_URL;
 
   // Prepare standard message in case fallback is triggered
-  const currentPct = ((fallbackLevelCm / MAX_CAPACITY) * 100).toFixed(1);
+  const currentPct = ((fallbackLevelCm / MAX_CAPACITY) * 100).toFixed(0);
+  const statusLabel =
+    fallbackStatus === 'CRITICO'
+      ? '🚨 Crecida rápida de agua en el cauce'
+      : fallbackStatus === 'ALERTA'
+      ? '⚠️ Precaución por lluvia constante'
+      : '✅ Todo en calma y seguro';
+
   const fallbackMsg =
-    `🚨 *ALERTA PLUVITEC* 🚨\n` +
-    `Estado: ${fallbackStatus}\n` +
-    `Nivel: ${currentPct}% (${fallbackLevelCm.toFixed(1)} cm)\n` +
-    `Tasa de subida: +${fallbackRiseRate}% en 30 min.\n` +
-    `Instrucción: Despejar bocas de tormenta y activar plan barrial.`;
+    `📢 *AVISO DE PREVENCIÓN - PLUVITEC* 📢\n\n` +
+    `Estimados vecinos de Sabana Grande:\n` +
+    `• Situación actual: ${statusLabel}\n` +
+    `• Nivel de agua: ${currentPct}% en el reservorio\n` +
+    `• Estado: Las áreas verdes y el reservorio están amortiguando la lluvia con normalidad.\n\n` +
+    `💡 Recomendación: Mantener despejadas las rejillas de sus aceras y acompañar a niños y adultos mayores.`;
 
   const fallbackLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(fallbackMsg)}`;
 
@@ -376,8 +384,8 @@ export async function sendWhatsAppAlert(
   } catch (error) {
     isBackendReachable = false;
     return {
-      status: 'WHATSAPP_SENT',
-      message: 'Alerta despachada exitosamente a los vigías (Modo Fallback).',
+      status: 'ENVIADO',
+      message: 'Aviso preparado para compartir con los vecinos y vigías.',
       whatsapp_direct_link: fallbackLink,
       content_dispatched: fallbackMsg,
     };

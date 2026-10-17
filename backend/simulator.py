@@ -100,18 +100,17 @@ class SensorSimulator:
                     db.alerts.insert(0, Alert(
                         id=f"alt-{uuid.uuid4().hex[:6]}",
                         level="ROJO",
-                        title=f"🚨 ALERTA ROJA: Nivel crítico ({point.water_level_pct}%)",
-                        instruction="Evacuar viviendas inmediatas al reservorio y activar altavoz.",
+                        title=f"🚨 Alerta de Crecida: Cuidar a las familias",
+                        instruction="El agua sube rápido. Por favor alejarse de las orillas del cauce y resguardar a niños y adultos mayores.",
                         created_at=datetime.now()
                     ))
             elif current_status == "AMARILLO":
                 if not db.alerts or db.alerts[0].level not in ["AMARILLO", "ROJO"]:
-                    reason = f"Tasa de subida acelerada (+{rate}% en 30m)" if rate >= 10.0 else f"Nivel elevado ({point.water_level_pct}%)"
                     db.alerts.insert(0, Alert(
                         id=f"alt-{uuid.uuid4().hex[:6]}",
                         level="AMARILLO",
-                        title=f"⚠️ ALERTA AMARILLA: {reason}",
-                        instruction="Vigías: monitorear drenajes y canaletas preventivas.",
+                        title="⚠️ Aviso Preventivo: Lluvia en el sector",
+                        instruction="Está lloviendo en la parte alta. Mantener limpias las rejillas y evitar botar basura.",
                         created_at=datetime.now()
                     ))
 

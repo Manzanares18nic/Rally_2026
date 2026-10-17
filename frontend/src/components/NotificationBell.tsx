@@ -15,68 +15,68 @@ import {
 
 export interface SystemNotification {
   id: string;
-  category: 'TERMICAS' | 'HIDRAULICA' | 'IOT_ESP32' | 'SENSORES' | 'CIUDADANIA';
+  category: 'CLIMA' | 'AGUA' | 'ENERGIA' | 'TRANQUILIDAD' | 'COMUNIDAD';
   title: string;
   description: string;
   time: string;
   badge: string;
-  badgeColor: 'emerald' | 'amber' | 'blue' | 'red' | 'purple';
+  badgeColor: 'emerald' | 'amber' | 'blue' | 'purple';
   isRead: boolean;
 }
 
 const INITIAL_NOTIFICATIONS: SystemNotification[] = [
   {
     id: 'notif-1',
-    category: 'TERMICAS',
-    title: 'Frescura en el Barrio por el Reservorio',
+    category: 'CLIMA',
+    title: 'Calles más frescas por las áreas verdes',
     description:
-      'El agua acumulada refresca el entorno vecinal: 24.2 °C en el agua vs. 32.8 °C en el aire (-8.6 °C más fresco en las calles cercanas).',
+      'El agua acumulada y las plantas del reservorio refrescan el ambiente del barrio, reduciendo el calor en las calles cercanas.',
     time: 'Hace 3 min',
-    badge: '8.6 °C más fresco',
+    badge: 'Ambiente Fresco',
     badgeColor: 'emerald',
     isRead: false,
   },
   {
     id: 'notif-2',
-    category: 'HIDRAULICA',
-    title: 'Desagüe y Drenaje Limpio',
+    category: 'AGUA',
+    title: 'Drenajes limpios y despejados',
     description:
-      'La compuerta del cauce está drenando de forma constante y segura (1.2 m³/s). No hay basura ni ramas atascadas en la rejilla.',
+      'El agua está corriendo con fluidez hacia el cauce. Las rejillas se encuentran libres de basura y sedimentos.',
     time: 'Hace 12 min',
-    badge: 'Flujo despejado',
+    badge: 'Paso Libre',
     badgeColor: 'blue',
     isRead: false,
   },
   {
     id: 'notif-3',
-    category: 'IOT_ESP32',
-    title: 'Revisión Preventiva de Batería Solar',
+    category: 'ENERGIA',
+    title: 'Sistema con energía solar activa',
     description:
-      'El panel solar de Tiscapa bajó a 18% de carga por el cielo nublado. El equipo pasó a modo de ahorro para continuar transmitiendo toda la noche.',
+      'El panel solar mantuvo cargado el equipo durante el día, garantizando que los avisos sigan funcionando toda la noche.',
     time: 'Hace 26 min',
-    badge: 'Ahorro activado',
-    badgeColor: 'amber',
+    badge: '100% Operativo',
+    badgeColor: 'emerald',
     isRead: false,
   },
   {
     id: 'notif-4',
-    category: 'SENSORES',
-    title: 'Medición de Agua Estable y Segura',
+    category: 'TRANQUILIDAD',
+    title: 'Nivel seguro en el cauce',
     description:
-      'El sensor ultrasónico en el Cauce La Maravilla reporta lecturas exactas y sin interferencias. Monitoreo continuo 100% activo.',
+      'Monitoreo constante en Sabana Grande: el nivel de agua es bajo y seguro. No hay riesgo para las familias ni viviendas.',
     time: 'Hace 38 min',
-    badge: 'Lectura activa',
+    badge: 'Todo Tranquilo',
     badgeColor: 'emerald',
     isRead: true,
   },
   {
     id: 'notif-5',
-    category: 'CIUDADANIA',
-    title: 'Limpieza Vecinal Programada',
+    category: 'COMUNIDAD',
+    title: 'Jornada vecinal de limpieza confirmada',
     description:
-      'Vecinos reportaron ramas y botellas cerca del paso peatonal de Sabana Grande. La cuadrilla municipal y jóvenes voluntarios ya van en camino.',
+      'Los vecinos se organizaron para limpiar hojas en el paso peatonal. La cuadrilla municipal acompaña la actividad.',
     time: 'Hace 1 hora',
-    badge: 'Cuadrilla en camino',
+    badge: 'Apoyo Comunitario',
     badgeColor: 'purple',
     isRead: true,
   },
@@ -121,16 +121,16 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
 
   const getCategoryIcon = (category: SystemNotification['category']) => {
     switch (category) {
-      case 'TERMICAS':
-        return <Thermometer className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />;
-      case 'HIDRAULICA':
-        return <Waves className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />;
-      case 'IOT_ESP32':
-        return <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />;
-      case 'SENSORES':
-        return <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />;
-      case 'CIUDADANIA':
-        return <Camera className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />;
+      case 'CLIMA':
+        return <Thermometer className="w-3.5 h-3.5 text-[#70C167]" />;
+      case 'AGUA':
+        return <Waves className="w-3.5 h-3.5 text-[#00A8E8]" />;
+      case 'ENERGIA':
+        return <Check className="w-3.5 h-3.5 text-[#70C167]" />;
+      case 'TRANQUILIDAD':
+        return <CheckCheck className="w-3.5 h-3.5 text-[#00A8E8]" />;
+      case 'COMUNIDAD':
+        return <Camera className="w-3.5 h-3.5 text-[#D81B60]" />;
     }
   };
 

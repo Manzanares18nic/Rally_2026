@@ -134,18 +134,24 @@ def get_alerts():
 def send_whatsapp_alert(alert_id: str):
     """Dispara o reenvía el aviso por WhatsApp al grupo de vigías comunitarios."""
     summary = db.get_dashboard_summary()
+    status_label = (
+        "🚨 Crecida rápida de agua en el cauce"
+        if summary.status == "ROJO"
+        else ("⚠️ Precaución por lluvia constante" if summary.status == "AMARILLO" else "✅ Todo en calma y seguro")
+    )
     msg = (
-        f"🚨 *ALERTA PLUVITEC* 🚨\n"
-        f"Estado: {summary.status}\n"
-        f"Nivel: {summary.current_level_pct}% ({summary.current_level_cm} cm)\n"
-        f"Tasa de subida: +{summary.rise_rate_pct_30m}% en 30 min.\n"
-        f"Instrucción: Despejar bocas de tormenta y activar plan barrial."
+        f"📢 *AVISO DE PREVENCIÓN - PLUVITEC* 📢\n\n"
+        f"Estimados vecinos de Sabana Grande:\n"
+        f"• Situación actual: {status_label}\n"
+        f"• Nivel de agua: {summary.current_level_pct:.0f}% en el reservorio\n"
+        f"• Estado: Las áreas verdes y el reservorio están amortiguando la lluvia con normalidad.\n\n"
+        f"💡 Recomendación: Mantener despejadas las rejillas de sus aceras y acompañar a niños y adultos mayores."
     )
     # Para el demo, generamos el enlace universal de WhatsApp y confirmación
     whatsapp_url = f"https://api.whatsapp.com/send?text={msg.replace(' ', '%20').replace('\n', '%0A')}"
     return {
-        "status": "WHATSAPP_SENT",
-        "message": "Alerta despachada exitosamente a los vigías.",
+        "status": "ENVIADO",
+        "message": "Aviso compartido exitosamente con los vecinos y coordinadores.",
         "whatsapp_direct_link": whatsapp_url,
         "content_dispatched": msg
     }
