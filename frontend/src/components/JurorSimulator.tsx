@@ -47,28 +47,28 @@ export const JurorSimulator: React.FC<JurorSimulatorProps> = ({
   const scenarios: { id: ScenarioType; title: string; desc: string }[] = [
     {
       id: 'CRECIDA_SUBITA',
-      title: 'Crecida súbita por tormenta',
-      desc: 'Simula incremento rápido de agua activando alerta roja.',
+      title: 'Lluvia fuerte y crecida rápida',
+      desc: 'El agua sube con rapidez para ver la alerta roja de precaución comunitaria.',
     },
     {
       id: 'VACIADO',
-      title: 'Vaciado y retención verde',
-      desc: 'Descenso del nivel tras absorción de infraestructura verde.',
+      title: 'El agua baja y se absorbe',
+      desc: 'El reservorio drena ordenadamente y las áreas verdes filtran el agua.',
     },
     {
       id: 'LLUVIA_MODERADA',
-      title: 'Lluvia constante',
-      desc: 'Subida gradual con activación de nivel preventivo amarillo.',
+      title: 'Lluvia suave a moderada',
+      desc: 'El nivel sube poco a poco avisando con precaución amarilla preventiva.',
     },
     {
       id: 'NORMAL',
-      title: 'Condición normal',
-      desc: 'Restablece el flujo regular del cauce.',
+      title: 'Día soleado y despejado (Normal)',
+      desc: 'Nivel seguro y tranquilo en el cauce sin riesgo alguno para las familias.',
     },
     {
       id: 'NODO_DESCONECTADO',
-      title: 'Fallo de nodo de sensado',
-      desc: 'Simula pérdida de señal o batería baja en el equipo.',
+      title: 'Aviso de batería o mantenimiento',
+      desc: 'Muestra cómo el sistema avisa si un sensor necesita revisión o recarga solar.',
     },
   ];
 
@@ -81,10 +81,10 @@ export const JurorSimulator: React.FC<JurorSimulatorProps> = ({
       <div className="pb-3 mb-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center flex-wrap gap-2">
         <div>
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-            Simulador de escenarios
+            Probar situaciones del agua
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Permite evaluar la respuesta hidrométrica ante diferentes condiciones.
+            Observa cómo responde el sistema y los avisos cuando llueve o baja el agua.
           </p>
         </div>
 

@@ -12,6 +12,8 @@ import {
   Layers,
   MapPin,
   ExternalLink,
+  CloudRain,
+  Users,
 } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
 import { TelemetryChart } from './TelemetryChart';
@@ -44,7 +46,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [activeAdminSubTab, setActiveAdminSubTab] = useState<'overview' | 'hardware' | 'network' | 'broadcast'>('overview');
   const [broadcastText, setBroadcastText] = useState(
-    'Alerta Preventiva SINAPRED: Monitoreo activo en cuenca Sabana Grande ante núcleo de tormenta.'
+    'Aviso Comunitario: El sistema de monitoreo de Sabana Grande informa que los niveles de agua se mantienen estables. Por favor mantener limpias las cunetas y rejillas frente a sus hogares.'
   );
 
   // Red de Nodos de Managua con coordenadas reales
@@ -362,7 +364,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div
               key={n.id}
               className={`rounded-2xl border overflow-hidden shadow-xs transition-all ${
-                n.id === selectedNodeId ? 'ring-2 ring-emerald-600' : ''
+                n.id === selectedNodeId ? 'ring-2 ring-[#00A8E8]' : ''
               } ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}
             >
               <div className="relative h-40 w-full overflow-hidden bg-slate-800">
@@ -370,7 +372,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <span
                   className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                     n.status === 'Activo'
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-[#70C167] text-white'
                       : 'bg-amber-600 text-white'
                   }`}
                 >
@@ -383,7 +385,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] space-y-1">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Nivel de llenado:</span>
-                    <strong className="text-emerald-700 dark:text-emerald-400">{n.waterLevel}</strong>
+                    <strong className="text-[#00A8E8]">{n.waterLevel}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Batería solar:</span>
@@ -395,7 +397,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     handleNodeChange(n.id);
                     if (onViewOnMap) onViewOnMap();
                   }}
-                  className="w-full mt-2 py-1.5 text-xs font-medium rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full mt-2 py-1.5 text-xs font-medium rounded-xl border border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <MapPin className="w-3.5 h-3.5" />
                   {n.id === selectedNodeId ? 'Ver en Mapa Satelital →' : 'Seleccionar y Ver en Mapa →'}
@@ -409,33 +411,136 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* 4. VISTA DE DIFUSIÓN DE ALERTAS MASIVAS */}
       {activeAdminSubTab === 'broadcast' && (
         <div
-          className={`rounded-2xl border p-6 transition-all shadow-xs max-w-2xl mx-auto ${
+          className={`rounded-2xl border p-6 transition-all shadow-xs max-w-2xl mx-auto space-y-4 ${
             isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
           }`}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <Bell className="w-4 h-4 text-emerald-600" />
-            <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-              Despacho de Alertas Comunitarias
-            </h3>
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Bell className="w-4 h-4 text-[#D81B60]" />
+              <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                Avisos y Alertas Comunitarias
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Comunica avisos claros a los comités y familias del barrio. Puedes presionar una plantilla rápida o redactar un mensaje personalizado:
+            </p>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-            Emite una instrucción inmediata a los comités vecinales y vigías de Sabana Grande mediante los canales de WhatsApp y altavoz comunitario.
-          </p>
 
-          <textarea
-            rows={3}
-            value={broadcastText}
-            onChange={(e) => setBroadcastText(e.target.value)}
-            className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
-          />
+          {/* Plantillas rápidas para coordinadores */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+              Plantillas rápidas de 1 clic:
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setBroadcastText(
+                    'Aviso Barrial: Todo se encuentra en calma. Los cauces y reservorios operan con normalidad y los drenajes están fluyendo sin obstáculos.'
+                  )
+                }
+                className={`p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 hover:border-[#70C167] ${
+                  isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4 text-[#70C167] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Todo en Calma (Normal)
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    Cauce fluyendo con normalidad y tranquilidad.
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setBroadcastText(
+                    'Aviso Preventivo: Se observan lluvias en la cuenca alta. Recomendamos mantener despejados los drenajes y evitar botar basura a las cunetas.'
+                  )
+                }
+                className={`p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 hover:border-[#00A8E8] ${
+                  isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <CloudRain className="w-4 h-4 text-[#00A8E8] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Lluvia Iniciando (Precaución)
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    Recordatorio vecinal para cuidar rejillas.
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setBroadcastText(
+                    'Alerta Vecinal: El agua en el cauce ha subido al 80%. Por seguridad comunitaria, resguardar a niños y adultos mayores lejos de la orilla.'
+                  )
+                }
+                className={`p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 hover:border-[#D81B60] ${
+                  isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <AlertTriangle className="w-4 h-4 text-[#D81B60] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Crecida de Agua (Alerta)
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    Alerta preventiva ante aumento rápido del nivel.
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setBroadcastText(
+                    'Convocatoria Barrial: Invitamos a los vecinos este sábado a una jornada comunitaria para limpiar hojas y sedimentos del reservorio.'
+                  )
+                }
+                className={`p-2.5 rounded-xl border text-left transition-all flex items-start gap-2.5 hover:border-[#70C167] ${
+                  isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <Users className="w-4 h-4 text-[#70C167] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                    Jornada de Limpieza Barrial
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    Organización comunitaria y voluntariado.
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 block mb-1">
+              Mensaje a difundir:
+            </label>
+            <textarea
+              rows={3}
+              value={broadcastText}
+              onChange={(e) => setBroadcastText(e.target.value)}
+              className="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00A8E8]"
+            />
+          </div>
 
           <button
             onClick={() => onSendCustomNotification(broadcastText)}
-            className="mt-3 w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs"
+            className="w-full py-2.5 rounded-xl bg-[#D81B60] hover:bg-[#b0144d] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs"
           >
             <Send className="w-3.5 h-3.5" />
-            <span>Emitir Alerta a la Red de Vigías</span>
+            <span>Enviar Aviso a la Comunidad</span>
           </button>
         </div>
       )}

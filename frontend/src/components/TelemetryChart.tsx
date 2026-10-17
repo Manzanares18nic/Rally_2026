@@ -70,28 +70,34 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
     strokeBack: '#7dd3fc',  // Onda secundaria traslúcida
   };
 
+  const isRaining =
+    dashboard.status === 'AMARILLO' ||
+    dashboard.status === 'ROJO' ||
+    dashboard.current_level_pct > 35 ||
+    dashboard.rise_rate_pct_30m > 2;
+
   return (
     <div
       className={`rounded-2xl border p-5 transition-all shadow-xs ${
         isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
       }`}
     >
-      {/* Encabezado con estética de fluido */}
-      <div className="flex justify-between items-center pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
+      {/* Encabezado comprensible y humano */}
+      <div className="flex justify-between items-center pb-4 mb-3 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500 dark:text-sky-400">
+          <div className="p-2 rounded-xl bg-[#00A8E8]/10 text-[#00A8E8]">
             <Waves className="w-4 h-4 animate-pulse" />
           </div>
           <div>
             <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <span>Fluctuación Hidrométrica en Vivo</span>
-              <span className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800 flex items-center gap-1">
+              <span>Nivel de Agua en Vivo</span>
+              <span className="text-[10px] font-semibold text-[#00A8E8] bg-[#00A8E8]/15 px-2 py-0.5 rounded-full border border-[#00A8E8]/30 flex items-center gap-1">
                 <Droplets className="w-2.5 h-2.5" />
-                <span>Superficie Activa</span>
+                <span>Medición en Tiempo Real</span>
               </span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Oleaje y tirante hidrodinámico en el Cauce La Maravilla
+              Altura y movimiento del agua en el Cauce La Maravilla
             </p>
           </div>
         </div>
@@ -110,6 +116,22 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
           </span>
         </div>
       </div>
+
+      {/* Gotas de lluvia animadas sobre el gráfico al haber precipitación o crecida */}
+      {isRaining && (
+        <div className="relative h-6 w-full overflow-hidden flex justify-around items-start pointer-events-none mb-1 px-8">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+            <div
+              key={i}
+              className="w-1.5 h-3 rounded-full bg-[#00A8E8] animate-raindrop opacity-80"
+              style={{
+                animationDelay: `${(i * 0.12) % 1.1}s`,
+                animationDuration: `${0.85 + (i % 3) * 0.18}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Gráfica con acabado de agua líquida */}
       <div className="h-64 w-full">
@@ -155,14 +177,14 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
               unit="%"
             />
 
-            {/* Líneas de cota hidrométrica */}
+            {/* Líneas de cota con lenguaje claro */}
             <ReferenceLine
               y={80}
               stroke="#D81B60"
               strokeDasharray="4 4"
               strokeOpacity={0.75}
               label={{
-                value: 'Cota Crítica (80%)',
+                value: 'Alerta de Desborde (80%)',
                 position: 'insideTopRight',
                 fill: '#D81B60',
                 fontSize: 10,
@@ -175,7 +197,7 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
               strokeDasharray="4 4"
               strokeOpacity={0.5}
               label={{
-                value: 'Alerta Preventiva (50%)',
+                value: 'Precaución por Lluvia (50%)',
                 position: 'insideTopRight',
                 fill: '#00A8E8',
                 fontSize: 10,
@@ -198,11 +220,11 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
                         <span>Hora: {data.timeLabel}</span>
                       </div>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Nivel medido: <strong>{data.originalPct}%</strong> ({data.water_level_cm} cm)
+                        Nivel de agua: <strong>{data.originalPct}%</strong> ({data.water_level_cm} cm)
                       </p>
                       {data.rain_mm !== undefined && (
                         <p className="text-slate-500 dark:text-slate-400 text-[11px]">
-                          Precipitación: {data.rain_mm} mm
+                          Lluvia registrada: {data.rain_mm} mm
                         </p>
                       )}
                     </div>
@@ -212,7 +234,7 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
               }}
             />
 
-            {/* Capa de onda trasera (sensación de profundidad de agua) con animación rápida y fluida */}
+            {/* Capa de onda trasera (sensación de profundidad de agua) */}
             <Area
               type="natural"
               dataKey="waterBack"
@@ -225,7 +247,7 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
               animationDuration={280}
             />
 
-            {/* Capa de agua principal (fluido con cresta brillante) con animación rápida y fluida */}
+            {/* Capa de agua principal (fluido con cresta brillante) */}
             <Area
               type="natural"
               dataKey="waterFront"
@@ -240,13 +262,13 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
         </ResponsiveContainer>
       </div>
 
-      {/* Pie de gráfica con leyenda de fluido */}
+      {/* Pie de gráfica comprensible para cualquier persona */}
       <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block" />
-          <span>Volumen dinámico en el reservorio</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00A8E8] inline-block" />
+          <span>Agua acumulada en el reservorio</span>
         </span>
-        <span className="text-slate-500">Muestreo ultrasónico: 2 Hz</span>
+        <span className="text-slate-500">Medición continua sin tocar el agua</span>
       </div>
     </div>
   );

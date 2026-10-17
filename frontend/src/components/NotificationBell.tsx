@@ -28,55 +28,55 @@ const INITIAL_NOTIFICATIONS: SystemNotification[] = [
   {
     id: 'notif-1',
     category: 'TERMICAS',
-    title: 'Gradiente Térmico: Reservorio vs. Ambiente',
+    title: 'Frescura en el Barrio por el Reservorio',
     description:
-      'Agua del reservorio a 24.2 °C | Temp. Ambiente: 32.8 °C (ΔT = -8.6 °C). La inercia térmica disipa calor y previene desoxigenación en la microcuenca.',
+      'El agua acumulada refresca el entorno vecinal: 24.2 °C en el agua vs. 32.8 °C en el aire (-8.6 °C más fresco en las calles cercanas).',
     time: 'Hace 3 min',
-    badge: 'ΔT = -8.6 °C',
+    badge: '8.6 °C más fresco',
     badgeColor: 'emerald',
     isRead: false,
   },
   {
     id: 'notif-2',
     category: 'HIDRAULICA',
-    title: 'Aliviadero de Fondo y Desagüe Operativo',
+    title: 'Desagüe y Drenaje Limpio',
     description:
-      'Compuerta de purga al 20% de apertura nominal. Caudal de desagüe continuo a 1.2 m³/s hacia el vertedor inferior sin sedimentación en la rejilla.',
+      'La compuerta del cauce está drenando de forma constante y segura (1.2 m³/s). No hay basura ni ramas atascadas en la rejilla.',
     time: 'Hace 12 min',
-    badge: 'Desagüe 1.2 m³/s',
+    badge: 'Flujo despejado',
     badgeColor: 'blue',
     isRead: false,
   },
   {
     id: 'notif-3',
     category: 'IOT_ESP32',
-    title: 'Anomalía de Batería: Nodo 03 (Tiscapa)',
+    title: 'Revisión Preventiva de Batería Solar',
     description:
-      'Tensión en celda LiFePO4 cayó a 3.42V (18% batería solar). Se activó protocolo de ahorro de energía y transmisión LoRa extendida (60s).',
+      'El panel solar de Tiscapa bajó a 18% de carga por el cielo nublado. El equipo pasó a modo de ahorro para continuar transmitiendo toda la noche.',
     time: 'Hace 26 min',
-    badge: 'Alerta Batería 18%',
+    badge: 'Ahorro activado',
     badgeColor: 'amber',
     isRead: false,
   },
   {
     id: 'notif-4',
     category: 'SENSORES',
-    title: 'Calibración Acústica: Sensor JSN-SR04T (Nodo 01)',
+    title: 'Medición de Agua Estable y Segura',
     description:
-      'Compensación ultrasónica por temperatura del aire aplicada (+0.18 m/s). 100% paquetes recibidos sin falso eco en el cauce.',
+      'El sensor ultrasónico en el Cauce La Maravilla reporta lecturas exactas y sin interferencias. Monitoreo continuo 100% activo.',
     time: 'Hace 38 min',
-    badge: 'Telemetría OK',
+    badge: 'Lectura activa',
     badgeColor: 'emerald',
     isRead: true,
   },
   {
     id: 'notif-5',
     category: 'CIUDADANIA',
-    title: 'Reporte Vecinal de Obstrucción en Drenaje',
+    title: 'Limpieza Vecinal Programada',
     description:
-      'Reporte ciudadano con fotografía de sedimentos en paso peatonal Sabana Grande recibido. Cuadrilla municipal programada para desarenado.',
+      'Vecinos reportaron ramas y botellas cerca del paso peatonal de Sabana Grande. La cuadrilla municipal y jóvenes voluntarios ya van en camino.',
     time: 'Hace 1 hora',
-    badge: 'Cuadrilla Activa',
+    badge: 'Cuadrilla en camino',
     badgeColor: 'purple',
     isRead: true,
   },
@@ -142,8 +142,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
       {/* Botón de la campana en la barra superior */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        title="Notificaciones del sistema hidrométrico"
-        aria-label="Abrir notificaciones"
+        title="Avisos del barrio y estado del agua"
+        aria-label="Abrir avisos del barrio"
         className={`relative p-2 rounded-xl border transition-all ${
           isOpen
             ? 'border-[#00A8E8] bg-[#00A8E8]/10 text-[#00A8E8]'
@@ -173,11 +173,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
           <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                Notificaciones y Telemetría
+                Avisos y Novedades del Barrio
               </span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
-                  {unreadCount} nuevas
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#70C167]/20 text-[#70C167]">
+                  {unreadCount} nuevos
                 </span>
               )}
             </div>
@@ -186,7 +186,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-medium"
+                  className="text-[11px] text-[#00A8E8] hover:underline font-medium"
                 >
                   Marcar leídas
                 </button>
@@ -206,7 +206,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
               onClick={() => setFilter('ALL')}
               className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
                 filter === 'ALL'
-                  ? 'bg-emerald-700 text-white'
+                  ? 'bg-[#00A8E8] text-white'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800'
               }`}
             >
@@ -216,7 +216,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
               onClick={() => setFilter('UNREAD')}
               className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
                 filter === 'UNREAD'
-                  ? 'bg-emerald-700 text-white'
+                  ? 'bg-[#00A8E8] text-white'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800'
               }`}
             >
@@ -239,7 +239,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
                     !notif.isRead
                       ? isDark
                         ? 'bg-slate-850/30'
-                        : 'bg-emerald-50/30'
+                        : 'bg-[#00A8E8]/5'
                       : 'opacity-80'
                   }`}
                 >
@@ -272,7 +272,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
                         {notif.badge}
                       </span>
 
-                      <span className="text-[10px] text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium">
+                      <span className="text-[10px] text-slate-400 hover:text-[#00A8E8] dark:hover:text-[#00A8E8] font-medium">
                         {!notif.isRead ? '● Marcar leída' : 'Leída'}
                       </span>
                     </div>
@@ -285,7 +285,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
           {/* Pie de Telemetría */}
           <div className="p-2.5 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 text-center">
             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-              Telemetría integrada en tiempo real • Microcuenca Sabana Grande
+              Monitoreo Comunitario en Vivo • Barrio Sabana Grande, Managua
             </span>
           </div>
         </div>
