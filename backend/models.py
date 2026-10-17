@@ -72,11 +72,11 @@ class DashboardSummary(BaseModel):
 
 
 
-# --- REPORTES CIUDADANOS & VISIÓN ARTIFICIAL (IDEA E) ---
+# --- REPORTES CIUDADANOS DE DRENAJE ---
 class VisionAIAnalysis(BaseModel):
     obstruction_detected: bool = True
-    obstruction_type: str = "SEDIMENTOS_Y_RESIDUOS_PLASTICOS"
-    confidence_pct: float = 94.2
+    obstruction_type: str = "SEDIMENTOS_Y_RESIDUOS"
+    confidence_pct: float = 95.0
     urgency_level: str = "ALTA"  # MEDIA, ALTA, CRITICA
     suggested_action: str = "Despachar cuadrilla de desarenado antes del pico de tormenta"
 
@@ -85,7 +85,7 @@ class CreateIncidentInput(BaseModel):
     description: str
     latitude: float
     longitude: float
-    photo_url: Optional[str] = "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80"
+    photo_url: Optional[str] = "/images/reservorio1.jpeg"
 
 class Incident(BaseModel):
     id: str
@@ -94,8 +94,8 @@ class Incident(BaseModel):
     latitude: float
     longitude: float
     photo_url: str
-    status: str = "VERIFICADO_POR_IA"  # PENDIENTE, VERIFICADO_POR_IA, ATENDIDO
-    ai_analysis: VisionAIAnalysis
+    status: str = "REGISTRADO"  # PENDIENTE, REGISTRADO, ATENDIDO
+    ai_analysis: VisionAIAnalysis = VisionAIAnalysis()
     created_at: datetime
 
 # --- DIAGNÓSTICO DE HARDWARE ESP32 (VISTA ADMIN) ---

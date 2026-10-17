@@ -160,7 +160,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             </div>
             <h3 className="font-bold text-sm">Reportar con Fotografía</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              Toma una foto de sedimentos o basura bloqueando el cauce para validación con IA.
+              Toma una foto de sedimentos o basura bloqueando el cauce para notificar a la cuadrilla de limpieza.
             </p>
           </div>
           <button

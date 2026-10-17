@@ -274,10 +274,10 @@ export const SatelliteMapView: React.FC<SatelliteMapProps> = ({
         <div style="color: #0f172a; font-family: sans-serif; font-size: 12px; max-width: 250px; line-height: 1.4;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
             <span style="padding: 2px 6px; background: #ea580c; color: white; border-radius: 4px; font-size: 9px; font-weight: 700;">
-              REPORTE CIUDADANO (IA)
+              REPORTE CIUDADANO
             </span>
-            <span style="font-size:10px; color:#64748b; font-weight:600;">
-              ${inc.ai_analysis?.confidence_pct || 94}% certeza
+            <span style="font-size:10px; color:#ea580c; font-weight:700;">
+              Prioridad Alta
             </span>
           </div>
 
@@ -351,7 +351,7 @@ export const SatelliteMapView: React.FC<SatelliteMapProps> = ({
 
           <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400">
             <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-            Reportes con Foto (IA)
+            Reportes Ciudadanos
           </span>
         </div>
       </div>

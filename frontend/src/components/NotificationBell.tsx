@@ -72,9 +72,9 @@ const INITIAL_NOTIFICATIONS: SystemNotification[] = [
   {
     id: 'notif-5',
     category: 'CIUDADANIA',
-    title: 'Reporte Vecinal Validado por Visión IA',
+    title: 'Reporte Vecinal de Obstrucción en Drenaje',
     description:
-      'Obstrucción parcial de sedimentos en paso peatonal Sabana Grande analizada con 94.5% de certeza. Se despachó cuadrilla barrial de desarenado.',
+      'Reporte ciudadano con fotografía de sedimentos en paso peatonal Sabana Grande recibido. Cuadrilla municipal programada para desarenado.',
     time: 'Hace 1 hora',
     badge: 'Cuadrilla Activa',
     badgeColor: 'purple',

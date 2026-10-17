@@ -49,10 +49,10 @@ export interface WhatsAppAlertResponse {
   content_dispatched: string;
 }
 
-export interface VisionAIAnalysis {
+export interface IncidentAnalysis {
   obstruction_detected: boolean;
   obstruction_type: string;
-  confidence_pct: number;
+  confidence_pct?: number;
   urgency_level: string;
   suggested_action: string;
 }
@@ -65,7 +65,7 @@ export interface Incident {
   longitude: number;
   photo_url: string;
   status: string;
-  ai_analysis: VisionAIAnalysis;
+  ai_analysis?: IncidentAnalysis;
   created_at: string;
 }
 
@@ -367,7 +367,7 @@ export async function sendWhatsAppAlert(
 }
 
 // ---------------------------------------------------------------------------
-// 5. GET /api/v1/incidents (Reportes Ciudadanos e IA de Visión)
+// 5. GET /api/v1/incidents (Reportes Ciudadanos de Drenaje)
 // ---------------------------------------------------------------------------
 export async function fetchIncidents(customBaseUrl?: string): Promise<Incident[]> {
   const baseUrl = customBaseUrl || API_BASE_URL;
@@ -383,12 +383,11 @@ export async function fetchIncidents(customBaseUrl?: string): Promise<Incident[]
         description: 'Boca de tormenta parcialmente bloqueada por botellas y ramas en el paso peatonal',
         latitude: 12.1242,
         longitude: -86.1755,
-        photo_url: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80',
-        status: 'VERIFICADO_POR_IA',
+        photo_url: '/images/reservorio1.jpeg',
+        status: 'REGISTRADO',
         ai_analysis: {
           obstruction_detected: true,
-          obstruction_type: 'SEDIMENTOS_Y_RESIDUOS_PLASTICOS',
-          confidence_pct: 94.5,
+          obstruction_type: 'SEDIMENTOS_Y_DESECHOS',
           urgency_level: 'ALTA',
           suggested_action: 'Limpieza preventiva de cuadrilla barrial antes del desborde',
         },

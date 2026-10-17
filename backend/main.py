@@ -151,11 +151,11 @@ def send_whatsapp_alert(alert_id: str):
     }
 
 # ---------------------------------------------------------------------------
-# 3. REPORTES CIUDADANOS & VISIÓN ARTIFICIAL (IDEA E)
+# 3. REPORTES CIUDADANOS DE DRENAJE Y SEDIMENTOS
 # ---------------------------------------------------------------------------
 @app.get("/api/v1/incidents", response_model=List[Incident], tags=["Reportes Ciudadanos"])
 def list_incidents():
-    """Listado de reportes ciudadanos de drenajes y sedimentación analizados por IA."""
+    """Listado de reportes ciudadanos de drenajes y sedimentación."""
     return db.incidents
 
 @app.post("/api/v1/incidents", response_model=Incident, status_code=201, tags=["Reportes Ciudadanos"])
@@ -178,7 +178,7 @@ async def upload_incident_photo(
     latitude: float = Form(12.1249),
     longitude: float = Form(-86.1761)
 ):
-    """Permite subir una foto real desde el celular/PC y procesarla con Visión Artificial."""
+    """Permite subir una foto real desde el celular/PC para atención de cuadrilla."""
     uploads_dir = os.path.join(os.path.dirname(__file__), "static", "uploads")
     os.makedirs(uploads_dir, exist_ok=True)
     

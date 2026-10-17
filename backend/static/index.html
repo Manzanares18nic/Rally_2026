@@ -301,7 +301,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODAL: SUBIR FOTO REAL PARA ANÁLISIS DE VISIÓN ARTIFICIAL (IA) -->
+  <!-- MODAL: SUBIR FOTO REAL DE REPORTE CIUDADANO                    -->
   <!-- ============================================================== -->
 
   <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -314,7 +314,7 @@
       </div>
 
       <p class="text-xs text-slate-300">
-        Sube una fotografía de cualquier drenaje o boca de tormenta. El modelo de **Visión Artificial** analizará el porcentaje de sedimentos y desechos.
+        Sube una fotografía de cualquier drenaje o boca de tormenta para notificar y coordinar a la cuadrilla municipal de limpieza.
       </p>
 
       <form id="form-upload-report" onsubmit="handlePhotoUpload(event)" class="space-y-3">
@@ -330,11 +330,11 @@
 
         <div>
           <label class="block text-xs text-slate-400 mb-1">Seleccionar Fotografía Real:</label>
-          <input type="file" id="report-file" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+          <input type="file" id="report-file" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
         </div>
 
-        <button type="submit" id="btn-submit-upload" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
-          <span>🤖</span> Analizar con Visión Artificial
+        <button type="submit" id="btn-submit-upload" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+          <span>📋</span> Enviar Reporte a Cuadrilla
         </button>
       </form>
     </div>
@@ -651,7 +651,7 @@
     async function handlePhotoUpload(event) {
       event.preventDefault();
       const btn = document.getElementById('btn-submit-upload');
-      btn.innerText = "⏳ Procesando con Visión Artificial...";
+      btn.innerText = "⏳ Enviando Reporte...";
       btn.disabled = true;
 
       try {
@@ -668,14 +668,14 @@
         });
         const data = await res.json();
 
-        alert(`✅ Fotografía analizada con éxito!\n🤖 Detección Visión AI: ${data.ai_analysis.obstruction_type}\n📊 Confianza: ${data.ai_analysis.confidence_pct}%\n📌 Acción recomendada: ${data.ai_analysis.suggested_action}`);
+        alert(`✅ Reporte enviado con éxito!\n📌 Punto registrado en el mapa.\n🛠️ Se notificó a la cuadrilla municipal.`);
         document.getElementById('modal-report').classList.add('hidden');
         document.getElementById('form-upload-report').reset();
         fetchIncidents();
       } catch (err) {
         alert("Error al subir foto: " + err);
       } finally {
-        btn.innerText = "🤖 Analizar con Visión Artificial";
+        btn.innerText = "📋 Enviar Reporte a Cuadrilla";
         btn.disabled = false;
       }
     }

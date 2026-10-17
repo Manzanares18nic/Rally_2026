@@ -121,12 +121,12 @@ class SimpleDB:
                 description="Boca de tormenta parcialmente bloqueada por botellas y ramas en el paso peatonal",
                 latitude=12.1242,
                 longitude=-86.1755,
-                photo_url="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80",
-                status="VERIFICADO_POR_IA",
+                photo_url="/images/reservorio1.jpeg",
+                status="REGISTRADO",
                 ai_analysis=VisionAIAnalysis(
                     obstruction_detected=True,
-                    obstruction_type="SEDIMENTOS_Y_RESIDUOS_PLASTICOS",
-                    confidence_pct=94.5,
+                    obstruction_type="SEDIMENTOS_Y_DESECHOS",
+                    confidence_pct=95.0,
                     urgency_level="ALTA",
                     suggested_action="Limpieza preventiva de cuadrilla barrial antes del desborde"
                 ),
@@ -141,12 +141,12 @@ class SimpleDB:
             description=description,
             latitude=lat,
             longitude=lng,
-            photo_url=photo_url or "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80",
-            status="VERIFICADO_POR_IA",
+            photo_url=photo_url or "/images/reservorio1.jpeg",
+            status="REGISTRADO",
             ai_analysis=VisionAIAnalysis(
                 obstruction_detected=True,
-                obstruction_type="SEDIMENTOS_Y_RESIDUOS_SOLIDOS",
-                confidence_pct=92.8,
+                obstruction_type="SEDIMENTOS_Y_DESECHOS",
+                confidence_pct=95.0,
                 urgency_level="ALTA",
                 suggested_action="Cuadrilla de desarenado y retiro de desechos requerida"
             ),

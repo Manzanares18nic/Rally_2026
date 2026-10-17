@@ -200,7 +200,7 @@ export const MetricCards: React.FC<MetricCardsProps> = ({
             <span className="font-medium">Anticipación Inteligente</span>
           </div>
           <span className="px-2 py-0.5 rounded bg-[#251F47] border border-[#483478] text-[#C084FC] text-[10px] font-bold font-mono tracking-wide">
-            Predicción IA
+            Proyección Hidráulica
           </span>
         </div>
       </div>
