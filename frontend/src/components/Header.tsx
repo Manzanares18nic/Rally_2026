@@ -77,11 +77,12 @@ export const Header: React.FC<HeaderProps> = ({
             {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-600" />}
           </button>
 
-          {/* Botón explícito: Iniciar sesión como administrador / Cerrar sesión */}
+          {/* Acceso para el equipo barrial / Cerrar sesión */}
           {isAdminLoggedIn ? (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-              <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                {adminName || 'Administrador'}
+              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#70C167] inline-block" />
+                <span>{adminName ? adminName.replace(/^Ing\.\s*/i, '') : 'Coordinador Barrial'}</span>
               </span>
               <button
                 onClick={onLogout}
@@ -97,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="px-3.5 py-2 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Iniciar sesión como administrador</span>
+              <span>Acceso de Coordinador</span>
             </button>
           )}
 

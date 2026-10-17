@@ -96,35 +96,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     },
   ];
 
-  // Componentes electrónicos reales del Kit de Monitoreo Abierto
+  // Componentes electrónicos del Kit de Monitoreo Comunitario explicados de forma clara y accesible
   const hardwareComponents = [
     {
-      name: 'Microcontrolador ESP32-WROOM-32D',
-      role: 'Procesamiento en borde y cálculo de tasa de subida',
-      specs: 'Dual Core 240 MHz, Wi-Fi, Bluetooth BLE, ultra bajo consumo en Deep Sleep.',
+      name: 'Cerebro Electrónico de Bajo Consumo (ESP32)',
+      role: '¿Qué hace?: Piensa, calcula qué tan rápido sube el agua y despacha los avisos día y noche sin fallar.',
+      benefit: 'Beneficio para el barrio: Consume poquísima energía y sigue funcionando aunque se corte la luz en la comunidad.',
       image: '/images/esp32.jpg',
-      badge: 'Cerebro IoT',
+      badge: 'Cerebro Autónomo',
     },
     {
-      name: 'Sensor Ultrasónico Impermeable JSN-SR04T',
-      role: 'Medición acústica de distancia a la lámina de agua',
-      specs: 'Sonda estanca IP67, alcance de 20 a 600 cm, resistente a humedad, lodo y vapores corrosivos.',
+      name: 'Ojo Acústico Resistente al Agua (Sensor Ultrasónico)',
+      role: '¿Qué hace?: Mide la altura del agua mediante ondas de sonido (como los murciélagos), sin tocar el agua sucia.',
+      benefit: 'Beneficio para el barrio: Es completamente sellado e impermeable; no se oxida con el lodo ni se atasca con basura.',
       image: '/images/sensor_jsn.jpeg',
-      badge: 'Sensado Estanco IP67',
+      badge: 'Totalmente Impermeable',
     },
     {
-      name: 'Pluviómetro de Balancín Calibrado',
-      role: 'Registro de precipitación acumulada en milímetros',
-      specs: 'Resolución de 0.2 mm por balanceo, colector cónico con filtro contra insectos y hojas.',
+      name: 'Recolector de Lluvia (Pluviómetro Comunitario)',
+      role: '¿Qué hace?: Cuenta cada gota que cae en el sector para anticipar crecidas antes de que el agua llegue al cauce.',
+      benefit: 'Beneficio para el barrio: Nos da hasta 45 minutos de ventaja para actuar antes de que el nivel sea peligroso.',
       image: '/images/pluviometro.jpeg',
-      badge: 'Pluviometría',
+      badge: 'Anticipación de Lluvia',
     },
     {
-      name: 'Módulo de Alimentación Solar + Batería Li-ion 18650',
-      role: 'Autonomía energética continua sin red eléctrica',
-      specs: 'Panel monocristalino 6V 3W, circuito de carga TP4056 con protección contra sobretensión.',
+      name: 'Panel Solar con Batería Recargable de Respaldo',
+      role: '¿Qué hace?: Se alimenta con la luz solar durante el día y almacena energía para trabajar toda la noche.',
+      benefit: 'Beneficio para el barrio: 100% autosuficiente; no requiere cables externos ni genera costos de electricidad a los vecinos.',
       image: '/images/solar_battery.jpeg',
-      badge: 'Energía Solar',
+      badge: 'Energía Solar Limpia',
     },
   ];
 
@@ -146,21 +146,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         }`}
       >
         <div className="flex items-center gap-2.5">
-          <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <Building2 className="w-4 h-4 text-[#00A8E8]" />
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Puesto de Mando y Telemetría Multicuenca (Alcaldía / SINAPRED)
+            Punto de Monitoreo Comunitario e Institucional
           </span>
         </div>
 
         {/* Selector de reservorios de Managua */}
         <div className="flex items-center gap-2 w-full md:w-auto">
           <label className="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">
-            Nodo en análisis:
+            Ubicación del equipo:
           </label>
           <select
             value={selectedNodeId}
             onChange={(e) => handleNodeChange(e.target.value)}
-            className="w-full md:w-auto px-3 py-1.5 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+            className="w-full md:w-auto px-3 py-1.5 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00A8E8]"
           >
             {networkNodes.map((node) => (
               <option key={node.id} value={node.id} className="dark:bg-slate-900 text-slate-900 dark:text-slate-100">
@@ -171,50 +171,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
-      {/* Sub-navegación administrativa */}
+      {/* Sub-navegación administrativa clara y entendible */}
       <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 flex-wrap">
         <button
           onClick={() => setActiveAdminSubTab('overview')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
             activeAdminSubTab === 'overview'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-600'
-              : 'text-slate-600 dark:text-slate-400 border border-transparent'
+              ? 'bg-[#00A8E8]/15 text-[#00A8E8] border border-[#00A8E8]/40 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'
           }`}
         >
-          Diagnóstico y Gráfica
+          Gráfica y Simulación
         </button>
 
         <button
           onClick={() => setActiveAdminSubTab('hardware')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
             activeAdminSubTab === 'hardware'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-600'
-              : 'text-slate-600 dark:text-slate-400 border border-transparent'
+              ? 'bg-[#70C167]/15 text-[#70C167] border border-[#70C167]/40 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'
           }`}
         >
-          Hardware y Sensores ESP32
+          Componentes del Equipo
         </button>
 
         <button
           onClick={() => setActiveAdminSubTab('network')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
             activeAdminSubTab === 'network'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-600'
-              : 'text-slate-600 dark:text-slate-400 border border-transparent'
+              ? 'bg-[#00A8E8]/15 text-[#00A8E8] border border-[#00A8E8]/40 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'
           }`}
         >
-          Red de Nodos y Fotos de Sitio
+          Fotos del Terreno
         </button>
 
         <button
           onClick={() => setActiveAdminSubTab('broadcast')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
             activeAdminSubTab === 'broadcast'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-600'
-              : 'text-slate-600 dark:text-slate-400 border border-transparent'
+              ? 'bg-[#D81B60]/15 text-[#D81B60] border border-[#D81B60]/40 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'
           }`}
         >
-          Difusión de Notificaciones Masivas
+          Avisar a la Comunidad
         </button>
       </div>
 
@@ -228,15 +228,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
               }`}
             >
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                <BatteryCharging className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="flex items-center gap-1.5 text-[11px] text-[#70C167] font-semibold">
+                <BatteryCharging className="w-3.5 h-3.5 text-[#70C167]" />
                 <span>Energía y Batería</span>
               </div>
-              <p className="text-lg font-bold mt-1 text-slate-900 dark:text-slate-100">
+              <p className="text-lg font-extrabold mt-1 text-slate-900 dark:text-slate-100">
                 {activeNode.battery}
               </p>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">
-                {activeNode.voltage} • Panel solar activo
+              <span className="text-[10px] text-[#70C167] font-medium block mt-0.5">
+                {activeNode.voltage} • Panel solar cargando
               </span>
             </div>
 
@@ -245,15 +245,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
               }`}
             >
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Enlace LoRa / GSM</span>
+              <div className="flex items-center gap-1.5 text-[11px] text-[#00A8E8] font-semibold">
+                <Wifi className="w-3.5 h-3.5 text-[#00A8E8]" />
+                <span>Señal del Equipo</span>
               </div>
-              <p className="text-lg font-bold mt-1 text-slate-900 dark:text-slate-100">
-                {activeNode.signal.split(' ')[0]}
+              <p className="text-lg font-extrabold mt-1 text-slate-900 dark:text-slate-100">
+                Buena ({activeNode.signal.split(' ')[0]})
               </p>
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                Radio de largo alcance resiliente
+                Transmisión activa sin cortes
               </span>
             </div>
 
@@ -262,15 +262,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
               }`}
             >
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                <Cpu className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Sensor Estanco</span>
+              <div className="flex items-center gap-1.5 text-[11px] text-[#00A8E8] font-semibold">
+                <Cpu className="w-3.5 h-3.5 text-[#00A8E8]" />
+                <span>Sensor de Agua</span>
               </div>
               <p className="text-xs font-bold mt-1 text-slate-900 dark:text-slate-100 truncate">
-                {activeNode.sensor}
+                Ojo Sonoro Sellado
               </p>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">
-                Compensado por temperatura
+              <span className="text-[10px] text-[#70C167] font-medium block mt-0.5">
+                Resistente a lodo y lluvia
               </span>
             </div>
 
@@ -279,15 +279,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
               }`}
             >
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                <Radio className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Salud Acústica</span>
+              <div className="flex items-center gap-1.5 text-[11px] text-[#70C167] font-semibold">
+                <Radio className="w-3.5 h-3.5 text-[#70C167]" />
+                <span>Estado de Mediciones</span>
               </div>
               <p className="text-xs font-bold mt-1 text-slate-900 dark:text-slate-100 truncate">
-                {activeNode.anomalies}
+                Lecturas Confiables
               </p>
               <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                Muestreo cada 3 segundos
+                Muestreo continuo cada segundo
               </span>
             </div>
           </div>
@@ -317,11 +317,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
             }`}
           >
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Arquitectura de Hardware Abierto del Nodo de Telemetría
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#70C167] inline-block" />
+              <span>Cómo Funciona el Equipo de Medición en el Barrio</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              Diseño de bajo costo y alta durabilidad para resistir ambientes tropicales húmedos e inundaciones. Costo aproximado por nodo: &lt; $45 USD con repuestos comerciales en ferreterías y tiendas locales de Managua.
+              Diseñado con piezas accesibles y duraderas para soportar sol fuerte, lodo y aguaceros tropicales sin fallar. Cada nodo cuesta menos de $45 USD y sus repuestos se consiguen en ferreterías locales de Managua.
             </p>
           </div>
 
@@ -335,18 +336,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               >
                 <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
                   <img src={hw.image} alt={hw.name} className="w-full h-full object-cover" />
-                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-700 text-white shadow-sm">
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#00A8E8] text-white shadow-sm">
                     {hw.badge}
                   </span>
                 </div>
-                <div className="p-4 space-y-2">
-                  <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100">{hw.name}</h4>
-                  <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
+                <div className="p-4 space-y-2.5">
+                  <h4 className="font-bold text-xs text-[#00A8E8]">{hw.name}</h4>
+                  <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                     {hw.role}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    {hw.specs}
-                  </p>
+                  <div className="p-2.5 rounded-xl bg-[#70C167]/10 border border-[#70C167]/30 text-[11px] text-[#70C167] font-semibold">
+                    {hw.benefit}
+                  </div>
                 </div>
               </div>
             ))}

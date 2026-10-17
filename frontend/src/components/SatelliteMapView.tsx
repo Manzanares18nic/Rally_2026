@@ -324,10 +324,10 @@ export const SatelliteMapView: React.FC<SatelliteMapProps> = ({
           />
           <div>
             <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <span>Red Multicuenca: {targetName}</span>
+              <span>{targetName}</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Coordenadas: {targetLat.toFixed(4)}° N, {targetLng.toFixed(4)}° O (WGS84 • ESRI Satélite HD)
+              Distrito VI, Managua • Vista Satelital de Cobertura y Puntos Seguros
             </p>
           </div>
         </div>

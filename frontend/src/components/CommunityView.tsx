@@ -54,92 +54,132 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   const completedSteps = Object.values(checklist).filter(Boolean).length;
   const progressPct = Math.round((completedSteps / 4) * 100);
 
-  // Configuración del semáforo ciudadano con la colorimetría PluviTec
+  // Configuración amigable y clara del estado para cualquier vecino (cero tecnicismos)
+  const isRaining = isYellow || isRed || dashboard.rise_rate_pct_30m > 3 || levelPct > 45;
+
   const statusConfig = isRed
     ? {
-        label: 'Alerta Roja: Desborde Inminente',
-        desc: 'El cauce La Maravilla superó el umbral crítico. Familias en márgenes y zonas bajas deben evacuar inmediatamente a los puntos altos seguros de Sabana Grande.',
-        bg: isDark ? 'bg-[#D81B60]/20 border-[#D81B60]/50 text-pink-100' : 'bg-pink-50 border-[#D81B60]/30 text-[#D81B60]',
-        badge: 'bg-[#D81B60] text-white',
+        label: 'Alerta de Crecida: Proteger a la Familia',
+        desc: 'El agua del cauce ha subido rápidamente por la tormenta. Por favor mantente a salvo, acompaña a niños y adultos mayores hacia zonas altas y comparte este aviso con tus vecinos.',
+        bg: isDark ? 'bg-gradient-to-br from-[#D81B60]/25 via-pink-950/20 to-slate-900 border-[#D81B60]/60 text-pink-100' : 'bg-gradient-to-br from-pink-50 via-rose-50 to-white border-[#D81B60]/40 text-pink-950',
+        badge: 'bg-[#D81B60] text-white font-bold',
         barColor: 'bg-[#D81B60]',
-        icon: <XCircle className="w-8 h-8 text-[#D81B60]" />,
+        icon: <AlertTriangle className="w-8 h-8 text-[#D81B60]" />,
+        peaceOfMindTip: '🚨 Qué hacer ahora: Salir de orillas bajas, resguardar documentos y acudir al punto seguro.',
       }
     : isYellow
     ? {
-        label: 'Alerta Amarilla: Precaución por Crecida Rápida',
-        desc: 'El caudal está aumentando velozmente por precipitaciones en la cuenca alta. Evite cruzar el puente peatonal y asegure accesos y bienes.',
-        bg: isDark ? 'bg-amber-950/40 border-amber-900/60 text-amber-100' : 'bg-amber-50 border-amber-200 text-amber-950',
-        badge: 'bg-amber-600 text-white',
+        label: 'Precaución: El agua está subiendo',
+        desc: 'Está lloviendo en la cuenca y el agua está llenando el cauce. El reservorio está captando el agua para amortiguarla. Mantente atento y despeja basura de tu acera.',
+        bg: isDark ? 'bg-gradient-to-br from-amber-950/40 via-yellow-950/20 to-slate-900 border-amber-600/50 text-amber-100' : 'bg-gradient-to-br from-amber-50 via-yellow-50 to-white border-amber-300 text-amber-950',
+        badge: 'bg-amber-600 text-white font-bold',
         barColor: 'bg-amber-500',
         icon: <AlertTriangle className="w-8 h-8 text-amber-500" />,
+        peaceOfMindTip: '⚠️ Recomendación: Evita cruzar puentes peatonales bajos mientras baje la corriente.',
       }
     : isFault
     ? {
-        label: 'Sensor en Mantenimiento',
-        desc: 'El nodo ultrasónico no transmite lecturas telemétricas. Vigías del comité barrial realizan inspección visual en sitio.',
+        label: 'Revisión Técnica del Sensor',
+        desc: 'Estamos ajustando la calibración del equipo de medición. Mientras tanto, los vigías barriales realizan recorridos físicos en el cauce.',
         bg: isDark ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-slate-100 border-slate-300 text-slate-800',
-        badge: 'bg-slate-700 text-slate-100',
+        badge: 'bg-slate-700 text-slate-100 font-bold',
         barColor: 'bg-slate-500',
-        icon: <AlertTriangle className="w-8 h-8 text-slate-400" />,
+        icon: <ShieldCheck className="w-8 h-8 text-slate-400" />,
+        peaceOfMindTip: 'ℹ️ Estado: Monitoreo presencial activo por el comité barrial.',
       }
     : {
-        label: 'Nivel Normal: Flujo Seguro',
-        desc: 'El tirante de agua se encuentra dentro del margen de seguridad en el Cauce La Maravilla y la Pista Sabana Grande.',
-        bg: isDark ? 'bg-[#70C167]/15 border-[#70C167]/30 text-emerald-100' : 'bg-emerald-50/70 border-[#70C167]/30 text-emerald-950',
-        badge: 'bg-[#70C167] text-white',
+        label: 'Flujo Normal y Seguro',
+        desc: 'El agua corre con tranquilidad y el reservorio tiene suficiente espacio de amortiguamiento. Tu calle y tu barrio se encuentran fuera de peligro.',
+        bg: isDark ? 'bg-gradient-to-br from-[#70C167]/20 via-emerald-950/20 to-slate-900 border-[#70C167]/40 text-emerald-100' : 'bg-gradient-to-br from-emerald-50 via-green-50 to-white border-[#70C167]/40 text-emerald-950',
+        badge: 'bg-[#70C167] text-white font-bold',
         barColor: 'bg-[#00A8E8]',
         icon: <ShieldCheck className="w-8 h-8 text-[#70C167]" />,
+        peaceOfMindTip: '✅ Tranquilidad garantizada: Capacidad de drenaje óptima en el sector.',
       };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto py-2">
-      {/* 1. Tarjeta principal de Estado Comunitario */}
+      {/* 1. Tarjeta principal de Estado Comunitario y Tranquilidad */}
       <section
-        className={`rounded-2xl border p-6 md:p-8 transition-all shadow-xs ${statusConfig.bg}`}
+        className={`rounded-3xl border p-6 md:p-8 transition-all shadow-md ${statusConfig.bg}`}
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-white/10 shrink-0">
+            <div className="p-3.5 rounded-2xl bg-white/40 dark:bg-black/20 shadow-xs shrink-0">
               {statusConfig.icon}
             </div>
             <div>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusConfig.badge}`}>
-                Semáforo Barrial
+              <span className={`px-3 py-1 rounded-full text-xs tracking-wide shadow-2xs ${statusConfig.badge}`}>
+                Estado Barrial
               </span>
-              <h2 className="text-xl md:text-2xl font-bold mt-1.5">{statusConfig.label}</h2>
+              <h2 className="text-xl md:text-2xl font-extrabold mt-1.5">{statusConfig.label}</h2>
             </div>
           </div>
 
           <button
             onClick={onSendWhatsApp}
             disabled={isSendingWhatsApp}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs shrink-0"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white font-bold text-xs flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-sm shrink-0"
           >
             <Bell className="w-4 h-4" />
             <span>{isSendingWhatsApp ? 'Enviando...' : 'Avisar a Vecinos por WhatsApp'}</span>
           </button>
         </div>
 
-        <p className="mt-4 text-sm leading-relaxed opacity-90 max-w-2xl">
+        <p className="mt-4 text-sm leading-relaxed opacity-95 max-w-2xl font-medium">
           {statusConfig.desc}
         </p>
 
-        {/* Indicador de Altura del Agua */}
-        <div className="mt-6 pt-6 border-t border-current/10">
+        {/* Consejo que brinda alivio y acción clara */}
+        <div className="mt-3 py-2 px-3.5 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10 text-xs font-medium inline-block">
+          {statusConfig.peaceOfMindTip}
+        </div>
+
+        {/* Indicador Visual del Reservorio con Gotas de Lluvia Animadas */}
+        <div className="mt-6 pt-5 border-t border-current/10">
           <div className="flex justify-between items-baseline text-xs mb-2 font-medium">
-            <span>Capacidad ocupada del cauce</span>
-            <span className="font-semibold text-sm">{levelPct.toFixed(0)}% de capacidad</span>
+            <span className="flex items-center gap-1.5">
+              <span>Nivel de Agua en el Reservorio</span>
+              {isRaining && (
+                <span className="text-[10px] font-bold text-[#00A8E8] bg-[#00A8E8]/15 px-2 py-0.5 rounded-full border border-[#00A8E8]/30 animate-pulse">
+                  🌧️ Lluvia activa entrando
+                </span>
+              )}
+            </span>
+            <span className="font-extrabold text-sm">{levelPct.toFixed(0)}% ocupado</span>
           </div>
-          <div className="w-full h-3 rounded-full bg-black/15 overflow-hidden">
+
+          {/* Visualizador de Gotas de Lluvia cayendo hacia el agua */}
+          {isRaining && (
+            <div className="relative h-7 w-full overflow-hidden flex justify-around items-start pointer-events-none mb-1 px-4">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+                <div
+                  key={i}
+                  className="w-1.5 h-3 rounded-full bg-[#00A8E8] animate-raindrop opacity-80"
+                  style={{
+                    animationDelay: `${(i * 0.15) % 1.1}s`,
+                    animationDuration: `${0.85 + (i % 3) * 0.18}s`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Barra del reservorio con olas de agua */}
+          <div className="w-full h-4 rounded-full bg-black/15 dark:bg-black/40 overflow-hidden p-0.5 relative">
             <div
-              className={`h-full transition-all duration-700 rounded-full ${statusConfig.barColor}`}
-              style={{ width: `${levelPct}%` }}
-            />
+              className={`h-full transition-all duration-700 rounded-full relative overflow-hidden ${statusConfig.barColor}`}
+              style={{ width: `${Math.max(5, levelPct)}%` }}
+            >
+              {/* Olas sutiles en la superficie del agua */}
+              <div className="absolute inset-0 bg-white/20 animate-reservoir-wave rounded-full" />
+            </div>
           </div>
-          <div className="flex justify-between text-[11px] opacity-75 mt-1.5 font-medium">
-            <span>0 cm (Cauce seco)</span>
-            <span>Altura medida: {dashboard.current_level_cm.toFixed(1)} cm</span>
-            <span>300 cm (Cota de desborde)</span>
+
+          <div className="flex justify-between text-[11px] opacity-75 mt-2 font-medium">
+            <span>Fondo Seco (0 cm)</span>
+            <span className="font-bold text-[#00A8E8]">Agua acumulada: {dashboard.current_level_cm.toFixed(1)} cm</span>
+            <span>Límite Seguro (300 cm)</span>
           </div>
         </div>
       </section>

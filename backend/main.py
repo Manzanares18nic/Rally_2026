@@ -62,10 +62,10 @@ def login(credentials: LoginInput):
     if credentials.email == "admin@reservoriovivo.ni" and credentials.password == "Rally2026*":
         user = AdminUser(
             id="usr-01",
-            name="Ing. Carlos Mendoza",
+            name="Carlos Mendoza",
             email="admin@reservoriovivo.ni",
-            role="ADMINISTRADOR_CUENCA",
-            institution="Alcaldía de Managua / Protección Civil"
+            role="COORDINADOR_BARRIAL",
+            institution="Comité de Agua y Drenaje Barrial"
         )
         return LoginResult(
             access_token="session-token-rally-2026-admin",
