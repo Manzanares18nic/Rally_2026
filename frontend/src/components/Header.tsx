@@ -39,12 +39,12 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           <img
             src="/images/logo.jpeg"
-            alt="Logo Reservorio Vivo"
+            alt="Logo AquaVerde"
             className="w-11 h-11 rounded-xl object-cover border border-emerald-600/30 shadow-xs shrink-0"
           />
           <div>
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
-              Reservorio Vivo
+              AquaVerde
             </h1>
             <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />

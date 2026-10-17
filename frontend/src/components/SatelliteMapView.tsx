@@ -319,7 +319,7 @@ export const SatelliteMapView: React.FC<SatelliteMapProps> = ({
         <div className="flex items-center gap-3">
           <img
             src="/images/logo.jpeg"
-            alt="Logo Reservorio Vivo"
+            alt="Logo AquaVerde"
             className="w-10 h-10 rounded-xl object-cover border border-emerald-600/30 shadow-xs shrink-0"
           />
           <div>

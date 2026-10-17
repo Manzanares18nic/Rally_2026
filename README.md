@@ -1,20 +1,19 @@
-# 🌊 Reservorio Vivo — Reto 05 (Rally Latinoamericano de Innovación 2026)
+# 🌿 AquaVerde — Reto 05 (Rally Latinoamericano de Innovación 2026)
 
-> **"Un reservorio que habla, un barrio que se anticipa."**  
-> Solución integral de ciclo cerrado que une telemetría IoT de bajo costo, infraestructura verde medida, pronóstico con IA, red comunitaria de vigías y reportes ciudadanos con visión artificial.
+> **"Monitoreo Inteligente e Infraestructura Verde en Reservorios Pluviales."**  
+> Solución integral que une telemetría IoT de bajo costo, reservorios multifuncionales adaptativos según el clima, red comunitaria de vigías y reportes ciudadanos de drenaje.
 
 ---
 
 ## 🎯 Reto y Propósito
 
-En comunidades vulnerables de Managua y Latinoamérica, los reservorios y cauces urbanos se desbordan intempestivamente provocando anegaciones graves. La mayoría de soluciones fallan porque solo alertan cuando el nivel ya es crítico o instalan jardines sin probar su impacto.
+En comunidades vulnerables de Managua y Latinoamérica, los reservorios y cauces urbanos se desbordan intempestivamente provocando anegaciones graves. La mayoría de soluciones fallan porque solo alertan cuando el nivel ya es crítico o no contemplan el uso multifuncional del suelo.
 
-**Reservorio Vivo** aborda este desafío integrando las 5 ideas estratégicas del reto:
-- 📡 **Idea A (Nodos IoT + Alertas)**: Nodos autónomos de sensado continuo con alertas por **tasa de subida de agua** (anticipa desbordes antes del tope) y protocolo de fallo visible (*nodo sin datos = alerta*).
-- 🌿 **Idea B (Infraestructura Verde Modular)**: Jardines de lluvia y franjas filtrantes medidas por sensores para demostrar su capacidad real de retención y amortiguamiento de escorrentía.
-- 🔮 **Idea C (Pronóstico con IA)**: Modelo hidrológico predictivo para anticipar el comportamiento del reservorio a 1-3 horas.
-- 📢 **Idea D (Red Comunitaria de Vigías)**: Alertas directas vía WhatsApp/SMS y activación de altavoz comunitario con aprobación humana para emergencias rojas.
-- 📸 **Idea E (Reporte Ciudadano con Visión Artificial)**: Detección y clasificación automática de sedimentos y basura en drenajes a partir de fotografías tomadas por los vecinos.
+**AquaVerde** aborda este desafío integrando:
+- 📡 **Nodos IoT ESP32 + Telemetría en Tiempo Real**: Nodos autónomos con sensor ultrasónico, pluviómetro, batería solar y alertas por tasa de subida.
+- 🌿 **Infraestructura Verde y Reservorios Multifuncionales**: Espacios adaptativos según las condiciones climáticas (parques y canchas deportivas en época seca; retención, amortiguamiento y aliviaderos de emergencia en temporada lluviosa).
+- 📢 **Red Comunitaria de Vigías Barriales**: Notificaciones tempranas y alertas por WhatsApp para evacuación preventiva.
+- 📸 **Participación Ciudadana y Foro Vecinal**: Reporte vecinal con fotografías y mapeo satelital de incidencias de drenaje.
 
 ---
 
@@ -24,20 +23,20 @@ En comunidades vulnerables de Managua y Latinoamérica, los reservorios y cauces
 graph LR
     subgraph Campo
         A[Nodos IoT ESP32]
-        B[Infraestructura Verde]
+        B[Reservorios Multifuncionales]
         C[Vecinos & Vigías]
     end
 
-    subgraph Plataforma Reservorio Vivo
+    subgraph Plataforma AquaVerde
         D[FastAPI Backend]
         E[(DB Series Temporales)]
-        F[Motor de Alertas & Pronóstico IA]
-        G[Visión Artificial Drenajes]
+        F[Motor de Alertas Hidráulicas]
+        G[API Clima Open-Meteo]
     end
 
     subgraph Acción
         H[Panel Web PWA]
-        I[WhatsApp / SMS / Altavoz]
+        I[WhatsApp Comunitario]
     end
 
     A -->|Telemetría Nivel & Lluvia| D
@@ -45,7 +44,7 @@ graph LR
     C -->|Fotos de Obstrucción| D
     D --> E
     D --> F
-    D --> G
+    G --> D
     F -->|Alerta Tasa de Subida| I
     E --> H
 ```

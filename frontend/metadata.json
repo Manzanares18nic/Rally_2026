@@ -1,6 +1,6 @@
 {
-  "name": "Reservorio Vivo - Telemetría Hidrométrica",
-  "description": "Sistema de alerta temprana y monitoreo hidrométrico en tiempo real para reservorios urbanos y prevención de inundaciones barriales (MVP 24h - Reto 05).",
+  "name": "AquaVerde - Monitoreo Inteligente e Infraestructura Verde",
+  "description": "AquaVerde: Sistema de monitoreo hidrométrico en tiempo real e infraestructura verde para reservorios urbanos y prevención de inundaciones barriales.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
