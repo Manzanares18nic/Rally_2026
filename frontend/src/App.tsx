@@ -12,6 +12,7 @@ import {
 } from './services/api';
 import { Header } from './components/Header';
 import { CommunityView } from './components/CommunityView';
+import { CommunityForum } from './components/CommunityForum';
 import { AdminDashboard } from './components/AdminDashboard';
 import { GreenInfrastructureView } from './components/GreenInfrastructureView';
 import { SatelliteMapView } from './components/SatelliteMapView';
@@ -26,8 +27,8 @@ export default function App() {
     return localStorage.getItem('theme') !== 'light';
   });
 
-  // Navegación principal: 'community' | 'green' | 'map' | 'admin'
-  const [currentTab, setCurrentTab] = useState<'community' | 'green' | 'map' | 'admin'>('community');
+  // Navegación principal: 'community' | 'forum' | 'green' | 'map' | 'admin'
+  const [currentTab, setCurrentTab] = useState<'community' | 'forum' | 'green' | 'map' | 'admin'>('community');
 
   // Autenticación de Administrador
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
@@ -228,6 +229,17 @@ export default function App() {
             </button>
 
             <button
+              onClick={() => setCurrentTab('forum')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                currentTab === 'forum'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              Foro Vecinal
+            </button>
+
+            <button
               onClick={() => setCurrentTab('green')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 currentTab === 'green'
@@ -276,9 +288,12 @@ export default function App() {
             onSendWhatsApp={handleSendWhatsApp}
             isSendingWhatsApp={isSendingWhatsApp}
             onGoToMap={() => setCurrentTab('map')}
+            onGoToForum={() => setCurrentTab('forum')}
             isDark={isDark}
           />
         )}
+
+        {currentTab === 'forum' && <CommunityForum isDark={isDark} />}
 
         {currentTab === 'green' && <GreenInfrastructureView isDark={isDark} />}
 

@@ -5,10 +5,6 @@ import {
   ChevronRight,
   X,
   ExternalLink,
-  Video,
-  Clock,
-  Building2,
-  Eye,
 } from 'lucide-react';
 
 export interface VideoItem {
@@ -27,23 +23,23 @@ const VIDEO_STORIES: VideoItem[] = [
   {
     id: 'vid-1',
     youtubeId: 'N2YCajbUNdM',
-    title: 'Avanza el proyecto de Drenaje Pluvial en Managua',
+    title: 'Avanza el proyecto de Drenaje Pluvial y Alcantarillado en el barrio 30 de Mayo',
     source: 'Viva Nicaragua Canal 13',
     tag: 'Obras de Mitigación',
     duration: '2:15 min',
-    thumbnail: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?auto=format&fit=crop&w=600&q=80',
+    thumbnail: 'https://i.ytimg.com/vi/N2YCajbUNdM/hqdefault.jpg',
     description:
-      'Supervisión de obras de alcantarillado sanitario y canalización de cauces para reducir la vulnerabilidad y anegamientos en barrios críticos de Managua.',
+      'Supervisión de obras de alcantarillado sanitario y canalización de cauces para reducir la vulnerabilidad y anegamientos en Managua.',
     url: 'https://www.youtube.com/watch?v=N2YCajbUNdM',
   },
   {
     id: 'vid-2',
     youtubeId: 'HSrklig2I2s',
-    title: 'Reservorio Superficial: Captación de Escorrentía',
+    title: 'Reservorio Superficial: Captación y Regulación de Escorrentía',
     source: 'MAG Nicaragua',
     tag: 'Cosecha de Agua',
     duration: '3:40 min',
-    thumbnail: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80',
+    thumbnail: 'https://i.ytimg.com/vi/HSrklig2I2s/hqdefault.jpg',
     description:
       'Técnicas de diseño, compactación y geomembranas en reservorios superficiales para almacenar agua pluvial y regular picos de escorrentía.',
     url: 'https://www.youtube.com/watch?v=HSrklig2I2s',
@@ -51,11 +47,11 @@ const VIDEO_STORIES: VideoItem[] = [
   {
     id: 'vid-3',
     youtubeId: 'LlqNa5M0whs',
-    title: 'Modelos de Reservorios y Control de Crecidas',
+    title: 'Modelos de Reservorios y Control de Crecidas Pluviales',
     source: 'MAG Nicaragua',
     tag: 'Ingeniería Hídrica',
     duration: '2:50 min',
-    thumbnail: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=600&q=80',
+    thumbnail: 'https://i.ytimg.com/vi/LlqNa5M0whs/hqdefault.jpg',
     description:
       'Explicación práctica de las dimensiones, taludes de contención y capacidad de amortiguamiento hidráulico ante tormentas tropicales intensas.',
     url: 'https://www.youtube.com/watch?v=LlqNa5M0whs',
@@ -63,26 +59,14 @@ const VIDEO_STORIES: VideoItem[] = [
   {
     id: 'vid-4',
     youtubeId: 'QBkwGCcY-fs',
-    title: 'Mantenimiento y Limpieza de Sedimentos',
+    title: 'Mantenimiento Preventivo y Limpieza de Sedimentos en Reservorios',
     source: 'MAG Nicaragua',
     tag: 'Desarenado',
     duration: '4:10 min',
-    thumbnail: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80',
+    thumbnail: 'https://i.ytimg.com/vi/QBkwGCcY-fs/hqdefault.jpg',
     description:
       'Recomendaciones para retiro de sedimentos, protección de bordes y preservación de obras de drenaje pluvial para evitar obstrucciones y desbordes.',
     url: 'https://www.youtube.com/watch?v=QBkwGCcY-fs',
-  },
-  {
-    id: 'vid-5',
-    youtubeId: 'N2YCajbUNdM',
-    title: 'Sistemas de Alcantarillado y Drenaje Barrial',
-    source: 'Canal 13 Managua',
-    tag: 'Prevención Urbana',
-    duration: '3:05 min',
-    thumbnail: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80',
-    description:
-      'Canalización pluvial y mitigación de desbordes en puntos vulnerables de la cuenca sur de Managua.',
-    url: 'https://www.youtube.com/watch?v=N2YCajbUNdM',
   },
 ];
 
@@ -108,14 +92,11 @@ export const NewsCarousel: React.FC<NewsCarouselProps> = ({ isDark }) => {
 
   return (
     <section className="space-y-3">
-      {/* Título de la sección */}
+      {/* Título de la sección como solicitó el usuario */}
       <div className="flex items-center justify-between px-1">
         <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-          Carrusel Shorts YouTube
+          Últimas Noticias
         </h3>
-        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-          Toca cualquier video para reproducir en grande
-        </span>
       </div>
 
       {/* Contenedor del Carrusel idéntico a carrusel.jpg */}
@@ -129,7 +110,7 @@ export const NewsCarousel: React.FC<NewsCarouselProps> = ({ isDark }) => {
           <ChevronLeft className="w-5 h-5" />
         </button>
 
-        {/* Fila de Tarjetas Verticales con Scroll Horizontal */}
+        {/* Fila de Tarjetas Verticales con Portadas Originales de YouTube */}
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-3.5 overflow-x-auto scrollbar-none scroll-smooth px-1 py-2"
@@ -139,16 +120,16 @@ export const NewsCarousel: React.FC<NewsCarouselProps> = ({ isDark }) => {
             <div
               key={vid.id}
               onClick={() => setSelectedVideo(vid)}
-              className="relative shrink-0 w-[175px] sm:w-[190px] md:w-[200px] h-[280px] sm:h-[300px] md:h-[320px] rounded-2xl overflow-hidden cursor-pointer shadow-md group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-slate-900"
+              className="relative shrink-0 w-[180px] sm:w-[200px] md:w-[215px] h-[280px] sm:h-[300px] md:h-[320px] rounded-2xl overflow-hidden cursor-pointer shadow-md group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-slate-900"
             >
-              {/* Imagen de Fondo Vertical */}
+              {/* Portada Oficial de YouTube */}
               <img
                 src={vid.thumbnail}
                 alt={vid.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
 
-              {/* Degradado oscuro inferior como en carrusel.jpg */}
+              {/* Degradado oscuro inferior idéntico a carrusel.jpg */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/10" />
 
               {/* Botón Circular de Reproducción Centrado */}
@@ -163,7 +144,7 @@ export const NewsCarousel: React.FC<NewsCarouselProps> = ({ isDark }) => {
                 <p className="text-xs font-semibold text-white leading-snug line-clamp-2 drop-shadow-sm">
                   {vid.title}
                 </p>
-                <div className="flex items-center justify-between text-[10px] text-white/75 font-medium">
+                <div className="flex items-center justify-between text-[10px] text-white/80 font-medium">
                   <span className="truncate max-w-[110px]">{vid.source}</span>
                   <span>{vid.duration}</span>
                 </div>

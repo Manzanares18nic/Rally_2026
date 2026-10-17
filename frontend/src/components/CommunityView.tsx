@@ -10,6 +10,7 @@ import {
   Square,
   PhoneCall,
   MapPin,
+  Leaf,
 } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
 import { NewsCarousel } from './NewsCarousel';
@@ -20,6 +21,7 @@ interface CommunityViewProps {
   onSendWhatsApp: () => void;
   isSendingWhatsApp: boolean;
   onGoToMap: () => void;
+  onGoToForum?: () => void;
   isDark: boolean;
 }
 
@@ -29,6 +31,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   onSendWhatsApp,
   isSendingWhatsApp,
   onGoToMap,
+  onGoToForum,
   isDark,
 }) => {
   const levelPct = Math.min(100, Math.max(0, dashboard.current_level_pct));
@@ -141,8 +144,8 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
         </div>
       </section>
 
-      {/* 2. Acciones Rápidas del Vecino (Reportar con Foto y Ver Mapa) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* 2. Acciones Rápidas del Vecino (Reportar con Foto, Foro Comunitario y Ver Mapa) */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Reportar con Foto */}
         <div
           className={`p-5 rounded-2xl border transition-all ${
@@ -155,16 +158,42 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
               <Camera className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-sm">Reportar Obstrucción con Fotografía</h3>
+            <h3 className="font-bold text-sm">Reportar con Fotografía</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              ¿Ves basura, sedimentos o ramas bloqueando el paso del agua? Sube una foto para que el sistema de visión artificial evalúe la prioridad y la cuadrilla municipal acuda de inmediato.
+              Toma una foto de sedimentos o basura bloqueando el cauce para validación con IA.
             </p>
           </div>
           <button
             onClick={onOpenReportModal}
-            className="mt-4 w-full py-2.5 px-4 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
           >
-            <span>Subir Fotografía del Drenaje</span>
+            <span>Subir Fotografía</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Muro / Foro Comunitario */}
+        <div
+          className={`p-5 rounded-2xl border transition-all ${
+            isDark
+              ? 'bg-[#0f172a] border-slate-800 text-slate-100'
+              : 'bg-white border-slate-200 text-slate-900'
+          } shadow-xs flex flex-col justify-between`}
+        >
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+              <Leaf className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm">Foro e Infraestructura Verde</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Propón bio-jardines, zanjas de infiltración y comparte iniciativas vecinales con fotos y likes.
+            </p>
+          </div>
+          <button
+            onClick={onGoToForum}
+            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>Ver Muro Barrial</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -181,16 +210,16 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
               <MapPin className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-sm">Mapa Satelital de Sabana Grande</h3>
+            <h3 className="font-bold text-sm">Mapa Satelital Multicuenca</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              Explora las imágenes satelitales en alta resolución de la cuenca, la ubicación de las franjas de bio-retención y los reportes comunitarios activos en el sector.
+              Radios de cobertura de los nodos, bio-retención y reportes vecinales geolocalizados.
             </p>
           </div>
           <button
             onClick={onGoToMap}
-            className="mt-4 w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            className="mt-4 w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
           >
-            <span>Explorar Mapa Satelital</span>
+            <span>Explorar Mapa</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>

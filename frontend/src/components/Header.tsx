@@ -35,34 +35,26 @@ export const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Identidad del Sistema y Localidad */}
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
-            Reservorio Vivo
-          </h1>
-          <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 dark:text-slate-400">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>Cauce La Maravilla • Pista Sabana Grande, Managua</span>
+        {/* Identidad del Sistema, Logo y Localidad */}
+        <div className="flex items-center gap-3">
+          <img
+            src="/images/logo.jpeg"
+            alt="Logo Reservorio Vivo"
+            className="w-11 h-11 rounded-xl object-cover border border-emerald-600/30 shadow-xs shrink-0"
+          />
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
+              Reservorio Vivo
+            </h1>
+            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>Cauce La Maravilla • Pista Sabana Grande, Managua</span>
+            </div>
           </div>
         </div>
 
-        {/* Controles: Notificaciones, Refresco, Modo Oscuro y Botón de Inicio de Sesión Admin */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Indicador de conexión discreto */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mr-1">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                isBackendLive ? 'bg-emerald-500' : 'bg-slate-400'
-              }`}
-            />
-            <span className="text-[11px]">
-              {isBackendLive ? 'Telemetría en vivo' : 'Modo local'}
-            </span>
-          </div>
-
-          {/* Sistema de Notificaciones en la Barra Superior */}
-          <NotificationBell isDark={isDark} />
-
+        {/* Controles en la barra superior: Refresco, Tema, Admin y Notificaciones a la extrema derecha */}
+        <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
           {/* Actualizar datos */}
           <button
             onClick={onRefresh}
@@ -104,6 +96,11 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Iniciar sesión como administrador</span>
             </button>
           )}
+
+          {/* Sistema de Notificaciones en la parte superior derecha */}
+          <div className="pl-1 border-l border-slate-200 dark:border-slate-800">
+            <NotificationBell isDark={isDark} />
+          </div>
         </div>
       </div>
     </header>

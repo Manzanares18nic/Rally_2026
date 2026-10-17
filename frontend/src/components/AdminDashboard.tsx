@@ -62,7 +62,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       signal: '-72 dBm (LoRaWAN 915MHz)',
       waterLevel: `${dashboard.current_level_pct.toFixed(0)}%`,
       anomalies: 'Lecturas acústicas estables sin rebote falso',
-      photo: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?auto=format&fit=crop&w=600&q=80',
+      photo: '/images/reservorio1.jpeg',
     },
     {
       id: 'node-02',
@@ -77,7 +77,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       signal: '-84 dBm (LoRaWAN 915MHz)',
       waterLevel: '35%',
       anomalies: 'Sedimentación en fondo detectada',
-      photo: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80',
+      photo: '/images/reservorio2.jpeg',
     },
     {
       id: 'node-03',
@@ -92,7 +92,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       signal: '-105 dBm (Intermitente)',
       waterLevel: '62%',
       anomalies: 'Pérdida de paquetes por batería baja',
-      photo: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=600&q=80',
+      photo: '/images/reservorio3.jpg',
     },
   ];
 
@@ -102,28 +102,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       name: 'Microcontrolador ESP32-WROOM-32D',
       role: 'Procesamiento en borde y cálculo de tasa de subida',
       specs: 'Dual Core 240 MHz, Wi-Fi, Bluetooth BLE, ultra bajo consumo en Deep Sleep.',
-      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80',
+      image: '/images/esp32.jpg',
       badge: 'Cerebro IoT',
     },
     {
       name: 'Sensor Ultrasónico Impermeable JSN-SR04T',
       role: 'Medición acústica de distancia a la lámina de agua',
       specs: 'Sonda estanca IP67, alcance de 20 a 600 cm, resistente a humedad, lodo y vapores corrosivos.',
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80',
+      image: '/images/sensor_jsn.jpeg',
       badge: 'Sensado Estanco IP67',
     },
     {
       name: 'Pluviómetro de Balancín Calibrado',
       role: 'Registro de precipitación acumulada en milímetros',
       specs: 'Resolución de 0.2 mm por balanceo, colector cónico con filtro contra insectos y hojas.',
-      image: 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?auto=format&fit=crop&w=500&q=80',
+      image: '/images/pluviometro.jpeg',
       badge: 'Pluviometría',
     },
     {
       name: 'Módulo de Alimentación Solar + Batería Li-ion 18650',
       role: 'Autonomía energética continua sin red eléctrica',
       specs: 'Panel monocristalino 6V 3W, circuito de carga TP4056 con protección contra sobretensión.',
-      image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=500&q=80',
+      image: '/images/solar_battery.jpeg',
       badge: 'Energía Solar',
     },
   ];
