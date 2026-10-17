@@ -41,15 +41,20 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           <img
             src="/images/logo.jpeg"
-            alt="Logo AquaVerde"
-            className="w-11 h-11 rounded-xl object-cover border border-emerald-600/30 shadow-xs shrink-0"
+            alt="Logo PluviTec"
+            className="w-11 h-11 rounded-xl object-cover border border-[#00A8E8]/40 shadow-xs shrink-0"
           />
           <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
-              AquaVerde
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-[#00A8E8]">
+                PluviTec
+              </h1>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#70C167]/15 text-[#70C167] border border-[#70C167]/30">
+                Eco-IoT
+              </span>
+            </div>
             <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-              <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <MapPin className="w-3.5 h-3.5 shrink-0 text-[#00A8E8]" />
               <span>Cauce La Maravilla • Pista Sabana Grande, Managua</span>
             </div>
           </div>
@@ -57,14 +62,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Controles en la barra superior: Refresco, Tema, Admin y Notificaciones a la extrema derecha */}
         <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
-          {/* Ficha Ejecutiva para Jurados */}
+          {/* Ficha Ejecutiva para Jurados con acento Rosa Fucsia */}
           {onOpenPitch && (
             <button
               onClick={onOpenPitch}
               title="Ver Ficha Técnica y Modelo de Viabilidad para Jurados"
-              className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+              className="px-3 py-2 rounded-xl bg-[#D81B60]/10 hover:bg-[#D81B60]/20 text-[#D81B60] border border-[#D81B60]/30 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
             >
-              <Award className="w-3.5 h-3.5 text-amber-500" />
+              <Award className="w-3.5 h-3.5 text-[#D81B60]" />
               <span className="hidden sm:inline">Ficha Jurados</span>
             </button>
           )}
@@ -75,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Actualizar datos"
             className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-300 transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-emerald-600' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#00A8E8]' : ''}`} />
           </button>
 
           {/* Selector de Tema (Modo Claro / Oscuro) */}
@@ -104,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <button
               onClick={onOpenLogin}
-              className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="px-3.5 py-2 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Iniciar sesión como administrador</span>

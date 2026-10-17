@@ -1,6 +1,6 @@
 {
-  "name": "AquaVerde - Monitoreo Inteligente e Infraestructura Verde",
-  "description": "AquaVerde: Sistema de monitoreo hidrométrico en tiempo real e infraestructura verde para reservorios urbanos y prevención de inundaciones barriales.",
+  "name": "PluviTec - Monitoreo Inteligente e Infraestructura Verde",
+  "description": "PluviTec: Sistema de monitoreo hidrométrico en tiempo real e infraestructura verde para reservorios urbanos y prevención de inundaciones barriales.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

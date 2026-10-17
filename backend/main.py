@@ -26,8 +26,8 @@ from database import db, MAX_CAPACITY_CM
 
 
 app = FastAPI(
-    title="AquaVerde API",
-    description="API REST de AquaVerde - Monitoreo Inteligente e Infraestructura Verde",
+    title="PluviTec API",
+    description="API REST de PluviTec - Monitoreo Inteligente e Infraestructura Verde",
     version="1.0.0"
 )
 
@@ -135,7 +135,7 @@ def send_whatsapp_alert(alert_id: str):
     """Dispara o reenvía el aviso por WhatsApp al grupo de vigías comunitarios."""
     summary = db.get_dashboard_summary()
     msg = (
-        f"🚨 *ALERTA AQUAVERDE* 🚨\n"
+        f"🚨 *ALERTA PLUVITEC* 🚨\n"
         f"Estado: {summary.status}\n"
         f"Nivel: {summary.current_level_pct}% ({summary.current_level_cm} cm)\n"
         f"Tasa de subida: +{summary.rise_rate_pct_30m}% en 30 min.\n"

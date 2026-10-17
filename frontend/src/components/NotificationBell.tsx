@@ -146,7 +146,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
         aria-label="Abrir notificaciones"
         className={`relative p-2 rounded-xl border transition-all ${
           isOpen
-            ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+            ? 'border-[#00A8E8] bg-[#00A8E8]/10 text-[#00A8E8]'
             : isDark
             ? 'border-slate-800 hover:bg-slate-800/60 text-slate-300'
             : 'border-slate-200 hover:bg-slate-50 text-slate-600'
@@ -154,7 +154,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ isDark }) =>
       >
         <Bell className="w-3.5 h-3.5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-700 text-white shadow-xs animate-pulse">
+          <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-[#D81B60] text-white shadow-xs animate-pulse">
             {unreadCount}
           </span>
         )}

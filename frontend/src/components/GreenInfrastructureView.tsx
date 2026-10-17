@@ -138,7 +138,7 @@ export const GreenInfrastructureView: React.FC<GreenInfrastructureProps> = ({ is
               onClick={() => setActiveSeason('SECA')}
               className={`px-3.5 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
                 activeSeason === 'SECA'
-                  ? 'bg-amber-500 text-white shadow-xs'
+                  ? 'bg-[#70C167] text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -150,7 +150,7 @@ export const GreenInfrastructureView: React.FC<GreenInfrastructureProps> = ({ is
               onClick={() => setActiveSeason('LLUVIOSA')}
               className={`px-3.5 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 ${
                 activeSeason === 'LLUVIOSA'
-                  ? 'bg-emerald-700 text-white shadow-xs'
+                  ? 'bg-[#00A8E8] text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -165,16 +165,16 @@ export const GreenInfrastructureView: React.FC<GreenInfrastructureProps> = ({ is
       <section
         className={`rounded-2xl border p-6 md:p-8 transition-all shadow-xs relative overflow-hidden ${
           isDark
-            ? 'bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 border-emerald-900/50 text-slate-200'
-            : 'bg-gradient-to-br from-emerald-50 via-white to-slate-50 border-emerald-200 text-slate-800'
+            ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border-[#00A8E8]/30 text-slate-200'
+            : 'bg-gradient-to-br from-sky-50/60 via-white to-emerald-50/40 border-[#00A8E8]/20 text-slate-800'
         }`}
       >
         <div className="flex items-start gap-4">
-          <div className="p-3 rounded-2xl bg-emerald-700/20 text-emerald-700 dark:text-emerald-400 shrink-0">
+          <div className="p-3 rounded-2xl bg-[#70C167]/15 text-[#70C167] shrink-0">
             <Sprout className="w-7 h-7" />
           </div>
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00A8E8]/10 text-[#00A8E8] text-[11px] font-semibold uppercase tracking-wider border border-[#00A8E8]/20">
               <Sparkles className="w-3 h-3" />
               <span>Solución Arquitectónica e Hidráulica • Reservorio Multifuncional</span>
             </div>

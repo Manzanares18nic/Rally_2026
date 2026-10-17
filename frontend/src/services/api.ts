@@ -1,5 +1,5 @@
 /**
- * AquaVerde API Service Client
+ * PluviTec API Service Client
  * Handles real-time polling, simulation triggers, WhatsApp alerts,
  * and seamless fallback when FastAPI backend is offline.
  */
@@ -342,7 +342,7 @@ export async function sendWhatsAppAlert(
   // Prepare standard message in case fallback is triggered
   const currentPct = ((fallbackLevelCm / MAX_CAPACITY) * 100).toFixed(1);
   const fallbackMsg =
-    `🚨 *ALERTA AQUAVERDE* 🚨\n` +
+    `🚨 *ALERTA PLUVITEC* 🚨\n` +
     `Estado: ${fallbackStatus}\n` +
     `Nivel: ${currentPct}% (${fallbackLevelCm.toFixed(1)} cm)\n` +
     `Tasa de subida: +${fallbackRiseRate}% en 30 min.\n` +

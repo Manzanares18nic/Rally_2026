@@ -1,4 +1,4 @@
-# 🌿 AquaVerde — Reto 05 (Rally Latinoamericano de Innovación 2026)
+# 🔷 PluviTec — Reto 05 (Rally Latinoamericano de Innovación 2026)
 
 > **"Monitoreo Inteligente e Infraestructura Verde en Reservorios Pluviales."**  
 > Solución integral que une telemetría IoT de bajo costo, reservorios multifuncionales adaptativos según el clima, red comunitaria de vigías y reportes ciudadanos de drenaje.
@@ -9,7 +9,7 @@
 
 En comunidades vulnerables de Managua y Latinoamérica, los reservorios y cauces urbanos se desbordan intempestivamente provocando anegaciones graves. La mayoría de soluciones fallan porque solo alertan cuando el nivel ya es crítico o no contemplan el uso multifuncional del suelo.
 
-**AquaVerde** aborda este desafío integrando:
+**PluviTec** aborda este desafío integrando:
 - 📡 **Nodos IoT ESP32 + Telemetría en Tiempo Real**: Nodos autónomos con sensor ultrasónico, pluviómetro, batería solar y alertas por tasa de subida.
 - 🌿 **Infraestructura Verde y Reservorios Multifuncionales**: Espacios adaptativos según las condiciones climáticas (parques y canchas deportivas en época seca; retención, amortiguamiento y aliviaderos de emergencia en temporada lluviosa).
 - 📢 **Red Comunitaria de Vigías Barriales**: Notificaciones tempranas y alertas por WhatsApp para evacuación preventiva.
@@ -27,7 +27,7 @@ graph LR
         C[Vecinos & Vigías]
     end
 
-    subgraph Plataforma AquaVerde
+    subgraph Plataforma PluviTec
         D[FastAPI Backend]
         E[(DB Series Temporales)]
         F[Motor de Alertas Hidráulicas]

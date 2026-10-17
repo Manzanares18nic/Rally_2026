@@ -49,12 +49,12 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#00A8E8]/20 text-[#00A8E8] border border-[#00A8E8]/30">
                   Rally Latinoamericano de Innovación 2026 • Reto 05
                 </span>
               </div>
               <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
-                Ficha Técnica Ejecutiva y Modelo de Viabilidad • AquaVerde
+                Ficha Técnica Ejecutiva y Modelo de Viabilidad • PluviTec
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Solución Modular y Replicable en Cualquier Comunidad Urbana Vulnerable de Latinoamérica (Piloto: Sabana Grande)
@@ -74,13 +74,13 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
         <div className="p-5 md:p-6 space-y-6 overflow-y-auto text-xs leading-relaxed">
           {/* 1. Resumen Ejecutivo del Proyecto */}
           <section className="space-y-2">
-            <h4 className="text-sm font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              <span>1. La Innovación Disruptiva de AquaVerde</span>
+            <h4 className="text-sm font-bold text-[#00A8E8] flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#00A8E8]" />
+              <span>1. La Innovación Disruptiva de PluviTec</span>
             </h4>
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
               <p>
-                <strong>AquaVerde</strong> resuelve el reto de las inundaciones urbanas mediante un modelo de <strong>infraestructura verde adaptativa de ciclo cerrado</strong>:
+                <strong>PluviTec</strong> resuelve el reto de las inundaciones urbanas mediante un modelo de <strong>infraestructura verde adaptativa de ciclo cerrado</strong>:
               </p>
               <ul className="list-disc pl-5 mt-2 space-y-1.5">
                 <li>
@@ -96,10 +96,10 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
             </div>
           </section>
 
-          {/* 2. Análisis Económico Disruptivo: Hardware Tradicional vs AquaVerde */}
+          {/* 2. Análisis Económico Disruptivo: Hardware Tradicional vs PluviTec */}
           <section className="space-y-3">
-            <h4 className="text-sm font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
+            <h4 className="text-sm font-bold text-[#00A8E8] flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-[#00A8E8]" />
               <span>2. Viabilidad Económica y Comparativa de Costos</span>
             </h4>
 
@@ -120,13 +120,13 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
                 </ul>
               </div>
 
-              {/* Solución AquaVerde */}
-              <div className="p-4 rounded-2xl border border-emerald-400 dark:border-emerald-600/50 bg-emerald-500/10 space-y-2 relative overflow-hidden">
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
+              {/* Solución PluviTec */}
+              <div className="p-4 rounded-2xl border border-[#00A8E8]/40 dark:border-[#00A8E8]/50 bg-[#00A8E8]/10 space-y-2 relative overflow-hidden">
+                <span className="text-[10px] font-bold text-[#00A8E8] uppercase tracking-wide flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Solución Abierta AquaVerde
+                  Solución Abierta PluviTec
                 </span>
-                <p className="text-base font-extrabold text-emerald-700 dark:text-emerald-300">
+                <p className="text-base font-extrabold text-[#00A8E8]">
                   $34.50 USD por nodo (99% de Ahorro)
                 </p>
                 <ul className="text-slate-700 dark:text-slate-300 space-y-1">
@@ -225,12 +225,12 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
                 Retorno Social de Inversión (SROI): 1 a 48
               </p>
               <p className="text-[11px] opacity-80 mt-0.5">
-                Por cada $1 USD invertido en la red de nodos AquaVerde, la comunidad y el municipio evitan $48 USD en reparaciones de pavimento, desbordes y dragados de urgencia.
+                Por cada $1 USD invertido en la red de nodos PluviTec, la comunidad y el municipio evitan $48 USD en reparaciones de pavimento, desbordes y dragados de urgencia.
               </p>
             </div>
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shrink-0 transition-colors shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white font-bold text-xs shrink-0 transition-colors shadow-xs"
             >
               Entendido / Cerrar
             </button>

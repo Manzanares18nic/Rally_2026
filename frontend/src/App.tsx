@@ -224,7 +224,7 @@ export default function App() {
               onClick={() => setCurrentTab('community')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 currentTab === 'community'
-                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
@@ -235,7 +235,7 @@ export default function App() {
               onClick={() => setCurrentTab('forum')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 currentTab === 'forum'
-                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
@@ -246,22 +246,22 @@ export default function App() {
               onClick={() => setCurrentTab('green')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 currentTab === 'green'
-                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'bg-white dark:bg-slate-900 text-[#70C167] shadow-xs font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              Infraestructura Verde (Idea B)
+              Infraestructura Verde
             </button>
 
             <button
               onClick={() => setCurrentTab('map')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 currentTab === 'map'
-                  ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              Mapa Satelital Sabana Grande
+              Mapa Satelital
             </button>
 
             {isAdminLoggedIn && (
@@ -269,7 +269,7 @@ export default function App() {
                 onClick={() => setCurrentTab('admin')}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                   currentTab === 'admin'
-                    ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#00A8E8] shadow-xs font-bold'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >

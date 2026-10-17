@@ -54,15 +54,15 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   const completedSteps = Object.values(checklist).filter(Boolean).length;
   const progressPct = Math.round((completedSteps / 4) * 100);
 
-  // Configuración del semáforo ciudadano con tonos sobrios institucionales
+  // Configuración del semáforo ciudadano con la colorimetría PluviTec
   const statusConfig = isRed
     ? {
         label: 'Alerta Roja: Desborde Inminente',
         desc: 'El cauce La Maravilla superó el umbral crítico. Familias en márgenes y zonas bajas deben evacuar inmediatamente a los puntos altos seguros de Sabana Grande.',
-        bg: isDark ? 'bg-red-950/40 border-red-900/60 text-red-100' : 'bg-red-50 border-red-200 text-red-900',
-        badge: 'bg-red-600 text-white',
-        barColor: 'bg-red-600',
-        icon: <XCircle className="w-8 h-8 text-red-500" />,
+        bg: isDark ? 'bg-[#D81B60]/20 border-[#D81B60]/50 text-pink-100' : 'bg-pink-50 border-[#D81B60]/30 text-[#D81B60]',
+        badge: 'bg-[#D81B60] text-white',
+        barColor: 'bg-[#D81B60]',
+        icon: <XCircle className="w-8 h-8 text-[#D81B60]" />,
       }
     : isYellow
     ? {
@@ -85,10 +85,10 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
     : {
         label: 'Nivel Normal: Flujo Seguro',
         desc: 'El tirante de agua se encuentra dentro del margen de seguridad en el Cauce La Maravilla y la Pista Sabana Grande.',
-        bg: isDark ? 'bg-emerald-950/30 border-emerald-900/40 text-emerald-100' : 'bg-emerald-50/70 border-emerald-200 text-emerald-950',
-        badge: 'bg-emerald-700 text-white',
-        barColor: 'bg-emerald-600',
-        icon: <ShieldCheck className="w-8 h-8 text-emerald-500" />,
+        bg: isDark ? 'bg-[#70C167]/15 border-[#70C167]/30 text-emerald-100' : 'bg-emerald-50/70 border-[#70C167]/30 text-emerald-950',
+        badge: 'bg-[#70C167] text-white',
+        barColor: 'bg-[#00A8E8]',
+        icon: <ShieldCheck className="w-8 h-8 text-[#70C167]" />,
       };
 
   return (
@@ -113,7 +113,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           <button
             onClick={onSendWhatsApp}
             disabled={isSendingWhatsApp}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs flex items-center justify-center gap-2 transition-colors shadow-xs shrink-0"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs shrink-0"
           >
             <Bell className="w-4 h-4" />
             <span>{isSendingWhatsApp ? 'Enviando...' : 'Avisar a Vecinos por WhatsApp'}</span>
@@ -155,7 +155,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           } shadow-xs flex flex-col justify-between`}
         >
           <div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#00A8E8]/10 text-[#00A8E8] flex items-center justify-center mb-3">
               <Camera className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-sm">Reportar con Fotografía</h3>
@@ -165,7 +165,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           </div>
           <button
             onClick={onOpenReportModal}
-            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-[#00A8E8] text-[#00A8E8] hover:bg-[#00A8E8]/10 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>Subir Fotografía</span>
             <ChevronRight className="w-4 h-4" />
@@ -181,7 +181,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           } shadow-xs flex flex-col justify-between`}
         >
           <div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#70C167]/15 text-[#70C167] flex items-center justify-center mb-3">
               <Leaf className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-sm">Foro e Infraestructura Verde</h3>
@@ -191,7 +191,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           </div>
           <button
             onClick={onGoToForum}
-            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+            className="mt-4 w-full py-2.5 px-3 rounded-xl border border-[#70C167] text-[#70C167] hover:bg-[#70C167]/10 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>Ver Muro Barrial</span>
             <ChevronRight className="w-4 h-4" />
@@ -207,7 +207,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           } shadow-xs flex flex-col justify-between`}
         >
           <div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#D81B60]/10 text-[#D81B60] flex items-center justify-center mb-3">
               <MapPin className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-sm">Mapa Satelital Multicuenca</h3>
@@ -217,7 +217,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
           </div>
           <button
             onClick={onGoToMap}
-            className="mt-4 w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+            className="mt-4 w-full py-2.5 px-3 rounded-xl bg-[#00A8E8] hover:bg-[#0090c8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
           >
             <span>Explorar Mapa</span>
             <ChevronRight className="w-4 h-4" />
