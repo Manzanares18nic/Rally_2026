@@ -45,8 +45,9 @@ export const Header: React.FC<HeaderProps> = ({
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#00A8E8]">
-                PluviTec
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                <span className="text-[#00A8E8]">Pluvi</span>
+                <span className="text-[#70C167]">Tec</span>
               </h1>
             </div>
             <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
