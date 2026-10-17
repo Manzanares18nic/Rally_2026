@@ -6,13 +6,9 @@ import {
   Bell,
   Camera,
   ChevronRight,
-  Droplets,
-  Calculator,
   CheckSquare,
   Square,
   PhoneCall,
-  Sparkles,
-  Info,
   MapPin,
 } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
@@ -39,18 +35,6 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
   const isRed = dashboard.status === 'ROJO';
   const isYellow = dashboard.status === 'AMARILLO';
   const isFault = dashboard.status === 'FALLO_SENSOR';
-
-  // Estado para la calculadora interactiva de cosecha de lluvia
-  const [roofArea, setRoofArea] = useState<number>(75);
-  const [rainScenario, setRainScenario] = useState<'moderada' | 'fuerte'>('moderada');
-
-  // Cálculo hidráulico en tiempo real:
-  // Lluvia moderada ~25mm, Lluvia fuerte ~50mm
-  const rainfallMm = rainScenario === 'moderada' ? 25 : 50;
-  // Litros generados = Área (m²) * Precipitación (mm)
-  const runoffLiters = Math.round(roofArea * rainfallMm);
-  // Un jardín de bio-retención absorbe e infiltra aprox 70% de la escorrentía
-  const infiltratedLiters = Math.round(runoffLiters * 0.72);
 
   // Estado para el checklist interactivo de prevención familiar
   const [checklist, setChecklist] = useState<{ [key: string]: boolean }>({
@@ -212,228 +196,148 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
         </div>
       </section>
 
-      {/* 3. CARRUSEL DE NOTICIAS Y EDUCACIÓN HIDRÁULICA (VIDEOS OFICIALES) */}
+      {/* 3. CARRUSEL SHORTS YOUTUBE (ESTILO carrusel.jpg CON REPRODUCTOR EN GRANDE Y DESENFOQUE) */}
       <NewsCarousel isDark={isDark} />
 
-      {/* 4. HERRAMIENTAS INTERACTIVAS COMUNITARIAS */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* A. Calculadora Interactiva de Cosecha de Lluvia y Bio-Retención Hogareña */}
-        <div
-          className={`p-5 rounded-2xl border ${
-            isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
-          } shadow-xs flex flex-col justify-between space-y-4`}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Calculator className="w-4 h-4 text-emerald-600" />
-                <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                  Calculadora Barrial de Bio-Retención
-                </h4>
-              </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
-                Interactivo
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Descubre cuántos litros de lluvia puedes cosechar o infiltrar con un jardín de lluvia o barril pluvial en tu vivienda.
-            </p>
-
-            {/* Slider de Metros Cuadrados */}
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between text-xs font-medium">
-                <span className="text-slate-600 dark:text-slate-400">Área de techo / patio:</span>
-                <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                  {roofArea} m²
-                </span>
-              </div>
-              <input
-                type="range"
-                min="20"
-                max="250"
-                step="5"
-                value={roofArea}
-                onChange={(e) => setRoofArea(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] text-slate-400">
-                <span>20 m² (Casa pequeña)</span>
-                <span>250 m² (Patio amplio)</span>
-              </div>
-            </div>
-
-            {/* Selector de Evento de Lluvia */}
-            <div className="mt-3 flex gap-2">
-              <button
-                onClick={() => setRainScenario('moderada')}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-medium border transition-colors ${
-                  rainScenario === 'moderada'
-                    ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                Lluvia típica (25 mm)
-              </button>
-              <button
-                onClick={() => setRainScenario('fuerte')}
-                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-medium border transition-colors ${
-                  rainScenario === 'fuerte'
-                    ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                Tormenta fuerte (50 mm)
-              </button>
-            </div>
+      {/* 4. PLAN FAMILIAR DE PREVENCIÓN ANTE LLUVIAS (CHECKLIST INTERACTIVO) */}
+      <section
+        className={`p-5 md:p-6 rounded-2xl border ${
+          isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
+        } shadow-xs space-y-4`}
+      >
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="w-4 h-4 text-emerald-600" />
+            <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+              Plan Familiar ante Lluvias (Protocolo Barrial)
+            </h4>
           </div>
-
-          {/* Resultado del impacto hídrico */}
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-2">
-            <div className="flex justify-between items-baseline">
-              <span className="text-xs text-slate-600 dark:text-slate-400">Escorrentía aportada:</span>
-              <strong className="text-sm text-slate-900 dark:text-slate-100">
-                {runoffLiters.toLocaleString()} Litros
-              </strong>
-            </div>
-            <div className="flex justify-between items-baseline pt-1 border-t border-slate-200 dark:border-slate-800">
-              <span className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
-                Infiltrables con bio-jardín:
-              </span>
-              <strong className="text-base text-emerald-700 dark:text-emerald-400 font-bold">
-                {infiltratedLiters.toLocaleString()} Litros
-              </strong>
-            </div>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 pt-1 leading-snug">
-              Al infiltrar esta agua en el patio, disminuyes la presión de choque sobre el Cauce La Maravilla y previenes la acumulación en la calzada.
-            </p>
-          </div>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+            {progressPct}% completado
+          </span>
         </div>
 
-        {/* B. Checklist Interactivo: Plan Familiar de Prevención */}
-        <div
-          className={`p-5 rounded-2xl border ${
-            isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
-          } shadow-xs flex flex-col justify-between space-y-4`}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <CheckSquare className="w-4 h-4 text-emerald-600" />
-                <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                  Plan Familiar ante Lluvias
-                </h4>
-              </div>
-              <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                {progressPct}% completado
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Marca las medidas preventivas que tu familia ya ejecutó en tu vivienda antes de la llegada de la lluvia:
-            </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Marca las acciones preventivas recomendadas para salvaguardar tu hogar y cooperar con el drenaje barrial:
+        </p>
 
-            {/* Barra de progreso */}
-            <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 mt-3 overflow-hidden">
-              <div
-                className="h-full bg-emerald-600 rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
+        {/* Barra de progreso */}
+        <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+          <div
+            className="h-full bg-emerald-600 rounded-full transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
 
-            {/* Lista interactiva */}
-            <div className="mt-3.5 space-y-2 text-xs">
-              <label
-                onClick={() => toggleChecklist('step1')}
-                className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-              >
-                {checklist.step1 ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                ) : (
-                  <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                )}
-                <span
-                  className={
-                    checklist.step1
-                      ? 'line-through text-slate-400'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }
-                >
-                  Limpiar canaletas del techo y despejar basura del frente de la casa.
-                </span>
-              </label>
-
-              <label
-                onClick={() => toggleChecklist('step2')}
-                className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-              >
-                {checklist.step2 ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                ) : (
-                  <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                )}
-                <span
-                  className={
-                    checklist.step2
-                      ? 'line-through text-slate-400'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }
-                >
-                  Guardar cédulas, títulos y medicamentos en bolsas plásticas impermeables.
-                </span>
-              </label>
-
-              <label
-                onClick={() => toggleChecklist('step3')}
-                className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-              >
-                {checklist.step3 ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                ) : (
-                  <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                )}
-                <span
-                  className={
-                    checklist.step3
-                      ? 'line-through text-slate-400'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }
-                >
-                  Revisar la ruta hacia la zona alta (Pista Sabana Grande hacia empalme).
-                </span>
-              </label>
-
-              <label
-                onClick={() => toggleChecklist('step4')}
-                className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-              >
-                {checklist.step4 ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                ) : (
-                  <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                )}
-                <span
-                  className={
-                    checklist.step4
-                      ? 'line-through text-slate-400'
-                      : 'text-slate-700 dark:text-slate-300'
-                  }
-                >
-                  Reportar en la app cualquier atasco de sedimentos en el puente peatonal.
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
-            <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
-              {progressPct === 100
-                ? '¡Excelente! Tu familia tiene el protocolo preventivo al día.'
-                : 'Completa todas las acciones antes de las lluvias de la tarde.'}
+        {/* Lista interactiva */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-xs">
+          <label
+            onClick={() => toggleChecklist('step1')}
+            className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors ${
+              checklist.step1
+                ? 'border-emerald-600/40 bg-emerald-50/40 dark:bg-emerald-950/20'
+                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            {checklist.step1 ? (
+              <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            ) : (
+              <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            )}
+            <span
+              className={
+                checklist.step1
+                  ? 'line-through text-slate-400'
+                  : 'text-slate-700 dark:text-slate-300 font-medium'
+              }
+            >
+              Limpiar canaletas del techo y despejar basura del frente de la casa.
             </span>
-          </div>
+          </label>
+
+          <label
+            onClick={() => toggleChecklist('step2')}
+            className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors ${
+              checklist.step2
+                ? 'border-emerald-600/40 bg-emerald-50/40 dark:bg-emerald-950/20'
+                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            {checklist.step2 ? (
+              <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            ) : (
+              <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            )}
+            <span
+              className={
+                checklist.step2
+                  ? 'line-through text-slate-400'
+                  : 'text-slate-700 dark:text-slate-300 font-medium'
+              }
+            >
+              Guardar cédulas, títulos y medicamentos en bolsas plásticas impermeables.
+            </span>
+          </label>
+
+          <label
+            onClick={() => toggleChecklist('step3')}
+            className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors ${
+              checklist.step3
+                ? 'border-emerald-600/40 bg-emerald-50/40 dark:bg-emerald-950/20'
+                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            {checklist.step3 ? (
+              <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            ) : (
+              <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            )}
+            <span
+              className={
+                checklist.step3
+                  ? 'line-through text-slate-400'
+                  : 'text-slate-700 dark:text-slate-300 font-medium'
+              }
+            >
+              Identificar la ruta de evacuación hacia el punto alto (Pista Sabana Grande).
+            </span>
+          </label>
+
+          <label
+            onClick={() => toggleChecklist('step4')}
+            className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors ${
+              checklist.step4
+                ? 'border-emerald-600/40 bg-emerald-50/40 dark:bg-emerald-950/20'
+                : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            {checklist.step4 ? (
+              <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            ) : (
+              <Square className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            )}
+            <span
+              className={
+                checklist.step4
+                  ? 'line-through text-slate-400'
+                  : 'text-slate-700 dark:text-slate-300 font-medium'
+              }
+            >
+              Reportar en la app cualquier atasco de sedimentos en el puente peatonal.
+            </span>
+          </label>
+        </div>
+
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
+            {progressPct === 100
+              ? '¡Excelente! Tu familia tiene el protocolo preventivo al día.'
+              : 'Completa todas las acciones antes de las lluvias de la tarde.'}
+          </span>
         </div>
       </section>
 
-      {/* 5. Directorio de Emergencia Directo */}
+      {/* 5. LÍNEAS DIRECTAS DE ASISTENCIA Y APOYO INSTITUCIONAL (MANAGUA) */}
       <section
         className={`rounded-2xl border p-4 transition-all shadow-xs ${
           isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'

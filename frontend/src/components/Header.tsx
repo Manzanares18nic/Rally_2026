@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, Sun, Moon, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import type { DashboardSummary } from '../services/api';
+import { NotificationBell } from './NotificationBell';
 
 interface HeaderProps {
   dashboard: DashboardSummary;
@@ -36,28 +37,31 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Identidad del Sistema y Localidad */}
         <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
             Reservorio Vivo
           </h1>
           <div className="flex items-center gap-1.5 mt-1 text-xs text-slate-500 dark:text-slate-400">
-            <MapPin className="w-3.5 h-3.5 shrink-0 text-blue-500" />
+            <MapPin className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <span>Cauce La Maravilla • Pista Sabana Grande, Managua</span>
           </div>
         </div>
 
-        {/* Controles: Refresco, Modo Oscuro y Botón de Inicio de Sesión Admin */}
+        {/* Controles: Notificaciones, Refresco, Modo Oscuro y Botón de Inicio de Sesión Admin */}
         <div className="flex items-center gap-2.5 flex-wrap">
           {/* Indicador de conexión discreto */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mr-2">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mr-1">
             <span
               className={`w-2 h-2 rounded-full ${
-                isBackendLive ? 'bg-blue-500' : 'bg-slate-400'
+                isBackendLive ? 'bg-emerald-500' : 'bg-slate-400'
               }`}
             />
             <span className="text-[11px]">
-              {isBackendLive ? 'Conectado' : 'Modo local'}
+              {isBackendLive ? 'Telemetría en vivo' : 'Modo local'}
             </span>
           </div>
+
+          {/* Sistema de Notificaciones en la Barra Superior */}
+          <NotificationBell isDark={isDark} />
 
           {/* Actualizar datos */}
           <button
@@ -65,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Actualizar datos"
             className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-300 transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-blue-500' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-emerald-600' : ''}`} />
           </button>
 
           {/* Selector de Tema (Modo Claro / Oscuro) */}
@@ -94,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <button
               onClick={onOpenLogin}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium flex items-center gap-1.5 transition-colors shadow-xs"
+              className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Iniciar sesión como administrador</span>

@@ -1,80 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Play,
   ChevronLeft,
   ChevronRight,
+  X,
   ExternalLink,
-  Newspaper,
-  Calendar,
+  Video,
+  Clock,
+  Building2,
   Eye,
-  CheckCircle2,
 } from 'lucide-react';
 
-export interface NewsItem {
+export interface VideoItem {
   id: string;
   youtubeId: string;
   title: string;
   source: string;
-  category: string;
-  badge: string;
-  description: string;
+  tag: string;
+  duration: string;
   thumbnail: string;
+  description: string;
   url: string;
-  duration?: string;
 }
 
-const NEWS_VIDEOS: NewsItem[] = [
+const VIDEO_STORIES: VideoItem[] = [
   {
-    id: 'news-1',
+    id: 'vid-1',
     youtubeId: 'N2YCajbUNdM',
-    title: 'Avanza el proyecto de Drenaje Pluvial y Alcantarillado en Managua',
+    title: 'Avanza el proyecto de Drenaje Pluvial en Managua',
     source: 'Viva Nicaragua Canal 13',
-    category: 'Obras de Mitigación',
-    badge: 'Infraestructura Urbana',
+    tag: 'Obras de Mitigación',
+    duration: '2:15 min',
+    thumbnail: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?auto=format&fit=crop&w=600&q=80',
     description:
       'Supervisión de obras de alcantarillado sanitario y canalización de cauces para reducir la vulnerabilidad y anegamientos en barrios críticos de Managua.',
-    thumbnail: 'https://i.ytimg.com/vi/N2YCajbUNdM/hqdefault.jpg',
     url: 'https://www.youtube.com/watch?v=N2YCajbUNdM',
-    duration: '2:15 min',
   },
   {
-    id: 'news-2',
+    id: 'vid-2',
     youtubeId: 'HSrklig2I2s',
-    title: 'Reservorio Superficial: Captación y Manejo de Escorrentía',
-    source: 'MAG Nicaragua (Ministerio Agropecuario)',
-    category: 'Ingeniería Hídrica',
-    badge: 'Cosecha de Agua',
+    title: 'Reservorio Superficial: Captación de Escorrentía',
+    source: 'MAG Nicaragua',
+    tag: 'Cosecha de Agua',
+    duration: '3:40 min',
+    thumbnail: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80',
     description:
       'Técnicas de diseño, compactación y geomembranas en reservorios superficiales para almacenar agua pluvial y regular picos de escorrentía.',
-    thumbnail: 'https://i.ytimg.com/vi/HSrklig2I2s/hqdefault.jpg',
     url: 'https://www.youtube.com/watch?v=HSrklig2I2s',
-    duration: '3:40 min',
   },
   {
-    id: 'news-3',
+    id: 'vid-3',
     youtubeId: 'LlqNa5M0whs',
-    title: 'Modelos de Reservorios y Control de Crecidas Pluviales',
+    title: 'Modelos de Reservorios y Control de Crecidas',
     source: 'MAG Nicaragua',
-    category: 'Gestión de Cuencas',
-    badge: 'Prevención Pluvial',
+    tag: 'Ingeniería Hídrica',
+    duration: '2:50 min',
+    thumbnail: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=600&q=80',
     description:
       'Explicación práctica de las dimensiones, taludes de contención y capacidad de amortiguamiento hidráulico ante tormentas tropicales intensas.',
-    thumbnail: 'https://i.ytimg.com/vi/LlqNa5M0whs/hqdefault.jpg',
     url: 'https://www.youtube.com/watch?v=LlqNa5M0whs',
-    duration: '2:50 min',
   },
   {
-    id: 'news-4',
+    id: 'vid-4',
     youtubeId: 'QBkwGCcY-fs',
-    title: 'Mantenimiento Preventivo y Limpieza de Sedimentos en Reservorios',
+    title: 'Mantenimiento y Limpieza de Sedimentos',
     source: 'MAG Nicaragua',
-    category: 'Mantenimiento Crítico',
-    badge: 'Desarenado y Cuidados',
+    tag: 'Desarenado',
+    duration: '4:10 min',
+    thumbnail: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80',
     description:
       'Recomendaciones para retiro de sedimentos, protección de bordes y preservación de obras de drenaje pluvial para evitar obstrucciones y desbordes.',
-    thumbnail: 'https://i.ytimg.com/vi/QBkwGCcY-fs/hqdefault.jpg',
     url: 'https://www.youtube.com/watch?v=QBkwGCcY-fs',
-    duration: '4:10 min',
+  },
+  {
+    id: 'vid-5',
+    youtubeId: 'N2YCajbUNdM',
+    title: 'Sistemas de Alcantarillado y Drenaje Barrial',
+    source: 'Canal 13 Managua',
+    tag: 'Prevención Urbana',
+    duration: '3:05 min',
+    thumbnail: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80',
+    description:
+      'Canalización pluvial y mitigación de desbordes en puntos vulnerables de la cuenca sur de Managua.',
+    url: 'https://www.youtube.com/watch?v=N2YCajbUNdM',
   },
 ];
 
@@ -83,196 +91,162 @@ interface NewsCarouselProps {
 }
 
 export const NewsCarousel: React.FC<NewsCarouselProps> = ({ isDark }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isAutoPlay, setIsAutoPlay] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
-  const currentNews = NEWS_VIDEOS[currentIndex];
-
-  const handlePrev = () => {
-    setIsPlaying(false);
-    setCurrentIndex((prev) => (prev === 0 ? NEWS_VIDEOS.length - 1 : prev - 1));
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -260, behavior: 'smooth' });
+    }
   };
 
-  const handleNext = () => {
-    setIsPlaying(false);
-    setCurrentIndex((prev) => (prev === NEWS_VIDEOS.length - 1 ? 0 : prev + 1));
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+    }
   };
-
-  useEffect(() => {
-    if (!isAutoPlay || isPlaying) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev === NEWS_VIDEOS.length - 1 ? 0 : prev + 1));
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [isAutoPlay, isPlaying]);
 
   return (
-    <section
-      className={`rounded-2xl border p-5 md:p-6 transition-all shadow-xs ${
-        isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'
-      }`}
-    >
-      {/* Header del Carrusel */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <Newspaper className="w-4 h-4" />
-          </div>
-          <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-              Noticias y Educación Comunitaria sobre Drenajes y Reservorios
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Videos oficiales sobre obras pluviales, manejo de cuencas y mantenimiento preventivo en Nicaragua
-            </p>
-          </div>
-        </div>
-
-        {/* Controles de Navegación */}
-        <div className="flex items-center gap-1.5 self-end sm:self-auto">
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mr-2">
-            {currentIndex + 1} de {NEWS_VIDEOS.length}
-          </span>
-          <button
-            onClick={handlePrev}
-            aria-label="Noticia anterior"
-            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleNext}
-            aria-label="Noticia siguiente"
-            className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+    <section className="space-y-3">
+      {/* Título de la sección */}
+      <div className="flex items-center justify-between px-1">
+        <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+          Carrusel Shorts YouTube
+        </h3>
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          Toca cualquier video para reproducir en grande
+        </span>
       </div>
 
-      {/* Tarjeta del Video Principal en Carrusel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-        {/* Contenedor del Reproductor / Miniatura Interactiva */}
-        <div className="lg:col-span-7">
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-md border border-slate-800">
-            {isPlaying ? (
+      {/* Contenedor del Carrusel idéntico a carrusel.jpg */}
+      <div className="relative group/carousel">
+        {/* Flecha Izquierda */}
+        <button
+          onClick={scrollLeft}
+          aria-label="Anterior"
+          className="absolute -left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 border border-white/20 backdrop-blur-xs"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+
+        {/* Fila de Tarjetas Verticales con Scroll Horizontal */}
+        <div
+          ref={scrollContainerRef}
+          className="flex items-center gap-3.5 overflow-x-auto scrollbar-none scroll-smooth px-1 py-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {VIDEO_STORIES.map((vid) => (
+            <div
+              key={vid.id}
+              onClick={() => setSelectedVideo(vid)}
+              className="relative shrink-0 w-[175px] sm:w-[190px] md:w-[200px] h-[280px] sm:h-[300px] md:h-[320px] rounded-2xl overflow-hidden cursor-pointer shadow-md group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-slate-900"
+            >
+              {/* Imagen de Fondo Vertical */}
+              <img
+                src={vid.thumbnail}
+                alt={vid.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+
+              {/* Degradado oscuro inferior como en carrusel.jpg */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/10" />
+
+              {/* Botón Circular de Reproducción Centrado */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-white/90 group-hover:bg-white text-slate-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-all">
+                  <Play className="w-5 h-5 fill-slate-900 ml-0.5" />
+                </div>
+              </div>
+
+              {/* Título en la parte inferior */}
+              <div className="absolute bottom-0 left-0 right-0 p-3.5 space-y-1">
+                <p className="text-xs font-semibold text-white leading-snug line-clamp-2 drop-shadow-sm">
+                  {vid.title}
+                </p>
+                <div className="flex items-center justify-between text-[10px] text-white/75 font-medium">
+                  <span className="truncate max-w-[110px]">{vid.source}</span>
+                  <span>{vid.duration}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Flecha Derecha */}
+        <button
+          onClick={scrollRight}
+          aria-label="Siguiente"
+          className="absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 border border-white/20 backdrop-blur-xs"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* MODAL LIGHTBOX EN GRANDE CON DESENFOQUE DETRÁS (BACKDROP BLUR) */}
+      {selectedVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div
+            className={`relative w-full max-w-3xl rounded-2xl border shadow-2xl overflow-hidden transition-all ${
+              isDark
+                ? 'bg-[#0f172a] border-slate-800 text-slate-100'
+                : 'bg-white border-slate-200 text-slate-900'
+            }`}
+          >
+            {/* Cabecera del Modal */}
+            <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-700 text-white">
+                  {selectedVideo.tag}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  {selectedVideo.source}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedVideo(null)}
+                aria-label="Cerrar reproductor"
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Reproductor de Video en Grande */}
+            <div className="relative w-full aspect-video bg-black">
               <iframe
-                src={`https://www.youtube.com/embed/${currentNews.youtubeId}?autoplay=1&rel=0`}
-                title={currentNews.title}
+                src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?autoplay=1&rel=0`}
+                title={selectedVideo.title}
                 className="w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
-              <div className="relative w-full h-full group cursor-pointer" onClick={() => setIsPlaying(true)}>
-                <img
-                  src={currentNews.thumbnail}
-                  alt={currentNews.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                {/* Botón de reproducción grande */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-emerald-600 transition-all">
-                    <Play className="w-6 h-6 fill-white ml-0.5" />
-                  </div>
-                </div>
-
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white">
-                  <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs font-semibold text-[11px]">
-                    {currentNews.duration}
-                  </span>
-                  <span className="text-[11px] text-white/80 group-hover:text-white flex items-center gap-1 font-medium">
-                    <Eye className="w-3.5 h-3.5" />
-                    Reproducir en la app
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Información y descripción de la noticia */}
-        <div className="lg:col-span-5 space-y-3.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-              {currentNews.badge}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              {currentNews.source}
-            </span>
-          </div>
-
-          <h4 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
-            {currentNews.title}
-          </h4>
-
-          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-            {currentNews.description}
-          </p>
-
-          <div className="pt-2 flex items-center gap-3">
-            {!isPlaying ? (
-              <button
-                onClick={() => setIsPlaying(true)}
-                className="py-2 px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
-              >
-                <Play className="w-3.5 h-3.5 fill-white" />
-                <span>Ver video aquí</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsPlaying(false)}
-                className="py-2 px-3.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-colors"
-              >
-                <span>Cerrar reproductor</span>
-              </button>
-            )}
-
-            <a
-              href={currentNews.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 text-xs font-medium flex items-center gap-1.5 transition-colors"
-            >
-              <span>Abrir en YouTube</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Miniaturas inferiores para saltar directamente */}
-      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {NEWS_VIDEOS.map((item, idx) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              setIsPlaying(false);
-              setCurrentIndex(idx);
-            }}
-            className={`p-2 rounded-xl text-left border transition-all flex flex-col justify-between ${
-              currentIndex === idx
-                ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-xs ring-1 ring-emerald-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
-                Noticia 0{idx + 1}
-              </span>
-              {currentIndex === idx && (
-                <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              )}
             </div>
-            <p className="text-[11px] font-medium text-slate-800 dark:text-slate-200 line-clamp-1">
-              {item.title}
-            </p>
-          </button>
-        ))}
-      </div>
+
+            {/* Información detallada del video en el modal */}
+            <div className="p-5 space-y-3">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                  {selectedVideo.title}
+                </h4>
+
+                <a
+                  href={selectedVideo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-1.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0"
+                >
+                  <span>Abrir en YouTube</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                {selectedVideo.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
