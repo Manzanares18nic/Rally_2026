@@ -57,7 +57,7 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
                 Ficha Técnica Ejecutiva y Modelo de Viabilidad • AquaVerde
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Caso Piloto: Cuenca Cauce La Maravilla y Pista Sabana Grande (Distrito VI, Managua)
+                Solución Modular y Replicable en Cualquier Comunidad Urbana Vulnerable de Latinoamérica (Piloto: Sabana Grande)
               </p>
             </div>
           </div>
@@ -189,30 +189,30 @@ export const ProjectPitchModal: React.FC<ProjectPitchModalProps> = ({
               <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
                 <p className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                   <Building2 className="w-4 h-4 text-emerald-600" />
-                  <span>Alcaldía de Managua (ALMA)</span>
+                  <span>Gobiernos Locales y Alcaldías</span>
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Dirección de Drenaje Pluvial recibe telemetría para despachar cuadrillas de desarenado antes de los taponamientos en el cauce La Maravilla.
+                  Direcciones de Drenaje Pluvial y Obras Públicas reciben telemetría en tiempo real para despachar cuadrillas de limpieza antes de los taponamientos en cauces.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
                 <p className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-blue-500" />
-                  <span>SINAPRED / COMUPRED</span>
+                  <span>Protección Civil y Gestión de Riesgo</span>
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Integración del semáforo con el Sistema Nacional de Prevención para activar planes de evacuación comunitarios en alertas amarillas y rojas.
+                  Sistemas nacionales y locales de prevención activan protocolos de evacuación anticipada con un margen de +42 minutos para salvar vidas y bienes.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
                 <p className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                   <Users className="w-4 h-4 text-amber-500" />
-                  <span>Comité Vecinal Sabana Grande</span>
+                  <span>Comités Vecinales y Vigías Barriales</span>
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Red de vigías que custodian físicamente los nodos, validan reportes con fotos y limpian trampas de sedimentos de manera comunitaria.
+                  Vecinos empoderados que custodian los nodos IoT, validan reportes ciudadanos con fotos y realizan jornadas de mantenimiento en los reservorios.
                 </p>
               </div>
             </div>
