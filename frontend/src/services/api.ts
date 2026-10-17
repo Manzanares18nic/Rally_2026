@@ -65,8 +65,23 @@ export interface Incident {
   longitude: number;
   photo_url: string;
   status: string;
+  field_assessment?: IncidentAnalysis;
   ai_analysis?: IncidentAnalysis;
   created_at: string;
+}
+
+export interface WeatherData {
+  temperature: number;
+  apparentTemperature: number;
+  relativeHumidity: number;
+  precipitation: number;
+  rainProbability: number;
+  weatherCode: number;
+  weatherDescription: string;
+  windSpeed: number;
+  isRainySeason: boolean;
+  seasonName: string;
+  reservoirMode: 'Época Seca (Parques y Convivencia Comunitaria)' | 'Temporada Lluviosa (Regulación y Almacenamiento Hidráulico)';
 }
 
 // Configuration
@@ -385,7 +400,7 @@ export async function fetchIncidents(customBaseUrl?: string): Promise<Incident[]
         longitude: -86.1755,
         photo_url: '/images/reservorio1.jpeg',
         status: 'REGISTRADO',
-        ai_analysis: {
+        field_assessment: {
           obstruction_detected: true,
           obstruction_type: 'SEDIMENTOS_Y_DESECHOS',
           urgency_level: 'ALTA',
@@ -396,4 +411,70 @@ export async function fetchIncidents(customBaseUrl?: string): Promise<Incident[]
     ];
   }
 }
+
+// ---------------------------------------------------------------------------
+// 6. GET Clima en Tiempo Real (Open-Meteo API sin límite de cuota)
+// ---------------------------------------------------------------------------
+export async function fetchWeatherData(lat: number = 12.1249, lng: number = -86.1761): Promise<WeatherData> {
+  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const isRainySeason = currentMonth >= 5 && currentMonth <= 10;
+  const seasonName = isRainySeason ? 'Temporada Lluviosa (Invierno)' : 'Época Seca (Verano)';
+  const reservoirMode = isRainySeason
+    ? 'Temporada Lluviosa (Regulación y Almacenamiento Hidráulico)'
+    : 'Época Seca (Parques y Convivencia Comunitaria)';
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&daily=precipitation_probability_max&timezone=America%2FManagua`,
+      { signal: controller.signal }
+    );
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`Weather API status ${res.status}`);
+    const data = await res.json();
+    const current = data.current || {};
+    const daily = data.daily || {};
+
+    const code = current.weather_code ?? 1;
+    let weatherDescription = 'Parcialmente Nublado';
+    if (code === 0) weatherDescription = 'Cielo Despejado';
+    else if (code <= 3) weatherDescription = 'Parcialmente Nublado';
+    else if (code <= 48) weatherDescription = 'Niebla / Neblina';
+    else if (code <= 55) weatherDescription = 'Llovizna';
+    else if (code <= 65) weatherDescription = 'Lluvia Moderada';
+    else if (code <= 82) weatherDescription = 'Chubascos Intensos';
+    else if (code >= 95) weatherDescription = 'Tormenta Eléctrica';
+
+    return {
+      temperature: Math.round((current.temperature_2m ?? 28.5) * 10) / 10,
+      apparentTemperature: Math.round((current.apparent_temperature ?? 31.0) * 10) / 10,
+      relativeHumidity: Math.round(current.relative_humidity_2m ?? 75),
+      precipitation: Number(current.precipitation ?? 0.0),
+      rainProbability: daily.precipitation_probability_max?.[0] ?? 40,
+      weatherCode: code,
+      weatherDescription,
+      windSpeed: Math.round((current.wind_speed_10m ?? 12) * 10) / 10,
+      isRainySeason,
+      seasonName,
+      reservoirMode,
+    };
+  } catch (err) {
+    return {
+      temperature: 28.5,
+      apparentTemperature: 32.0,
+      relativeHumidity: 78,
+      precipitation: 0.0,
+      rainProbability: 65,
+      weatherCode: 2,
+      weatherDescription: 'Parcialmente Nublado (Managua)',
+      windSpeed: 14.0,
+      isRainySeason,
+      seasonName,
+      reservoirMode,
+    };
+  }
+}
+
 
