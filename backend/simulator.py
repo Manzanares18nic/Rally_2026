@@ -17,6 +17,7 @@ class SensorSimulator:
         self.scenario: str = "NORMAL"  # NORMAL, LLUVIA_MODERADA, CRECIDA_SUBITA, NODO_DESCONECTADO, VACIADO
         self.interval_seconds: float = 0.8  # Ritmo ideal de 800ms para observar la subida segundo a segundo
         self.worker_thread: threading.Thread = None
+        self.crecida_subiendo: bool = True
         
         # Estado interno de la simulación
         self.current_water_level_cm: float = 95.0  # ~31% capacidad (Día normal)
@@ -50,16 +51,17 @@ class SensorSimulator:
             db.add_reading(water_level_cm=self.current_water_level_cm, rain_mm=self.rain_intensity_mm)
 
         elif self.scenario == "CRECIDA_SUBITA":
-            # Tormenta fuerte: inicia desde nivel bajo (60 cm / 20%) para ver el agua subir drásticamente
+            # Tormenta fuerte: inicia desde nivel bajo (55 cm / ~18%) para ver el agua subir drásticamente
+            self.crecida_subiendo = True
             self.rain_intensity_mm = 45.0
-            self.current_water_level_cm = 60.0
+            self.current_water_level_cm = 55.0
             db.sensor_status = "ONLINE"
-            # Reiniciar historial para que la gráfica pinte la curva subiendo desde abajo en tiempo real
+            # Reiniciar historial para que la gráfica pinte la subida desde la base
             db.telemetry_history = [
                 TelemetryPoint(
                     timestamp=now - timedelta(seconds=(15 - i) * 2),
-                    water_level_pct=round((max(45.0, 60.0 - (15 - i) * 1.0) / MAX_CAPACITY_CM) * 100, 1),
-                    water_level_cm=round(max(45.0, 60.0 - (15 - i) * 1.0), 1),
+                    water_level_pct=round((max(40.0, 55.0 - (15 - i) * 1.0) / MAX_CAPACITY_CM) * 100, 1),
+                    water_level_cm=round(max(40.0, 55.0 - (15 - i) * 1.0), 1),
                     rain_mm=round(self.rain_intensity_mm, 1)
                 )
                 for i in range(15)
@@ -92,19 +94,32 @@ class SensorSimulator:
                 time.sleep(self.interval_seconds)
                 continue
 
-            # Dinámica acelerada de subida y bajada en vivo para demostraciones
+            # Dinámica viva: en lluvia fuerte el agua sube y es absorbida por la infraestructura verde
             if self.scenario == "CRECIDA_SUBITA":
-                # Sube de forma clara y progresiva (~3.5% a 5% por ciclo)
-                increment = random.uniform(10.0, 16.0)
-                self.current_water_level_cm = min(MAX_CAPACITY_CM * 0.96, self.current_water_level_cm + increment)
+                if self.crecida_subiendo:
+                    # Sube de forma clara y progresiva (+4% a +6% por ciclo)
+                    increment = random.uniform(12.0, 18.0)
+                    self.current_water_level_cm += increment
+                    if self.current_water_level_cm >= MAX_CAPACITY_CM * 0.95:
+                        self.current_water_level_cm = MAX_CAPACITY_CM * 0.95
+                        self.crecida_subiendo = False  # Al llegar a la cota máxima (95%), los jardines de lluvia absorben
+                else:
+                    # Los bio-filtros drenan agua de forma visible (-4% por ciclo) hasta el 40% para volver a subir
+                    decrement = random.uniform(11.0, 17.0)
+                    self.current_water_level_cm -= decrement
+                    if self.current_water_level_cm <= 120.0:  # ~40%
+                        self.current_water_level_cm = 120.0
+                        self.crecida_subiendo = True  # Nueva oleada de agua
             elif self.scenario == "LLUVIA_MODERADA":
                 # Sube moderadamente (~2% a 3% por ciclo)
                 increment = random.uniform(5.5, 9.0)
                 self.current_water_level_cm = min(MAX_CAPACITY_CM * 0.70, self.current_water_level_cm + increment)
             elif self.scenario == "VACIADO":
                 # Drenaje verde rápido: desciende continuamente (~4% por ciclo)
-                decrement = random.uniform(11.0, 17.0)
+                decrement = random.uniform(12.0, 18.0)
                 self.current_water_level_cm = max(55.0, self.current_water_level_cm - decrement)
+                if self.current_water_level_cm <= 55.0:
+                    self.current_water_level_cm = 55.0 + random.uniform(-0.5, 0.5)
             else:
                 # Normal / Día soleado: oscilación suave alrededor de 95cm sin lluvia
                 self.rain_intensity_mm = 0.0

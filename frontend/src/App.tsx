@@ -145,11 +145,58 @@ export default function App() {
   const handleTriggerScenario = async (scenario: ScenarioType) => {
     setIsTriggeringScenario(true);
     setCurrentScenario(scenario);
+
+    // Actualización inmediata para retroalimentación instantánea
+    if (scenario === 'CRECIDA_SUBITA') {
+      setDashboard((prev) => ({
+        ...prev,
+        current_level_pct: 18.0,
+        current_level_cm: 54.0,
+        status: 'VERDE',
+        rise_rate_pct_30m: 14.0,
+      }));
+      // Reiniciar puntos inmediatos subiendo desde 18%
+      const now = Date.now();
+      setTelemetry(
+        Array.from({ length: 15 }, (_, i) => ({
+          timestamp: new Date(now - (15 - i) * 1500).toISOString(),
+          water_level_pct: Math.round(Math.max(14, 18 - (15 - i) * 0.4)),
+          water_level_cm: Math.max(42, 54 - (15 - i) * 1.2),
+          rain_mm: 45.0,
+        }))
+      );
+    } else if (scenario === 'VACIADO') {
+      setDashboard((prev) => ({
+        ...prev,
+        current_level_pct: 92.0,
+        current_level_cm: 276.0,
+        status: 'ROJO',
+        rise_rate_pct_30m: -18.0,
+      }));
+      const now = Date.now();
+      setTelemetry(
+        Array.from({ length: 15 }, (_, i) => ({
+          timestamp: new Date(now - (15 - i) * 1500).toISOString(),
+          water_level_pct: Math.round(Math.min(95, 92 + (15 - i) * 0.3)),
+          water_level_cm: Math.min(285, 276 + (15 - i) * 0.9),
+          rain_mm: 0.0,
+        }))
+      );
+    } else if (scenario === 'NORMAL') {
+      setDashboard((prev) => ({
+        ...prev,
+        current_level_pct: 31.0,
+        current_level_cm: 93.0,
+        status: 'VERDE',
+        rise_rate_pct_30m: 0.5,
+      }));
+    }
+
     try {
       const res = await triggerSimulatorScenario(scenario, apiUrl);
       setDashboard(res.dashboard);
       await pollData();
-      showToast(`Escenario aplicado: ${scenario}`);
+      showToast(`Escenario activado: ${scenario}`);
     } catch {
       showToast('Error al aplicar escenario');
     } finally {
