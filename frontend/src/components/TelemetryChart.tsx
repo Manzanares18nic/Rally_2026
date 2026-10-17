@@ -52,33 +52,14 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({ telemetry, dashb
     };
   });
 
-  const isRed = dashboard.status === 'ROJO';
-  const isYellow = dashboard.status === 'AMARILLO';
-
-  // Paleta reactiva de agua según severidad
-  const waterColors = isRed
-    ? {
-        primaryStop: '#ef4444',
-        midStop: '#b91c1c',
-        deepStop: '#7f1d1d',
-        strokeFront: '#f87171',
-        strokeBack: '#fca5a5',
-      }
-    : isYellow
-    ? {
-        primaryStop: '#f59e0b',
-        midStop: '#b45309',
-        deepStop: '#78350f',
-        strokeFront: '#fbbf24',
-        strokeBack: '#fde68a',
-      }
-    : {
-        primaryStop: '#0284c7', // Cyan azul agua brillante
-        midStop: '#0369a1',    // Azul intermedio
-        deepStop: '#0c4a6e',   // Azul marino de fondo
-        strokeFront: '#38bdf8',
-        strokeBack: '#7dd3fc',
-      };
+  // Paleta de agua natural permanente (azul cristalino y marino profundo)
+  const waterColors = {
+    primaryStop: '#0284c7', // Cyan azul agua brillante
+    midStop: '#0369a1',    // Azul intermedio
+    deepStop: '#0c4a6e',   // Azul marino de fondo
+    strokeFront: '#38bdf8', // Cresta de agua brillante
+    strokeBack: '#7dd3fc',  // Onda secundaria traslúcida
+  };
 
   return (
     <div
